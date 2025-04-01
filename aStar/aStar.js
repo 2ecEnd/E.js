@@ -199,6 +199,7 @@ function aStar(){
     while (reachable.length > 0){
 
         let currentNodeIndex = chooseNode(reachable, finishNode);
+
         currentNodeNumber = reachable[currentNodeIndex];
 
         let currentNode = graphNodes[currentNodeNumber];
@@ -252,6 +253,7 @@ function chooseNode(nodes, finishNode){
 
         if(graphNodes[currentNode].cost + evristicCost(currentNode, finishNode) < bestCost){
             bestNode = i;
+            bestCost = graphNodes[currentNode].cost;
         }
     }
 
