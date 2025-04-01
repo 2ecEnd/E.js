@@ -1,11 +1,11 @@
 //Работа с холстом
-var points = [];
+let points = [];
 
-var canvas = document.getElementsByTagName('canvas')[0];
+let canvas = document.getElementsByTagName('canvas')[0];
 canvas.height = 480;
 canvas.width  = 640;
 
-var context = example.getContext('2d');
+let context = example.getContext('2d');
 canvas.addEventListener('click', function(e)
 {
     // Сдвиг на 8 нужен для того, центр точки был ровно на курсоре
@@ -27,15 +27,15 @@ canvas.addEventListener('click', function(e)
     {
         context.moveTo(currX, currY);
         context.lineTo(points[index][0], points[index][1]);
-        context.stroke();
 
         index++;
     }
+    context.stroke();
 });
 
 
 // Активация алгоритма
-var button = document.getElementById('start');
+let button = document.getElementById('start');
 button.addEventListener('click', function(e)
 {
     // Составление матрицы смежности
@@ -48,11 +48,17 @@ button.addEventListener('click', function(e)
         adj.push(row);
     }
 
+    // Для отладки
     for(let i in points)
     {
         let row = '';
         for(let j in points)
             row += ' ' + adj[i][j].toFixed(3);
         console.log(row);
+    }
+
+    class Ant
+    {
+        
     }
 });
