@@ -1,76 +1,11 @@
-let graphNodes;
+let graphNodes; // Массив вершин хранит объекты класса Node
 let n;
-
-let brushMode = 'wall';
-let startIsSet = false;
-let finishIsSet = false;
 
 let start = 0;
 let finish = 0;
 
-const form = document.getElementById('sizeForm');
-form.addEventListener('submit', function(event) {
-    event.preventDefault();
 
-    let size = document.getElementById('size').value;
-    n = parseInt(size);
-
-    if (isNaN(n)){
-        alert('Пожалуйста, введите число');
-        return;
-    }
-    else if(n > 20){
-        alert('Это слишком большой размер, максимум 20');
-        return;
-    }
-    else if(n < 2){
-        alert('Слишком маленькое число');
-        return;
-    }
-
-    document.getElementById('modelsContainer').removeChild(form);
-    createMap();
-});
-
-function createGenerateButton(){
-    let generateButton = document.createElement('button');
-    generateButton.id = "generate";
-    generateButton.innerHTML = "Проложить путь";
-    generateButton.addEventListener('click', function(){aStar()});
-
-    document.getElementById("mapEditorContainer").appendChild(generateButton);
-}
-
-function createBrushes(){
-    let brushContainer = document.createElement('div');
-    brushContainer.id = "brushContainer";
-    brushContainer.classList.add('brushContainer');
-
-    let wallBrush = document.createElement('button');
-    let startFinishBrush = document.createElement('button');
-    wallBrush.id = "wallBrush";
-    startFinishBrush.id = "startFinishBrush";
-
-    wallBrush.addEventListener('click', function(){brushMode = 'wall'});
-    startFinishBrush.addEventListener('click', function(){brushMode = 'start-finish'});
-
-    document.getElementById("mapEditorContainer").appendChild(brushContainer);
-    document.getElementById("brushContainer").appendChild(wallBrush);
-    document.getElementById("brushContainer").appendChild(startFinishBrush);
-}
-
-function createMapEditorContainer(){
-    let container = document.createElement('div');
-    container.id = "mapEditorContainer";
-    container.classList.add('mapEditor');
-
-    document.getElementById("modelsContainer").appendChild(container);
-
-    createGenerateButton();
-    createBrushes();
-}
-
-function createMap(){
+function createMap(){ // Создание таблицы размером n*n
     let table = document.createElement('table');
     table.classList.add("map");
     let number = 0;
@@ -97,7 +32,8 @@ function createMap(){
     createMapEditorContainer();
 }
 
-function toggleWall(cell, cellNumber){
+
+function toggleWall(cell, cellNumber){ // Функция превращает клетку в wall или start-finish, в зависимости от текущей кисти (brushMode)
     if (brushMode == 'wall'){
         cell.classList.toggle('wall')
         cell.classList.toggle('free')
@@ -143,20 +79,16 @@ function toggleWall(cell, cellNumber){
     }
 }
 
-function openTub(button){
-    let div = document.getElementById("modelsContainer");
-    button.classList.toggle('active');
-    div.classList.toggle('open');
-}
 
-class Node{
+class Node{ // Класс для вершины
     constructor(number){
-        this.reachableNodes = [];
+        this.reachableNodes = []; // Соседние клетки, в которые можно попасть из этой
         this.isWall = false;
-        this.explored = false;
+        this.visited = false;
         this.cost = 10000000;
-        this.previousNode;
+        this.previousNode; 
 
+        // Проверка соседних клеток на доступность
         if ((number%n - (number-1)%n == 1) && (number-1 >= 0)){
             this.reachableNodes.push(number-1);
         }
@@ -174,35 +106,24 @@ class Node{
 
 }
 
-function createClearPathButton(startNode, finishNode){
-    let generateButton = document.createElement('button');
-    generateButton.id = "clearPath";
-    generateButton.innerHTML = "Очистить путь";
-    generateButton.addEventListener('click', function(){hidePath(startNode, finishNode)});
-
-    document.getElementById("modelsContainer").appendChild(generateButton);
-}
-
-function evristicCost(currentNode, finishNode){
-    return Math.abs(Math.floor(currentNode / n) - Math.floor(finishNode / n)) + Math.abs(currentNode%n - finishNode%n);
-}
 
 function aStar(){
-    let flag = false;
+    let flag = false; // Флаг становится true если мы нашли finish
     let startNode = start;
     let finishNode = finish;
     let currentNodeNumber;
-    let reachable = [startNode];
-    graphNodes[startNode].explored = true;
-    graphNodes[startNode].cost = 0;
+    let reachable = [startNode]; // Массив с доступными для посещения клетками
 
+    graphNodes[startNode].visited = true;
+    graphNodes[startNode].cost = 0;
+    
     while (reachable.length > 0){
 
-        let currentNodeIndex = chooseNode(reachable, finishNode);
+        let currentNodeIndex = chooseNode(reachable, finishNode); // Индекс лучшей клетки в массиве reachable
 
-        currentNodeNumber = reachable[currentNodeIndex];
+        currentNodeNumber = reachable[currentNodeIndex]; // Номер лучшей клетки
 
-        let currentNode = graphNodes[currentNodeNumber];
+        let currentNode = graphNodes[currentNodeNumber]; // Сама клетка, объект класса Node
 
         reachable.splice(currentNodeIndex, 1);
 
@@ -213,9 +134,9 @@ function aStar(){
             for (let i of currentNode.reachableNodes){
                 let nextNode = graphNodes[i];
                 if (!nextNode.isWall){
-                    if (!nextNode.explored){
+                    if (!nextNode.visited){
                         reachable.push(i);
-                        nextNode.explored = true;
+                        nextNode.visited = true;
                         nextNode.previousNode = currentNodeNumber;
                         nextNode.cost = currentNode.cost + 1;
                     }
@@ -226,8 +147,8 @@ function aStar(){
                 }
             }
         }
-
     }
+
 
     if (flag){
         showPath(startNode, finishNode);
@@ -240,10 +161,19 @@ function aStar(){
         alert("Нет пути");
     }
 
+
     clearGraphNodes();
 }
 
-function chooseNode(nodes, finishNode){
+
+function clearGraphNodes(){
+    for (let i of graphNodes){
+        i.visited = false;
+    }
+}
+
+
+function chooseNode(nodes, finishNode){ // Алгоритм выбора лучшей клетки из доступных
     let bestCost = 1000000;
     let currentNode;
     let bestNode;
@@ -260,29 +190,7 @@ function chooseNode(nodes, finishNode){
     return bestNode;
 }
 
-function clearGraphNodes(){
-    for (let i of graphNodes){
-        i.explored = false;
-    }
-}
 
-function showPath(startNode, finishNode){
-    let currentNode = finishNode;
-
-    while(currentNode != startNode){
-        currentNode = graphNodes[currentNode].previousNode;
-        document.getElementById(currentNode).classList.toggle('path');
-    }
-}
-
-function hidePath(startNode, finishNode){
-    let currentNode = finishNode;
-
-    while(currentNode != startNode){
-        currentNode = graphNodes[currentNode].previousNode;
-        document.getElementById(currentNode).classList.toggle('path');
-    }
-
-    document.getElementById("modelsContainer").removeChild(document.getElementById("clearPath"));
-    createMapEditorContainer();
+function evristicCost(currentNode, finishNode){ // Эвристика Манхэттенское расстояние
+    return Math.abs(Math.floor(currentNode / n) - Math.floor(finishNode / n)) + Math.abs(currentNode%n - finishNode%n);
 }
