@@ -26,8 +26,8 @@ form.addEventListener('submit', function(event) {
         alert('Пожалуйста, введите число');
         return;
     }
-    else if(n > 20){
-        alert('Это слишком большой размер, максимум 20');
+    else if(n > 100){
+        alert('Это слишком большой размер, максимум 100');
         return;
     }
     else if(n < 2){

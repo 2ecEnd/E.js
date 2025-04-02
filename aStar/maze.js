@@ -2,7 +2,7 @@
 
 function generateMaze(){
     toggleAllCellsIntoWalls();
-    let randomCell = Math.floor(Math.random() * n * n)
+    let randomCell = chooseRandomCell();
     let startCell = [randomCell, randomCell]
     let reachable = [startCell];
 
@@ -59,5 +59,19 @@ function toggleAllCellsIntoWalls(){
         cell.classList.remove('free');
         cell.classList.remove('start');
         cell.classList.remove('finish');
+    }
+}
+
+
+function chooseRandomCell(){
+    if (n%2 != 0){
+        let randomNum = Math.floor(Math.random() * (n-1) * (n-1));
+        while((randomNum % 2 == 1) || (Math.floor(randomNum/n) % 2 == 0)) randomNum = Math.floor(Math.random() * (n-1) * (n-1));
+        return randomNum
+    }
+    else{
+        let randomNum = Math.floor(Math.random() * n * n);
+        while(randomNum % 2 == 0) randomNum = Math.floor(Math.random() * n * n);
+        return randomNum
     }
 }
