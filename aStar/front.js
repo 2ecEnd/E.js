@@ -48,6 +48,7 @@ function createMapEditorContainer(){
     document.getElementById("modelsContainer").appendChild(container);
 
     createGenerateButton();
+    createMazeButton();
     createBrushes();
 }
 
@@ -59,6 +60,16 @@ function createGenerateButton(){
     generateButton.addEventListener('click', function(){aStar()});
 
     document.getElementById("mapEditorContainer").appendChild(generateButton);
+}
+
+
+function createMazeButton(){
+    let mazeButton = document.createElement('button');
+    mazeButton.id = "maze";
+    mazeButton.innerHTML = "Сгенерировать лабиринт";
+    mazeButton.addEventListener('click', function(){generateMaze()});
+
+    document.getElementById("mapEditorContainer").appendChild(mazeButton);
 }
 
 
@@ -79,6 +90,8 @@ function createBrushes(){
     document.getElementById("brushContainer").appendChild(wallBrush);
     document.getElementById("brushContainer").appendChild(startFinishBrush);
 }
+
+
 
 
 
