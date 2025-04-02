@@ -107,7 +107,7 @@ class Node{ // Класс для вершины
 }
 
 
-function aStar(){
+async function aStar(){
     let flag = false; // Флаг становится true если мы нашли finish
     let startNode = start;
     let finishNode = finish;
@@ -117,7 +117,7 @@ function aStar(){
     graphNodes[startNode].visited = true;
     graphNodes[startNode].cost = 0;
     
-    while (reachable.length > 0){
+    while (reachable.length > 0 && !flag){
 
         let currentNodeIndex = chooseNode(reachable, finishNode); // Индекс лучшей клетки в массиве reachable
 
@@ -126,6 +126,8 @@ function aStar(){
         let currentNode = graphNodes[currentNodeNumber]; // Сама клетка, объект класса Node
 
         reachable.splice(currentNodeIndex, 1);
+
+        document.getElementById(currentNodeNumber).classList.add('current');
 
         if (currentNodeNumber == finishNode){
             flag = true;
@@ -147,6 +149,8 @@ function aStar(){
                 }
             }
         }
+
+        await sleep(25);
     }
 
 
@@ -165,6 +169,10 @@ function aStar(){
     clearGraphNodes();
 }
 
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 function clearGraphNodes(){
     for (let i of graphNodes){
@@ -181,9 +189,9 @@ function chooseNode(nodes, finishNode){ // Алгоритм выбора луч�
     for (let i = 0; i < nodes.length; i++){
         currentNode = nodes[i];
 
-        if(graphNodes[currentNode].cost + evristicCost(currentNode, finishNode) < bestCost){
+        if(evristicCost(currentNode, finishNode) < bestCost){
             bestNode = i;
-            bestCost = graphNodes[currentNode].cost;
+            bestCost = evristicCost(currentNode, finishNode);
         }
     }
 

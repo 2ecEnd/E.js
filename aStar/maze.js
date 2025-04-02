@@ -60,6 +60,8 @@ function toggleAllCellsIntoWalls(){
         cell.classList.remove('start');
         cell.classList.remove('finish');
     }
+    startIsSet = false;
+    finishIsSet = false;
 }
 
 

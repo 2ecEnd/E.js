@@ -128,6 +128,11 @@ function hidePath(startNode, finishNode){
         document.getElementById(currentNode).classList.toggle('path');
     }
 
+    for(let i = 0; i < n*n; i++){
+        const cell = document.getElementById(i);
+        if (cell.classList.contains('current')) cell.classList.remove('current');
+    }
+
     document.getElementById("modelsContainer").removeChild(document.getElementById("clearPath"));
     createMapEditorContainer();
 }

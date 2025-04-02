@@ -86,6 +86,10 @@ input[type="text"]{
         background-color: rgb(25, 25, 25);
     }
 
+    .current{
+        background-color: rgba(0, 128, 0, 0.5);
+    }
+
     .path{
         background-color: green;
     }
