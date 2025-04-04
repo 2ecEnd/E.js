@@ -167,7 +167,7 @@ class AntColonyOptimization
         if (adj.length == 0)
             return;
 
-        const maxIter = 1000; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
+        const maxIter = 100; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
         let iter = 0;
         
         let path = [];
@@ -215,8 +215,12 @@ canvas.width  = 640;
 let context = example.getContext('2d');
 canvas.addEventListener('click', function(e)
 {
-    // Сдвиг на 8 нужен для того, центр точки был ровно на курсоре
-    let currX = e.x - 8, currY = e.y - 8;
+    // Преобразование координат курсора, чтобы точки отрисовывались корректно
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / canvas.clientWidth;
+    const scaleY = canvas.height / canvas.clientHeight;
+    const currX = (e.clientX - rect.left) * scaleX;
+    const currY = (e.clientY - rect.top) * scaleY;
 
     // Отрисовка точки в месте клика 
     context.fillStyle = "#5a5a5a";
