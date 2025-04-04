@@ -14,7 +14,7 @@ class Ant
     }
 
     // Метод выбора следующей вершины
-    makeChoice(adj, pheromoneMatrix, alpha, beta)
+    makeChoice(adj, pheromoneMatrix, a, b)
     {
         if (this.path.length == 0)
         {
@@ -42,7 +42,7 @@ class Ant
             let pheromone = pheromoneMatrix[this.curr][neighbor];
             let proximity = 1 / adj[this.curr][neighbor];
 
-            wishes.push(Math.pow(pheromone, alpha) * Math.pow(proximity, beta));
+            wishes.push(Math.pow(pheromone, a) * Math.pow(proximity, b));
             summWishes += wishes.at(-1);
         }
         for(let neighbor in neighborVertexes)
@@ -94,22 +94,26 @@ class Ant
 
 class AntColonyOptimization
 {
-    kAlpha = 1;
-    kBeta = 2;
+    kAlpha;
+    kBeta;
     kPheromone = 1;
-    kQ = 5.0;
-    kEvaporation = 0.2;
+    kQ;
+    kEvaporation;
 
     adj = [];
     pheromoneMatrix = [];
 
     ants = [];
 
-    constructor(adj)
+    constructor(adj, alpha, beta, Q, evaporation)
     {
         this.adj = adj;
+        this.kAlpha = alpha;
+        this.kBeta = beta;
+        this.kQ = Q;
+        this.kEvaporation = evaporation;
 
-        let graphWeight = 0;
+        let graphWeight = 0.0;
         for(let i in adj)
         {
             let j = i + 1
@@ -127,7 +131,7 @@ class AntColonyOptimization
             {
                 if (i == j)
                 {
-                    row.push(0);
+                    row.push(0.0);
                 }
                 else
                 {
@@ -248,9 +252,10 @@ canvas.addEventListener('click', function(e)
 
 
 // Активация алгоритма
-let button = document.getElementById('start');
-button.addEventListener('click', function(e)
+document.getElementById('dataForm').addEventListener('submit', function(e)
 {
+    e.preventDefault(); // Отменяем перезагрузку страницы
+
     // Составление матрицы смежности
     adj = [];
     for(let i in points)
@@ -261,22 +266,21 @@ button.addEventListener('click', function(e)
         adj.push(row);
     }
 
-    // Для отладки
-    /*for(let i in points)
-    {
-        let row = '';
-        for(let j in points)
-            row += ' ' + adj[i][j].toFixed(3);
-        console.log(row);
-    }*/
+    let antColony = new AntColonyOptimization
+    (
+        adj, 
+        parseInt(document.getElementById('alpha').value),
+        parseInt(document.getElementById('beta').value),
+        parseInt(document.getElementById('q').value),
+        parseInt(document.getElementById('evaporation').value),
+    );
 
-    let antColony = new AntColonyOptimization(adj);
+
     let path = antColony.solveSalesmansProblem();
     for(let v of path)
     {
         console.log(v);
     }
-    //let colors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)", "rgb(0, 0, 0)", "rgb(127, 127, 127)"];
     context.strokeStyle = "rgba(255, 0, 0, 1)";
     
     context.beginPath();
