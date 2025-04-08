@@ -72,8 +72,8 @@ input[type="text"]{
     border-collapse: collapse;
 
     td{
-        width: 5px;
-        height: 5px;
+        width: 4px;
+        height: 4px;
         background-color: white;
         
     }
@@ -106,11 +106,11 @@ input[type="text"]{
 
 .modelsContainer{
     justify-content: center;
-    max-width: 1300px;
-    height: 400px;
+    max-width: 1920px;
+    height: 850px;
     margin: 0 auto;
     background-color: rgb(25, 25, 25);
-    transform: translateY(-400px);
+    transform: translateY(-850px);
     transition: transform 0.5s ease;
 
     button{

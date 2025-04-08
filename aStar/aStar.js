@@ -150,7 +150,7 @@ async function aStar(){
             }
         }
 
-        await sleep(25);
+        await sleep(10);
     }
 
 
@@ -189,10 +189,15 @@ function chooseNode(nodes, finishNode){ // Алгоритм выбора луч�
     for (let i = 0; i < nodes.length; i++){
         currentNode = nodes[i];
 
-        if(evristicCost(currentNode, finishNode) < bestCost){
+        if(graphNodes[currentNode].cost + evristicCost(currentNode, finishNode) < bestCost){
             bestNode = i;
-            bestCost = evristicCost(currentNode, finishNode);
+            bestCost = graphNodes[currentNode].cost + evristicCost(currentNode, finishNode);
         }
+
+        // if(evristicCost(currentNode, finishNode) < bestCost){
+        //     bestNode = i;
+        //     bestCost = evristicCost(currentNode, finishNode);
+        // }
     }
 
     return bestNode;
