@@ -13,14 +13,6 @@ const net = new neuralNetwork(2500, 128, 10);
 
 let pixelsArr = [];
 
-for(let i = 0; i < 10; i++){
-    for(let j = 1; j < 11; j++){
-        getInputFromImage(`images/${i}_${j}.png`, (data) => {
-            pixelsArr.push(data);
-        });
-    }
-}
-
 
 function trainingTenNumbers(){
     for(let i = 0; i < 5000; i++){
