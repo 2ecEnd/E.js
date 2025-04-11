@@ -11,18 +11,22 @@ class neuralNetwork{
 
 const net = new neuralNetwork(2500, 128, 10);
 
-let pixelsArr = [];
+const intervals = [4132, 4684, 4176, 4350, 4072, 3795, 4137, 4401, 4063, 4188];
 
-
-function trainingTenNumbers(){
-    for(let i = 0; i < 5000; i++){
-        for(let j = 0; j < 10; j++){
+async function trainingTenNumbers(){
+    for(let i = 0; i < 45000; i++){
+        await new Promise((resolve) => {
             let targetVector = new Array(10).fill(0);
-            targetVector[j] = 1;
-            calculatePrediction(pixelsArr[(j*10) + Math.floor(Math.random() * 10)], targetVector, 0);
-        }
+            let randomNum = Math.floor(Math.random() * 10);
+            targetVector[randomNum] = 1;
+
+            getInputFromImage(`images/${randomNum} (${Math.floor(Math.random() * intervals[randomNum])}).jpg`, (data) => {
+                calculatePrediction(data, targetVector, 0);
+                resolve();
+            });
+        });
+        inputFileButton.innerHTML = i;
     }
-    alert('done')
 }
 
 
@@ -79,7 +83,7 @@ function softmax(arr){
 
 
 function train(input, targetVector){
-    const learningRate = 0.00004;
+    const learningRate = 0.00001;
 
     const outputError = net.outputArray.map((x, i) => x - targetVector[i]);
 
