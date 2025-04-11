@@ -1,0 +1,23 @@
+body{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background-color: #17212b;
+}
+main{
+    justify-content: center;
+    align-items: center;
+    display: inline-flex;
+    background-color: #1b2733;
+    gap: 20px;
+    height: 600px;
+    width: 1000px;
+}
+#map{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+canvas{
+    background-color: #fff;
+}
