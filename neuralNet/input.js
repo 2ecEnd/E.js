@@ -1,11 +1,16 @@
 const pica = window.pica();
 
+let input = [];
+
 for(let i = 1; i < 4133; i++){
-    getInputFromImage(`images/${0} (${Math.floor(Math.random() * 4133)}).jpg`);
+    getInputFromImage(`images/${0} (${Math.floor(Math.random() * 4133)}).jpg`, (data) => {
+        input = data;
+    });
 }
 
 function getInputFromImage(imageUrl, callback){
     const image = new Image();
+    alert(1);
 
     image.onload = function(){
         const targetCanvas = document.getElementById("drawingCanvas");
