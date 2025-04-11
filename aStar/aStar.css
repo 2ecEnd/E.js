@@ -1,0 +1,207 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+
+    background-image: url(images/T90M.jpg);
+    height: 100vh;
+    background-size: cover;
+}
+
+.container-fluid{
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background-color: rgb(25, 25, 25);
+
+    .container{
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 15px 10px;
+
+        .menu button{
+            border: none;
+            outline: none;
+            background: none;
+            text-decoration: none;
+            font-size: 24px;
+            color: rgb(255, 255, 255);
+            margin: 0 30px;
+        }
+
+        .menu button.active{
+            border-bottom: 2px solid chocolate;
+            color: chocolate;
+            margin-top: 2px;
+        }
+
+        .search{
+            justify-content: center;
+            border: 1px solid chocolate;
+            border-radius: 50px;
+            background-color: rgb(255, 255, 255);
+            padding: 10px 20px;
+        }
+    }
+}
+
+.d-flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header .container .menu button:hover{
+    color: chocolate;
+    cursor: pointer;
+}
+
+input[type="text"]{
+    border: none;
+    outline: none;
+    background: none;
+}
+
+.map{
+    border: 1px solid chocolate;
+    border-radius: 10px;
+    padding: 2px;
+    background-color: white;
+    border-collapse: collapse;
+
+    td{
+        width: 4px;
+        height: 4px;
+        background-color: white;
+        
+    }
+
+    .free:hover{
+        background-color: rgb(100, 100, 100);
+    }
+
+    .wall{
+        background-color: rgb(25, 25, 25);
+    }
+
+    .current{
+        background-color: rgba(0, 128, 0, 0.5);
+    }
+
+    .path{
+        background-color: green;
+    }
+
+    .start{
+        background-color: green;
+    }
+
+    .finish{
+        background-color: chocolate;
+    }
+
+}
+
+.modelsContainer{
+    justify-content: center;
+    max-width: 1920px;
+    height: 850px;
+    margin: 0 auto;
+    background-color: rgb(25, 25, 25);
+    transform: translateY(-850px);
+    transition: transform 0.5s ease;
+
+    button{
+        border: none;
+        outline: none;
+        background: none;
+        text-decoration: none;
+        font-size: 24px;
+        color: rgb(255, 255, 255);
+        margin: 0 30px;
+    }
+
+    .sizeForm{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 150px;
+        height: 75px;
+
+        .sizeInput{
+            background-color: rgb(220, 220, 220);
+            border: 1px solid chocolate;
+            border-radius: 5px;
+            height: 25px;
+            font-size: 16px;
+        }
+
+        .submitInput{
+            background-color: rgb(220, 220, 220);
+            border: 1px solid chocolate;
+            border-radius: 5px;
+            height: 28px;
+            font-size: 18px;
+        }
+
+        .submitInput:hover{
+            background-color: rgb(200, 200, 200);
+            border: 2px solid chocolate;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    }
+
+    .mapEditor{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        height: 75px;
+        padding: 10px 0;
+        background-color: rgb(40, 40, 40);
+        margin-left: 10px;
+
+        .brushContainer{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 200px;
+            height: 40px;
+
+            #wallBrush{
+                background-color: rgb(30, 30, 30);
+                width: 40px;
+                height: 40px;
+                border: 1px solid chocolate;
+                border-radius: 3px;
+            }
+            #wallBrush:hover{
+                border: 2px solid chocolate;
+                cursor: pointer;
+            }
+            #startFinishBrush{
+                background-color: green;
+                width: 40px;
+                height: 40px;
+                border: 1px solid chocolate;
+                border-radius: 3px;
+            }
+            #startFinishBrush:hover{
+                border: 2px solid chocolate;
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.modelsContainer button:hover{
+    color: chocolate;
+    cursor: pointer;
+}
+
+.modelsContainer.open{
+    transform: translateY(0px);
+}
