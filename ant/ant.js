@@ -2,7 +2,7 @@ class Ant
 {
     path = [];
     distance = 0;
-    visited = [];
+    visited = new Set();
     start = 0;
     curr = 0;
     canContinue = true;
@@ -19,7 +19,7 @@ class Ant
         if (this.path.length == 0)
         {
             this.path.push(this.curr);
-            this.visited.push(this.curr); 
+            this.visited.add(this.curr); 
         }
 
         // Если соседей не оказалось = весь путь был пройден
@@ -32,8 +32,8 @@ class Ant
             return;
         }
 
-        let choosingProbabilities = [];
         // Подсчёт вероятности перехода муравья в соседние вершины
+        let choosingProbabilities = [];
         let wishes = [];
         let probability = [];
         let summWishes = 0.0;
@@ -45,7 +45,7 @@ class Ant
             wishes.push(Math.pow(pheromone, a) * Math.pow(proximity, b));
             summWishes += wishes.at(-1);
         }
-        for(let i in neighborVertexes)
+        for(let i = 0; i < neighborVertexes.length; i++)
         {
             probability.push(wishes[i] / summWishes);
             if (i == 0)
@@ -57,16 +57,16 @@ class Ant
         //Выбор следующей вершины
         let nextVertex;
         let choose = Math.random();
-        for(let neighbor in neighborVertexes)
-            if (choose <= choosingProbabilities[neighbor])
+        for(let i = 0; i < neighborVertexes.length; i++)
+            if (choose <= choosingProbabilities[i])
             {
-                nextVertex = neighborVertexes[neighbor];
+                nextVertex = neighborVertexes[i];
                 break;
             }
 
         this.path.push(nextVertex);
         this.distance += adj[this.curr][nextVertex];
-        this.visited.push(nextVertex);
+        this.visited.add(nextVertex);
         this.curr = nextVertex;
     }
     
@@ -74,8 +74,8 @@ class Ant
     getNeighborVertexes(adj)
     {
         let neighbors = [];
-        for(let v in adj)
-            if (adj[this.curr][v] != 0 && this.visited.indexOf(v) == -1)
+        for(let v = 0; v < adj.length; v++)
+            if (!this.visited.has(v))
                 neighbors.push(v);
         return neighbors;
     }
@@ -101,12 +101,6 @@ class AntColonyOptimization
         this.kQ = Q;
         this.kEvaporation = evaporation;
 
-        let graphWeight = 0.0;
-        for(let i = 0; i < this.adj.length; i++)
-            for(let j = i + 1; j < this.adj.length; j++)
-                graphWeight += this.adj[i][j];
-        this.kQ = 0.015 * graphWeight;
-
         for(let i = 0; i < this.adj.length; i++)
         {
             let row = []
@@ -121,18 +115,19 @@ class AntColonyOptimization
 
     createAnts()
     {
-        for(let i in this.adj)
+        this.ants = [];
+        for(let i = 0; i < this.adj.length; i++)
             this.ants.push(new Ant(i));
     }
 
     updatePheromone(lup)
     {
-        for(let i in lup)
-            for(let j in lup)
+        for(let i = 0; i < lup.length; i++)
+            for(let j = 0; j < lup.length; j++)
             {
                 this.pheromoneMatrix[i][j] = (1 - this.kEvaporation) * this.pheromoneMatrix[i][j] + lup[i][j];
                 if(this.pheromoneMatrix[i][j] < 0.01 && i != j)
-                    this.pheromoneMatrix = 0.01;
+                    this.pheromoneMatrix[i][j] = 0.01;
             }
     }
 
@@ -145,9 +140,9 @@ class AntColonyOptimization
         let iter = 0;
         
         let path = [];
-        let distance = 1000000000;
+        let distance = Infinity;
 
-        while (iter != maxIter)
+        while (iter < maxIter)
         {
             iter += 1;
             let lup = []; // lup - local update pheromone 
@@ -176,7 +171,18 @@ class AntColonyOptimization
 
                 // Обновление феромонов
                 for(let v = 0; v < ant.path.length - 1; v++)
-                    lup[v][v + 1] += this.kQ / ant.distance;
+                {
+                    if (v == ant.path.length - 2)
+                    {
+                        lup[ant.path[v]][ant.path[0]] += this.kQ / ant.distance;
+                        lup[ant.path[0]][ant.path[v]] += this.kQ / ant.distance;
+                    }
+                    else
+                    {
+                        lup[ant.path[v]][ant.path[v + 1]] += this.kQ / ant.distance;
+                        lup[ant.path[v + 1]][ant.path[v]] += this.kQ / ant.distance;
+                    }
+                }
             }
             this.updatePheromone(lup);
         }
@@ -185,7 +191,7 @@ class AntColonyOptimization
     }
 }
 
-function clearCanvas() 
+async function clearCanvas() 
 {
     // Очистка холста
     ctx.fillStyle = 'rgb(255, 255, 255)';
@@ -216,15 +222,15 @@ function clearCanvas()
 
 // Инициализация холста
 let canvas = document.getElementsByTagName('canvas')[0];
-canvas.height = 480;
-canvas.width  = 640;
+canvas.height = 600;
+canvas.width  = 800;
 
 // Точки, которые пользователь ставит на холсте
 let points = []; 
 
 //Работа с холстом
 let ctx = canvas.getContext('2d');
-canvas.addEventListener('click', function(e)
+canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
     const rect = canvas.getBoundingClientRect();
@@ -260,7 +266,7 @@ canvas.addEventListener('click', function(e)
 
 
 // Активация алгоритма
-document.getElementById('dataForm').addEventListener('submit', function(e)
+document.getElementById('dataForm').addEventListener('submit', async function(e)
 {
     // Отменяем перезагрузку страницы
     e.preventDefault(); 
@@ -305,4 +311,10 @@ document.getElementById('dataForm').addEventListener('submit', function(e)
     }   
     ctx.stroke(); 
     ctx.closePath();   
+});
+
+const arrow = document.getElementById("arrow");
+
+arrow.addEventListener('click', async function(){
+    document.getElementById("header").classList.toggle("active");
 });

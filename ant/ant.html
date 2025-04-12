@@ -5,17 +5,56 @@
     <title>Ant Algorithm</title>
 </head>
 <body>
-    <main>
+    <header class="container-fluid active" id="header">
+        <div class="arrow" id="arrow">
+            <img src="../design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
+        </div>
+        <div class="container d-flex">
+            <nav class="menu d-flex">
+                <button id="algorithm1">
+                    <img src="../design_Images/main 30px.png" alt="">
+                    Главная страница
+                </button>
+                <a href="aStar/aStar.html">
+                    <button id="algorithm2">
+                        <img src="../design_Images/Astar 30px.png" alt="">
+                        Поиск пути
+                    </button>
+                </a>
+                <button id="algorithm3">
+                    <img src="../design_Images/cluster 30px.png" alt="">
+                    Кластеризация
+                </button>
+                <button id="algorithm4">
+                    <img src="../design_Images/genetic 30px.png" alt="">
+                    Генетический алгоритм
+                </button>
+                <button id="algorithm5">
+                    <img src="../design_Images/ant 30px.png" alt="">
+                    Муравьиный алгоритм
+                </button>
+                <button id="algorithm6">
+                    <img src="../design_Images/tree 30px.png" alt="">
+                    Дерево решений
+                </button>
+                <button id="algorithm7">
+                    <img src="../design_Images/neural 30px.png" alt="">
+                    Нейронная сеть
+                </button>
+            </nav>
+        </div>
+    </header>
+    <div class="mainContainer d-flex">
         <canvas></canvas>
 
         <form id="dataForm">
             <input type="text" id="alpha" value="1">
-            <input type="text" id="beta" value="2">
+            <input type="text" id="beta" value="3">
             <input type="text" id="q" value="5">
             <input type="text" id="evaporation" value="0.2">
             <button type="submit" id="start">Press Start!</button>
         </form>
-    </main>
+    </div>
+    <script src="ant.js"></script>
 </body>
-<script src="ant.js"></script>
 </html>
