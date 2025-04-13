@@ -1,0 +1,139 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    color: rgb(255, 255, 255);
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+
+    height: 100vh;
+    background-color: rgb(23, 33, 34);
+    background-size: cover;
+}
+
+.container-fluid{
+    position: relative;
+    z-index: 1;
+    max-width: 70px;
+    height: 100%;
+    background-color: rgb(27, 39, 51);
+    transition: max-width 0.4s ease;
+
+    .arrow{
+        margin: 15px 0 0 30px;
+        height: 30px;
+        width: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform: rotate(180deg);
+
+        padding-right: 2px;
+
+        transition: margin 0.4s ease, transform 0.4s ease;;
+    }
+
+    .arrow:hover{
+        background-color: rgb(55, 65, 76);
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .container{
+        height: 450px;
+        margin: 0 auto;
+        padding: 15px 10px;
+        margin-top: 30px;
+
+        .menu{
+            height: 100%;
+
+            a{
+                text-decoration: none;
+            }
+        }
+
+        .menu button{
+            display: flex;
+            align-items: center;
+
+            border: 4px solid rgb(32, 47, 62);
+            border-radius: 10px;
+            height: 50px;
+            width: 50px;
+
+            position: relative;
+            transition: transform 0.4s ease, width 0.4s ease;
+
+            text-align: left;
+            outline: none;
+            background: none;
+            text-decoration: none;
+            font-size: 24px;
+            color: rgb(255, 255, 255);
+            margin: 0 30px;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+
+            img{
+                margin-right: 10px;
+            }
+        }
+
+        .menu button.active{
+            border: 4px solid rgb(27, 68, 111);
+            border-radius: 10px;
+            background-color: rgb(27, 68, 111);
+        }
+    }
+}
+
+.container-fluid.active{
+    max-width: 370px;
+
+    .menu button{
+        height: 50px;
+        width: 320px;
+
+
+    }
+
+    .arrow{
+        margin: 15px 0 0 330px;
+        transform: rotate(0deg);
+    }
+}
+
+.d-flex{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+header .container .menu button:hover{
+    border: 4px solid rgb(27, 68, 111);
+    border-radius: 10px;
+    background-color: rgb(27, 68, 111);
+    cursor: pointer;
+    transform: translateX(+15px);
+}
+
+.mainContainer{
+    background-color: rgb(27, 39, 51);
+    border-radius: 10px;
+    margin: 30px;
+    width: 100%;
+    height: 94%;
+}
+#map{
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+canvas{
+    background-color: #fff;
+}
