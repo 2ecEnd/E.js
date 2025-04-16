@@ -4,14 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>example</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <canvas height='320' width='480' id='example'>Обновите браузер</canvas>
-    <script>
-        var example = document.getElementById("example"),
-            ctx     = example.getContext('2d');
-        ctx.fillRect(0, 0, example.width, example.height);
-    </script>
-    +
+    <header class="container-fluid active" id="header">
+        <div class="arrow" id="arrow">
+            <img src="design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
+        </div>
+        <div class="container d-flex">
+            <nav class="menu d-flex">
+                <button id="algorithm1">
+                    <img src="design_Images/main 30px.png" alt="">
+                    Главная страница
+                </button>
+                <a href="aStar/aStar.html">
+                    <button id="algorithm2">
+                        <img src="design_Images/Astar 30px.png" alt="">
+                        Поиск пути
+                    </button>
+                </a>
+                <button id="algorithm3">
+                    <img src="design_Images/cluster 30px.png" alt="">
+                    Кластеризация
+                </button>
+                <button id="algorithm4">
+                    <img src="design_Images/genetic 30px.png" alt="">
+                    Генетический алгоритм
+                </button>
+                <button id="algorithm5">
+                    <img src="design_Images/ant 30px.png" alt="">
+                    Муравьиный алгоритм
+                </button>
+                <button id="algorithm6">
+                    <img src="design_Images/tree 30px.png" alt="">
+                    Дерево решений
+                </button>
+                <button id="algorithm7">
+                    <img src="design_Images/neural 30px.png" alt="">
+                    Нейронная сеть
+                </button>
+            </nav>
+        </div>
+    </header>
+    <div class="mainContainer d-flex">
+
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
