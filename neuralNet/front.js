@@ -16,5 +16,5 @@ inputFileButton.addEventListener('click', function(){
 });
 
 saveDataButton.addEventListener('click', function(){
-    saveDataToJson(pixelsArr, 'pixelsArr.json');
+    saveDataToJson([net.hiddenWeights, net.outputWeights], 'weights.json');
 });

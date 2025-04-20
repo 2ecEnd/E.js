@@ -7,6 +7,10 @@ canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 //canvas.addEventListener('mouseout', stopDrawing);
 
+context.clearRect(0, 0, canvas.width, canvas.height);
+context.fillStyle = 'white';
+context.fillRect(0, 0, canvas.width, canvas.height);
+
 clearCanvasButton.addEventListener('click', function(){
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = 'white';
@@ -18,7 +22,7 @@ let x = 0;
 let y = 0;
 
 context.strokeStyle = '#000000';
-context.lineWidth = 4;
+context.lineWidth = 3;
 context.lineCap = 'round';
 context.lineJoin = 'round';
 

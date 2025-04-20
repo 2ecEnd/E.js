@@ -11,22 +11,40 @@ class neuralNetwork{
 
 const net = new neuralNetwork(2500, 128, 10);
 
-const intervals = [4132, 4684, 4176, 4350, 4072, 3795, 4137, 4401, 4063, 4188];
+const intervals = [1033, 1171, 1044, 1087, 1018, 948, 1034, 1100, 1015, 1047];
+
+let averageLoss;
 
 async function trainingTenNumbers(){
-    for(let i = 0; i < 45000; i++){
-        await new Promise((resolve) => {
-            let targetVector = new Array(10).fill(0);
-            let randomNum = Math.floor(Math.random() * 10);
-            targetVector[randomNum] = 1;
+    averageLoss = 0;
 
-            getInputFromImage(`images/${randomNum} (${Math.floor(Math.random() * intervals[randomNum])}).jpg`, (data) => {
-                calculatePrediction(data, targetVector, 0);
-                resolve();
+    const totalIterations = 42000;
+    const batchSize = 100;
+
+    for (let j = 0; j < totalIterations; j+= batchSize){
+        const promises = [];
+
+        for(let i = j; i < j+batchSize; i++){
+            const promise = new Promise((resolve) => {
+                let targetVector = new Array(10).fill(0);
+                let randomNum = Math.floor(Math.random() * 10);
+                let randomFolder = Math.floor(Math.random() * 4 + 1);
+                targetVector[randomNum] = 1;
+    
+                getInputFromImage(`images/${randomNum}/${randomFolder}/${randomNum} (${Math.floor(Math.random() * intervals[randomNum]) + 1}).jpg`, (data) => {
+                    calculatePrediction(data, targetVector, 0);
+                    resolve();
+                });
             });
-        });
-        inputFileButton.innerHTML = i;
+            promises.push(promise);
+        }
+
+        await Promise.all(promises);
+
+        document.getElementById("inputFile").innerHTML = j;
     }
+
+    alert(`Средний Loss за эпоху составил: ${(averageLoss/42000).toFixed(2)}`);
 }
 
 
@@ -35,7 +53,7 @@ function outputPrediction(arr){
     for(let i = 0; i < arr.length; i++){
         if (arr[i] > arr[bestPred]) bestPred = i;
     }
-    bestPred > 0.4 ? alert(`это ${bestPred}`) : alert("Не могу понять что это");
+    arr[bestPred] > 0.5 ? alert(`это ${bestPred}`) : alert("Не могу понять что это");
 }
 
 function calculatePrediction(input, targetVector, flag){
@@ -83,9 +101,16 @@ function softmax(arr){
 
 
 function train(input, targetVector){
-    const learningRate = 0.00001;
+    const learningRate = 0.00005;
 
     const outputError = net.outputArray.map((x, i) => x - targetVector[i]);
+
+    let loss = 0;
+    for (let i = 0; i < 10; i++) {
+        loss -= targetVector[i] * Math.log(net.outputArray[i] + 1e-10);
+    }
+
+    averageLoss += loss;
 
     for(let i = 0; i < 128; i++){
         for(let j = 0; j < 10; j++){
