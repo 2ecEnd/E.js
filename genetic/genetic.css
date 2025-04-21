@@ -1,7 +1,10 @@
-body{
+*{
     font-family: Arial, Helvetica, sans-serif;
     font-size: 15px;
-    color: rgb(255, 255, 255);
+    color: rgb(207, 233, 255);
+}
+
+body{
     margin: 0;
     padding: 0;
 
@@ -97,8 +100,6 @@ body{
     .menu button{
         height: 50px;
         width: 320px;
-
-
     }
 
     .arrow{
@@ -128,12 +129,62 @@ header .container .menu button:hover{
     margin: 30px;
     width: 100%;
     height: 94%;
-}
-#map{
-    justify-content: center;
+    display: inline-flex;
+    justify-content: space-around;
     align-items: center;
-    display: flex;
-}
-canvas{
-    background-color: #fff;
+
+    canvas{
+        background-color: #fff;
+
+        border-radius: 7px;
+        border: 3px solid rgba(0, 0, 0, 0.9);
+    }
+
+    #inputs
+    {
+        display: flex;
+        flex-direction: column;
+        margin-left: 10%;
+        gap: 30px;
+
+        .input_name{
+            margin-bottom: 5px;
+        }
+        input{
+            height: 20px;
+            width: 150px;
+            
+            border-radius: 5px;
+
+            color: rgba(0, 0, 0);
+        }
+        div{
+            color: rgb(255, 255, 255);
+        }
+    }
+
+    #control_buttons{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+
+        margin-top: 10px;
+
+        button{
+            height: 40px;
+            width: 150px;
+    
+            color: rgb(207, 233, 255);
+    
+            border: 1px solid rgb(27, 68, 111);
+            border-radius: 5px;
+            box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
+    
+            background-color: rgb(27, 68, 111);
+        }
+        button:hover{
+            border: 1px solid rgb(207, 233, 255);
+        }
+    }
 }

@@ -1,12 +1,12 @@
 let canvas = document.getElementsByTagName('canvas')[0];
-canvas.height = 600;
-canvas.width  = 800;
+canvas.height = 720;
+canvas.width  = 1280;
 let ctx = canvas.getContext('2d');
 let points = []; 
 let adj = []; 
-let stopFlag = false;
+let stopFlag = true;
 let pointColor  = "rgb(0, 0, 0)";
-let edgeColor   = "rgba(160, 160, 160, 0.1)";
+let edgeColor   = "rgba(160, 160, 160, 0.05)";
 let pathColor   = "rgba(0, 200, 0, 0.8)";
 
 // -=-=-=-Утилитарные функции-=-=-=-
@@ -172,12 +172,6 @@ function cataclysmicMutation(population)
     let newPopulation = initializePopulation();
     newPopulation[0] = getBestPath(population);
     population = newPopulation;
-    // let newPopulation = population;
-
-    // for (let i = 1; i < population.length; i++)
-    //     adaptiveMutation(newPopulation[i]);
-    // newPopulation[0] = getBestPath(population);
-    // population = newPopulation;
 }
 
 // Поиск лучшего маршрута в популяции
@@ -205,7 +199,6 @@ async function genetic()
     let bestPath;
 
     while(!stopFlag)
-    //for(let i = 0; i < POPULATION_SIZE; i++)
     {
         // Создание нового поколения
         let newPopulation = [];
@@ -250,7 +243,6 @@ async function genetic()
         sleep(10);
     }
 }
-
 
 
 //-=-=-=-Работа с холстом-=-=-=-
@@ -311,7 +303,7 @@ async function drawPath(path)
 }
 
 
-//-=-=-=-Кнопоськи-=-=-=-
+//-=-=-=-Взаимодействие с пользователем-=-=-=-
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -347,17 +339,23 @@ canvas.addEventListener('click', async function(e)
 
 document.getElementById('start').addEventListener('click', async function(e)
 {
-    // Отменяем перезагрузку страницы
-    e.preventDefault(); 
-
-    stopFlag = false;
+    stopFlag = false; // Алгоритм начинает работу
     await genetic(); 
     //await new Promise(resolve => setTimeout(resolve, 0));
 });
-document.getElementById('stop').addEventListener('click', async function(e)
-{
-    // Отменяем перезагрузку страницы
-    e.preventDefault(); 
 
-    stopFlag = true;
+document.getElementById('stop').addEventListener('click', function(e)
+{
+    stopFlag = true; // Алгоритм завершает работу
+});
+
+document.getElementById('clear').addEventListener('click', function(e)
+{
+    stopFlag = true; // Алгоритм завершает работу
+
+    // Подчищаем за собой
+    clearCanvas();
+    points = [];
+    adj = [];
+    console.clear();
 });

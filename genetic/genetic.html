@@ -15,7 +15,7 @@
                     <img src="../design_Images/main 30px.png" alt="">
                     Главная страница
                 </button>
-                <a href="aStar/aStar.html">
+                <a href="../aStar/aStar.html">
                     <button id="algorithm2">
                         <img src="../design_Images/Astar 30px.png" alt="">
                         Поиск пути
@@ -25,14 +25,18 @@
                     <img src="../design_Images/cluster 30px.png" alt="">
                     Кластеризация
                 </button>
-                <button id="algorithm4">
-                    <img src="../design_Images/genetic 30px.png" alt="">
-                    Генетический алгоритм
-                </button>
-                <button id="algorithm5">
-                    <img src="../design_Images/ant 30px.png" alt="">
-                    Муравьиный алгоритм
-                </button>
+                <a href="genetic.html">
+                    <button id="algorithm4">
+                        <img src="../design_Images/genetic 30px.png" alt="">
+                        Генетический алгоритм
+                    </button>
+                </a>
+                <a href="../ant/ant.html">
+                    <button id="algorithm5">
+                        <img src="../design_Images/ant 30px.png" alt="">
+                        Муравьиный алгоритм
+                    </button>
+                </a>
                 <button id="algorithm6">
                     <img src="../design_Images/tree 30px.png" alt="">
                     Дерево решений
@@ -44,11 +48,38 @@
             </nav>
         </div>
     </header>
-    <div class="mainContainer d-flex">
-        <canvas></canvas>
+    <div class="mainContainer">
+        <table>
+            <tr>
+                <td>
+                    <canvas></canvas>
+                </td>
+                <td>
+                    <div id="inputs">
+                        <div>
+                            <div class="input_name">Размер популяции</div>
+                            <div><input type="text" id="popilation_size" value="1000"></div>
+                        </div>
+                        <div>
+                            <div class="input_name">Стагнация</div>
+                            <div><input type="text" id="stagnation_limit" value="50"></div>
+                        </div>  
+                        <div>
+                            <div class="input_name">Размер "турнира"</div>
+                            <div><input type="text" id="tournament_size" value="16"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td id="control_buttons">
+                    <button id="start">Press Start</button>
+                    <button id="stop">Press Stop</button>
+                    <button id="clear">Clear canvas</button>
+                </td>
+            </tr>
+        </table>
 
-        <button id="start">Press Start!</button>
-        <button id="stop">Press Stop!</button>
     </div>
     <script src="../main.js"></script>
     <script src="genetic.js"></script>

@@ -1,0 +1,175 @@
+[33mcommit 2703373c92fde98abc720f7b67a4f878502458ca[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mlee_alex[m[33m, [m[1;31morigin/lee_alex[m[33m)[m
+Author: lee_alex <leealex.2006@mail.ru>
+Date:   Mon Apr 21 16:52:31 2025 +0700
+
+    genetic complete
+
+[33mcommit 429c23a86f990e71e0509aa309d0d11b581b13cb[m
+Author: lee_alex <leealex.2006@mail.ru>
+Date:   Mon Apr 21 16:22:40 2025 +0700
+
+    90% genetic done, small changes in design
+
+[33mcommit f35377f73ca5637b6655e4556fb08a739a9f4e46[m
+Author: lee_alex <leealex.2006@mail.ru>
+Date:   Mon Apr 21 14:27:34 2025 +0700
+
+    bugfix
+
+[33mcommit d20dc1cc4526aec32bed5b57821072d6865a40ab[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Sun Apr 13 20:03:40 2025 +0700
+
+    adde genetic
+
+[33mcommit 6f15262225febd19dda8fe2253717a109f342d97[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Sun Apr 13 02:06:48 2025 +0700
+
+    changed desing, bugfix
+
+[33mcommit d0d776c6862db6490d5d13e133d53c2cbe31a8ee[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 922c6ea 03984d0
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Fri Apr 11 17:32:32 2025 +0700
+
+    Merge branch kirill
+
+[33mcommit 03984d00e8e40dbcad936a7373fa29295bd86271[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Fri Apr 11 17:26:15 2025 +0700
+
+    ничего не изменил
+
+[33mcommit 922c6eaa2666df9765a731a19ac5de6e57b1af25[m
+Merge: 3cda3d6 66fd56c
+Author: remos6 <remos6@yandex.ru>
+Date:   Fri Apr 11 17:23:10 2025 +0700
+
+    merhe to main
+
+[33mcommit 5cdfa47bf17ec73a766b38ddcbbb5799af2b1d45[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Fri Apr 11 17:15:30 2025 +0700
+
+    Обучение нейронки на 42000 картинках
+
+[33mcommit 704661c6cae67f6ab516c1a8a7c54fac26fea66d[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Thu Apr 10 20:50:45 2025 +0700
+
+    Добавил дизайн для шлавной страницы
+
+[33mcommit 7e01d257fd512dcb48b1d3553a7219fe7e541a1d[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Tue Apr 8 19:20:01 2025 +0700
+
+    Добавил генерацию лабиринта и визуализации пути + нейросеть, пока плохо работает
+
+[33mcommit 3cda3d69a42c1a326a819a3c0428b057c9d6c78a[m
+Author: remos6 <remos6@yandex.ru>
+Date:   Tue Apr 8 19:16:06 2025 +0700
+
+    added Clustering
+
+[33mcommit 66fd56ccd22a75ed129b0c7c1971b8e436f07e3a[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Sun Apr 6 14:31:07 2025 +0700
+
+    bug fixes, small changes in logic & design
+
+[33mcommit 5d88fd8e2064f6f60568aa40f4267e57b4a84637[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Fri Apr 4 15:36:39 2025 +0700
+
+    now user can input his coefficients
+
+[33mcommit d8cc1c9301bff8198835af0f3fde9fff2c2b6940[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Fri Apr 4 15:00:42 2025 +0700
+
+    small changes in design
+
+[33mcommit 9c879864d04228719b3f590637e7e1ed3a9e058f[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Fri Apr 4 14:15:51 2025 +0700
+
+    raw ant alg (with bugs)
+
+[33mcommit ba4d8b287cf18b90fc6063270251d38d11cb1fb5[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Wed Apr 2 16:17:21 2025 +0700
+
+    Добавил визуализацию пути
+
+[33mcommit 6bea9421b8d4153d27657f6c5524184a2e48e653[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Wed Apr 2 15:27:25 2025 +0700
+
+    Модифицировал лабиринт
+
+[33mcommit e7d76315eb2eabddc4298068ca72bb7d4c0a9a77[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Wed Apr 2 14:03:24 2025 +0700
+
+    Добавил генерацию лабиринта
+
+[33mcommit 2d5fec4aae081107076bf894f0239911b4e08934[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Wed Apr 2 00:32:00 2025 +0700
+
+    Разделил js файл на два: один с самим алгоритмом, другой с функциями для визуализации + добавил комменты
+
+[33mcommit 958fcba9bafac98593e7b4b886140dd6da72d510[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Tue Apr 1 23:07:30 2025 +0700
+
+    fixed changing edges color
+
+[33mcommit f6127287e49d766c52e1d9c0521fb8dbfb207874[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Tue Apr 1 10:12:00 2025 +0700
+
+    Исправил баг
+
+[33mcommit 807e7eeb7b2fc5c694cf88eb1fe4245c15bce0c1[m
+Author: Several_SIZE <kner647@gmail.com>
+Date:   Tue Apr 1 09:05:45 2025 +0700
+
+    aStar with bug
+
+[33mcommit ba91c2cea142c4366338ea07f3267f5945e50d27[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Mon Mar 31 14:35:13 2025 +0700
+
+    creatind adj matrix for alg
+
+[33mcommit 5f8322361a549a393401576fefb34bde2ab00d55[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Mon Mar 31 13:23:53 2025 +0700
+
+    added graph rendering
+
+[33mcommit 7656432d956c88326f3d60b76a6e882d04872b96[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Mon Mar 31 12:51:48 2025 +0700
+
+    changed structure
+
+[33mcommit 5ffad2b48e2572be8aa9589cb9683b3cebde2764[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Mon Mar 31 12:50:36 2025 +0700
+
+    added canvas
+
+[33mcommit 6d364950fd701b93d9f128f05e18d40a28a75866[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Mon Mar 31 12:35:23 2025 +0700
+
+    init ant alg
+
+[33mcommit 65ca3de0d459debf74949678c4c2def77a0fd357[m
+Author: 2ec_End <leealex.2006@mail.ru>
+Date:   Sun Mar 30 15:51:38 2025 +0700
+
+    init commit
