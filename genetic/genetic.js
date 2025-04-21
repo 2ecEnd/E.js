@@ -53,7 +53,7 @@ function calculateDistance(path)
 // TODO: Реализовать их не как константы
 let POPULATION_SIZE = 1000;     // Размер популяции
 let MUTATION_RATE = 0.1;        // Вероятность мутации
-let TOURNAMENT_SIZE = 4;        // Размер турнира для выбора родителя
+let TOURNAMENT_SIZE = 16;        // Размер турнира для выбора родителя
 let stagnation = 0;             // Количество стагнации
                                 // иначе говоря, сколько поколений не меняется результат
 
@@ -129,7 +129,7 @@ function crossing(parent1, parent2)
 }
 
 // Динамическая мутация маршрута
-function adaptiveMutation(path) 
+function adaptiveMutation(path, cataclysmic = false) 
 {
     // "Лёгкая" мутация путём смены мест двух вершин 
     function lightMutation()
@@ -154,10 +154,17 @@ function adaptiveMutation(path)
         }
     }
 
-    if (points.length <= 15)
-        lightMutation();
+    if (cataclysmic)
+    {
+        let r;
+    }
     else
-        hardMutation();
+    {
+        if (points.length <= 15)
+            lightMutation();
+        else
+            hardMutation();
+    }
 }
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)
 function cataclysmicMutation(population) 
@@ -207,19 +214,22 @@ async function genetic()
             // Выбор родителей
             let parent1 = selectParent(population);
             let parent2 = selectParent(population);
+
             // Скрещивание родителей
             let child = crossing(parent1, parent2);
+
             // Применение мутации
-            if (stagnation === 100)
-                cataclysmicMutation(population);
             if (Math.random() < MUTATION_RATE) 
                 adaptiveMutation(child);
+
             newPopulation.push(child);
         }
         // Замена старой популяции новой
         population = newPopulation;
         gen++;
 
+        if (stagnation === 50)
+            cataclysmicMutation(population);
         
         if (gen % 10 === 0)
         {
@@ -249,21 +259,14 @@ function clearCanvas()
 {
     ctx.fillStyle = 'rgb(255, 255, 255)';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-    // Повторная отрисовка всех точек
-    ctx.fillStyle = "#5a5a5a";
-    ctx.strokeStyle = pointColor;
-    ctx.lineWidth = 1;
-    for(let i in points)
-    {
-        ctx.beginPath();
-        ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    // Повторная отрисовка всех рёбер
+// Отрисовка графа
+function drawGraph()
+{
+    // Отрисовка всех рёбер
     ctx.strokeStyle = edgeColor;
+    ctx.lineWidth = 1;
     ctx.beginPath();
     for(let i = 0; i < points.length; i++)
         for(let j = i + 1; j < points.length; j++)
@@ -273,12 +276,25 @@ function clearCanvas()
         }
     ctx.stroke();
     ctx.closePath();
+
+    // Отрисовка всех точек
+    ctx.fillStyle = "#5a5a5a";
+    ctx.strokeStyle = pointColor;
+    for(let i in points)
+    {
+        ctx.beginPath();
+        ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
+        ctx.fill();
+        ctx.closePath();
+    }
 }
 
 // Отрисовка найденного пути
 async function drawPath(path) 
 {
     clearCanvas();
+    drawGraph();
+
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
     ctx.lineWidth = 2;
@@ -294,6 +310,8 @@ async function drawPath(path)
     ctx.closePath();
 }
 
+
+//-=-=-=-Кнопоськи-=-=-=-
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -324,24 +342,7 @@ canvas.addEventListener('click', async function(e)
     adj.push(newRow);
 
     // Отрисовка точки в месте клика 
-    ctx.fillStyle = "#5a5a5a";
-    ctx.strokeStyle = pointColor;
-    ctx.beginPath();
-    ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
-    ctx.fill();
-    ctx.closePath();
-
-    // Отрисовка рёбер
-    ctx.beginPath();
-    ctx.strokeStyle = edgeColor;
-    ctx.lineWidth = 1;
-    for(let i = 0; i < points.length - 1; i++)
-    {
-        ctx.moveTo(currX, currY);
-        ctx.lineTo(points[i][0], points[i][1]);
-    }
-    ctx.stroke();
-    ctx.closePath();
+    drawGraph();
 });
 
 document.getElementById('start').addEventListener('click', async function(e)
