@@ -3,184 +3,192 @@ canvas.height = 600;
 canvas.width  = 800;
 let ctx = canvas.getContext('2d');
 let points = []; 
+let adj = []; 
+//let controller = new AbortController();
 let stopFlag = false;
 
 //-=-=-=-Генетический алгоритм-=-=-=-
-class GeneticAlgorithm
+// Константы для настройки алгоритма
+let POPULATION_SIZE = 1000; // Размер популяции
+let MUTATION_RATE = 0.1; // Вероятность мутации
+let TOURNAMENT_SIZE = 4;
+
+// Генерация случайного числа
+function randomNumber(start, end)
 {
-    // Константы для настройки алгоритма
-    POPULATION_SIZE = 100; // Размер популяции
-    MUTATION_RATE = 0.1; // Вероятность мутации
-
-    constructor(vertexes)
+    return Math.floor(Math.random() * (end - start - 1) + start);
+}
+//Перемешивание элементов массива
+function shuffle(array) 
+{
+    let currentIndex = array.length;
+    while (currentIndex !== 0) 
     {
-        this.adj = [];
-        for(let i in vertexes)
+        let randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        let temp = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temp;
+    }
+}
+// Расчет расстояния для маршрута
+function calculateDistance(path) 
+{
+    let distance = adj[path.at(-1)][path[0]];
+    for (let i = 0; i < path.length - 1; i++) 
+        distance += adj[path[i]][path[i + 1]];
+
+    return distance;
+}
+
+// Инициализация начальной популяции случайными маршрутами
+function initializePopulation() 
+{
+    let population = [];
+    for (let i = 0; i < POPULATION_SIZE; i++) 
+    {
+        let path = [];
+        for (let j = 0; j < adj.length; j++) 
+            path.push(j);
+        shuffle(path); // Перемешивание городов
+
+        population.push(path);
+    }
+    return population;
+}
+
+// Выбор родителя из популяции турнирным способом
+function selectParent(population) 
+{
+    let candidates = [];
+    for(let i = 0; i < TOURNAMENT_SIZE; i++)
+        candidates.push(population[Math.floor(Math.random() * (population.length - 1))]);
+
+    let winner = 0; //Индекс победителя турнира
+    let minDist = calculateDistance(candidates[0]);
+    for (let i = 1; i < candidates.length; i++)
+    {
+        let tmpDist = calculateDistance(candidates[i]);
+        if (tmpDist < minDist)
         {
-            let row = []
-            for(let j in vertexes)
-                row.push(((vertexes[i][0] - vertexes[j][0]) ** 2 + (vertexes[i][1] - vertexes[j][1]) ** 2) ** 0.5);
-            this.adj.push(row);
+            winner = i;
+            minDist = tmpDist;
         }
     }
 
-    randomNumber(start, end)
-    {
-        return Math.floor(Math.random() * (end - start - 1) + start);
-    }
-    
-    shuffle(array) 
-    {
-        let currentIndex = array.length;
-        while (currentIndex !== 0) 
-        {
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
+    return candidates[winner];
+}
 
-            let temp = array[currentIndex];
-            array[currentIndex] = array[randomIndex];
-            array[randomIndex] = temp;
+// Скрещивание двух родителей для создания потомка
+function crossing(parent1, parent2) 
+{
+    let child = new Array(parent1.length).fill(-1);
+    let start = randomNumber(0, parent1.length);
+    let end = randomNumber(0, parent1.length);
+    if (start > end) 
+    {
+        let temp = start;
+        start = end;
+        end = temp;
+    }
+
+    // Копирование части маршрута из первого родителя
+    for (let i = start; i < end; i++) 
+        child[i] = parent1[i];
+
+    // Заполнение оставшихся городов из второго родителя
+    let childIndex = 0;
+    for (let i = 0; i < parent2.length; i++) 
+    {
+        let currentCity = parent2[i];
+        if (!child.includes(currentCity)) 
+        {
+            while (child[childIndex] != -1) 
+                childIndex++;
+            child[childIndex] = currentCity;
         }
     }
 
-    // Инициализация начальной популяции случайными маршрутами
-    initializePopulation() 
+    return child;
+}
+
+// Мутация маршрута
+function mutation(path) 
+{
+    let index1 = randomNumber(0, path.length);
+    let index2 = randomNumber(0, path.length);
+
+    let temp = path[index1];
+    path[index1] = path[index2];
+    path[index2] = temp;
+}
+// Каластрофическая мутация популяции
+function cataclysmicMutation(population) 
+{
+    for (let i = 1; i < 10; i++)
+        population[i] = crossing(population[0], population[i]);
+
+    for (let i = 10; i < population.length; i++)
+        shuffle(population[i]);
+}
+
+// Поиск лучшего маршрута в популяции
+function getBestPath(population) 
+{
+    let bestPath = population[0];
+    let bestDistance = calculateDistance(bestPath);
+    for (let path of population) 
     {
-        let population = [];
-        for (let i = 0; i < this.POPULATION_SIZE; i++) 
+        let distance = calculateDistance(path);
+        if (distance < bestDistance) 
         {
-            let path = [];
-            for (let j = 0; j < this.adj.length; j++) 
-                path.push(j);
-            this.shuffle(path); // Перемешивание городов
-            population.push(path);
+            bestPath = path;
+            bestDistance = distance;
         }
-        return population;
     }
+    return bestPath;
+}
 
-    // Выбор родителя из популяции
-    selectParent(population) 
-    {
-        return population[this.randomNumber(0, population.length - 1)];
-    }
+async function genetic(vertexes) 
+{
+    // Инициализация начальной популяции
+    let population = initializePopulation();
+    let gen = 1;
 
-    // Скрещивание двух родителей для создания потомка
-    crossing(parent1,  parent2) 
+    while(!stopFlag)
+    //for(let i = 0; i < POPULATION_SIZE; i++)
     {
-        let child = new Array(parent1.length).fill(-1);
-        let start = this.randomNumber(0, parent1.length);
-        let end = this.randomNumber(0, parent1.length);
-        if (start > end) 
+        // Создание нового поколения
+        let newPopulation = [];
+        while (newPopulation.length < POPULATION_SIZE) 
         {
-            let temp = start;
-            start = end;
-            end = temp;
+            // Выбор родителей
+            let parent1 = selectParent(population);
+            let parent2 = selectParent(population);
+            // Скрещивание родителей
+            let child = crossing(parent1, parent2);
+            // Применение мутации
+            if (Math.random() < MUTATION_RATE) 
+                mutation(child);
+            newPopulation.push(child);
         }
+        // Замена старой популяции новой
+        population = newPopulation;
+        gen++;
 
-        // Копирование части маршрута из первого родителя
-        for (let i = start; i < end; i++) 
-            child[i] = parent1[i];
-
-        // Заполнение оставшихся городов из второго родителя
-        let childIndex = 0;
-        for (let i = 0; i < parent2.length; i++) 
+        
+        if (gen % 10 === 0)
         {
-            let currentCity = parent2[i];
-            if (!child.includes(currentCity)) 
-            {
-                while (child[childIndex] != -1) 
-                    childIndex++;
-                child[childIndex] = currentCity;
-            }
-        }
-
-        return child;
-    }
-
-    // Мутация маршрута
-    mutate(path) 
-    {
-        let index1 = this.randomNumber(0, path.length);
-        let index2 = this.randomNumber(0, path.length);
-
-        let temp = path[index1];
-        path[index1] = path[index2];
-        path[index2] = temp;
-    }
-
-    // Поиск лучшего маршрута в популяции
-    getBestPath(population) 
-    {
-        let bestPath = population[0];
-        let bestDistance = this.calculateDistance(bestPath);
-        for (let path of population) 
-        {
-            let distance = this.calculateDistance(path);
-            if (distance < bestDistance) 
-            {
-                bestPath = path;
-                bestDistance = distance;
-            }
-        }
-        return bestPath;
-    }
-
-    // Расчет расстояния для маршрута
-    calculateDistance(path) 
-    {
-        let distance = 0;
-        for (let i = 0; i < path.length - 1; i++) 
-            distance += this.adj[path[i]][path[i + 1]];
-        return distance;
-    }
-
-    async genetic() 
-    {
-        // Инициализация начальной популяции
-        let population = this.initializePopulation();
-        let gen = 1;
-        //while(!stopFlag)
-        for(let i = 0; i < this.POPULATION_SIZE; i++)
-        {
-            // Создание нового поколения
-            let newPopulation = [];
-            while (newPopulation.length < this.POPULATION_SIZE) 
-            {
-                // Выбор родителей
-                let parent1 = this.selectParent(population);
-                let parent2 = this.selectParent(population);
-                // Скрещивание родителей
-                let child = this.crossing(parent1, parent2);
-                // Применение мутации
-                if (Math.random() < this.MUTATION_RATE) 
-                    this.mutate(child);
-                newPopulation.push(child);
-            }
-            // Замена старой популяции новой
-            population = newPopulation;
             // Выбор лучшего маршрута
-            let bestPath = this.getBestPath(population);
-            let bestDistance = this.calculateDistance(bestPath);
+            let bestPath = getBestPath(population);
+            let bestDistance = calculateDistance(bestPath);
             console.log("Поколение " + gen + ": Лучший маршрут = " + bestPath + ", Расстояние = " + bestDistance);
-            gen++;
-
-
-            clearCanvas();
-            // Отрисовка найденного пути 
-            ctx.strokeStyle = "rgba(0, 155, 0, 0.6)";
-            ctx.beginPath();
-            for(let point = 0; point < bestPath.length - 1; point++)
-            {
-                ctx.moveTo(points[bestPath[point]][0], points[bestPath[point]][1]);
-                ctx.lineTo(points[bestPath[point + 1]][0], points[bestPath[point + 1]][1]);
-            }   
-            ctx.moveTo(points[bestPath.at(-1)][0], points[bestPath.at(-1)][1]);
-            ctx.lineTo(points[bestPath[0]][0], points[bestPath[0]][1]);
-            ctx.stroke(); 
-            ctx.closePath();
-
-            //sleep(100);
+            await drawPath(bestPath);
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
+
+        sleep(10);
     }
 }
 
@@ -189,9 +197,10 @@ function sleep(ms)
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
 //-=-=-=-Работа с холстом-=-=-=-
 // Очистка холста
-async function clearCanvas() 
+function clearCanvas() 
 {
     ctx.fillStyle = 'rgb(255, 255, 255)';
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -219,6 +228,23 @@ async function clearCanvas()
     ctx.closePath();
 }
 
+async function drawPath(path) 
+{
+    clearCanvas();
+    // Отрисовка найденного пути 
+    ctx.strokeStyle = "rgba(0, 155, 0, 0.6)";
+    ctx.beginPath();
+    for(let point = 0; point < path.length - 1; point++)
+    {
+        ctx.moveTo(points[path[point]][0], points[path[point]][1]);
+        ctx.lineTo(points[path[point + 1]][0], points[path[point + 1]][1]);
+    }   
+    ctx.moveTo(points[path.at(-1)][0], points[path.at(-1)][1]);
+    ctx.lineTo(points[path[0]][0], points[path[0]][1]);
+    ctx.stroke(); 
+    ctx.closePath();
+}
+
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -233,6 +259,20 @@ canvas.addEventListener('click', async function(e)
 
     // Добавлям точку в мартрицу смежности
     points.push([currX, currY]);
+
+    // Обновляем матрицу смежности
+    for(let i = 0; i < adj.length; i++)
+    {
+        let dist = ((points[i][0] - points.at(-1)[0]) ** 2 + (points[i][1] - points.at(-1)[1]) ** 2) ** 0.5;
+        adj[i].push(dist);
+    }
+    let newRow = [];
+    for(let i = 0; i < points.length; i++)
+    {
+        let dist = ((points[i][0] - points.at(-1)[0]) ** 2 + (points[i][1] - points.at(-1)[1]) ** 2) ** 0.5;
+        newRow.push(dist);
+    }
+    adj.push(newRow);
 
     // Отрисовка точки в месте клика 
     ctx.fillStyle = "#5a5a5a";
@@ -258,15 +298,14 @@ document.getElementById('start').addEventListener('click', async function(e)
     // Отменяем перезагрузку страницы
     e.preventDefault(); 
 
-    // Составление матрицы смежности
-    let GA = new GeneticAlgorithm(points);
-
-    GA.genetic(); 
+    stopFlag = false;
+    await genetic(points); 
+    //await new Promise(resolve => setTimeout(resolve, 0));
 });
 document.getElementById('stop').addEventListener('click', async function(e)
 {
     // Отменяем перезагрузку страницы
     e.preventDefault(); 
 
-    stopFlag = true; 
+    stopFlag = true;
 });
