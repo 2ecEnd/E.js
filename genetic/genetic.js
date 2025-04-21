@@ -4,21 +4,19 @@ canvas.width  = 800;
 let ctx = canvas.getContext('2d');
 let points = []; 
 let adj = []; 
-//let controller = new AbortController();
 let stopFlag = false;
+let pointColor  = "rgb(0, 0, 0)";
+let edgeColor   = "rgba(160, 160, 160, 0.1)";
+let pathColor   = "rgba(0, 200, 0, 0.8)";
 
-//-=-=-=-Генетический алгоритм-=-=-=-
-// Константы для настройки алгоритма
-let POPULATION_SIZE = 1000; // Размер популяции
-let MUTATION_RATE = 0.1; // Вероятность мутации
-let TOURNAMENT_SIZE = 4;
-
-// Генерация случайного числа
+// -=-=-=-Утилитарные функции-=-=-=-
+// Генерация случайного числа в пределах [start; end)
 function randomNumber(start, end)
 {
     return Math.floor(Math.random() * (end - start - 1) + start);
 }
-//Перемешивание элементов массива
+
+// Перемешивание элементов массива
 function shuffle(array) 
 {
     let currentIndex = array.length;
@@ -32,6 +30,13 @@ function shuffle(array)
         array[randomIndex] = temp;
     }
 }
+
+// "Усыпить" поготок на n мс
+function sleep(ms) 
+{
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // Расчет расстояния для маршрута
 function calculateDistance(path) 
 {
@@ -41,6 +46,16 @@ function calculateDistance(path)
 
     return distance;
 }
+
+
+//-=-=-=-Генетический алгоритм-=-=-=-
+// Константы для настройки алгоритма
+// TODO: Реализовать их не как константы
+let POPULATION_SIZE = 1000;     // Размер популяции
+let MUTATION_RATE = 0.1;        // Вероятность мутации
+let TOURNAMENT_SIZE = 4;        // Размер турнира для выбора родителя
+let stagnation = 0;             // Количество стагнации
+                                // иначе говоря, сколько поколений не меняется результат
 
 // Инициализация начальной популяции случайными маршрутами
 function initializePopulation() 
@@ -113,24 +128,49 @@ function crossing(parent1, parent2)
     return child;
 }
 
-// Мутация маршрута
-function mutation(path) 
+// Динамическая мутация маршрута
+function adaptiveMutation(path) 
 {
-    let index1 = randomNumber(0, path.length);
-    let index2 = randomNumber(0, path.length);
+    // "Лёгкая" мутация путём смены мест двух вершин 
+    function lightMutation()
+    {
+        const i = randomNumber(0, path.length);
+        const j = randomNumber(0, path.length);
+    
+        [path[i], path[j]] = [path[j], path[i]];
+    }
 
-    let temp = path[index1];
-    path[index1] = path[index2];
-    path[index2] = temp;
+    // "Тяжёлая" (Агрессивная) мутация путём инверсии подмассива
+    function hardMutation()
+    {
+        let i = randomNumber(0, path.length - 1);
+        let j = randomNumber(i + 1, path.length);
+        
+        while (i < j)
+        {
+            [path[i], path[j]] = [path[j], path[i]];
+            i++;
+            j--;
+        }
+    }
+
+    if (points.length <= 15)
+        lightMutation();
+    else
+        hardMutation();
 }
-// Каластрофическая мутация популяции
+// Катастрофическая мутация популяции (чтобы выходить из локального минимума)
 function cataclysmicMutation(population) 
 {
-    for (let i = 1; i < 10; i++)
-        population[i] = crossing(population[0], population[i]);
+    let newPopulation = initializePopulation();
+    newPopulation[0] = getBestPath(population);
+    population = newPopulation;
+    // let newPopulation = population;
 
-    for (let i = 10; i < population.length; i++)
-        shuffle(population[i]);
+    // for (let i = 1; i < population.length; i++)
+    //     adaptiveMutation(newPopulation[i]);
+    // newPopulation[0] = getBestPath(population);
+    // population = newPopulation;
 }
 
 // Поиск лучшего маршрута в популяции
@@ -150,11 +190,12 @@ function getBestPath(population)
     return bestPath;
 }
 
-async function genetic(vertexes) 
+async function genetic() 
 {
     // Инициализация начальной популяции
     let population = initializePopulation();
     let gen = 1;
+    let bestPath;
 
     while(!stopFlag)
     //for(let i = 0; i < POPULATION_SIZE; i++)
@@ -169,8 +210,10 @@ async function genetic(vertexes)
             // Скрещивание родителей
             let child = crossing(parent1, parent2);
             // Применение мутации
+            if (stagnation === 100)
+                cataclysmicMutation(population);
             if (Math.random() < MUTATION_RATE) 
-                mutation(child);
+                adaptiveMutation(child);
             newPopulation.push(child);
         }
         // Замена старой популяции новой
@@ -180,8 +223,14 @@ async function genetic(vertexes)
         
         if (gen % 10 === 0)
         {
-            // Выбор лучшего маршрута
-            let bestPath = getBestPath(population);
+            let newBestPath = getBestPath(population);
+            if (bestPath === newBestPath)
+                stagnation += 10;
+            else
+            {
+                stagnation = 0;
+                bestPath = newBestPath;
+            }
             let bestDistance = calculateDistance(bestPath);
             console.log("Поколение " + gen + ": Лучший маршрут = " + bestPath + ", Расстояние = " + bestDistance);
             await drawPath(bestPath);
@@ -192,10 +241,6 @@ async function genetic(vertexes)
     }
 }
 
-function sleep(ms) 
-{
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 
 //-=-=-=-Работа с холстом-=-=-=-
@@ -207,7 +252,8 @@ function clearCanvas()
 
     // Повторная отрисовка всех точек
     ctx.fillStyle = "#5a5a5a";
-    ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
+    ctx.strokeStyle = pointColor;
+    ctx.lineWidth = 1;
     for(let i in points)
     {
         ctx.beginPath();
@@ -217,6 +263,7 @@ function clearCanvas()
     }
 
     // Повторная отрисовка всех рёбер
+    ctx.strokeStyle = edgeColor;
     ctx.beginPath();
     for(let i = 0; i < points.length; i++)
         for(let j = i + 1; j < points.length; j++)
@@ -228,11 +275,13 @@ function clearCanvas()
     ctx.closePath();
 }
 
+// Отрисовка найденного пути
 async function drawPath(path) 
 {
     clearCanvas();
     // Отрисовка найденного пути 
-    ctx.strokeStyle = "rgba(0, 155, 0, 0.6)";
+    ctx.strokeStyle = pathColor;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     for(let point = 0; point < path.length - 1; point++)
     {
@@ -276,6 +325,7 @@ canvas.addEventListener('click', async function(e)
 
     // Отрисовка точки в месте клика 
     ctx.fillStyle = "#5a5a5a";
+    ctx.strokeStyle = pointColor;
     ctx.beginPath();
     ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
     ctx.fill();
@@ -283,7 +333,8 @@ canvas.addEventListener('click', async function(e)
 
     // Отрисовка рёбер
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
+    ctx.strokeStyle = edgeColor;
+    ctx.lineWidth = 1;
     for(let i = 0; i < points.length - 1; i++)
     {
         ctx.moveTo(currX, currY);
@@ -299,7 +350,7 @@ document.getElementById('start').addEventListener('click', async function(e)
     e.preventDefault(); 
 
     stopFlag = false;
-    await genetic(points); 
+    await genetic(); 
     //await new Promise(resolve => setTimeout(resolve, 0));
 });
 document.getElementById('stop').addEventListener('click', async function(e)
