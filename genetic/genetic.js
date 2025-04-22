@@ -3,13 +3,13 @@ canvas.height = 720;
 canvas.width  = 1280;
 let ctx = canvas.getContext('2d');
 
-let points = []; 
+let vertexes = []; 
 let adj = []; 
 
 let controller = new AbortController();
 let isWorking = false;
 
-let pointColor  = "rgb(0, 0, 0)";
+let vertexColor  = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
 let pathColor   = "rgba(0, 200, 0, 0.8)";
 
@@ -163,7 +163,7 @@ function adaptiveMutation(path, cataclysmic = false)
     }
     else
     {
-        if (points.length <= 15)
+        if (vertexes.length <= 15)
             lightMutation();
         else
             hardMutation();
@@ -274,15 +274,15 @@ function clearCanvas()
 }
 
 // Отрисовка вершин графа
-function drawPoints(all = true)
+function drawVertexess(all = true)
 {
-    ctx.fillStyle = pointColor;
+    ctx.fillStyle = vertexColor;
     if (all)
     {
-        for(let i in points)
+        for(let i in vertexes)
         {
             ctx.beginPath();
-            ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
+            ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
             ctx.fill();
             ctx.closePath();
         }
@@ -290,7 +290,7 @@ function drawPoints(all = true)
     else
     {
         ctx.beginPath();
-        ctx.arc(points.at(-1)[0], points.at(-1)[1], 5, 0, 2 * Math.PI, true);
+        ctx.arc(vertexes.at(-1)[0], vertexes.at(-1)[1], 5, 0, 2 * Math.PI, true);
         ctx.fill();
         ctx.closePath();
     }
@@ -302,11 +302,11 @@ function drawEdges()
     ctx.strokeStyle = edgeColor;
     ctx.lineWidth = 1;
     ctx.beginPath();
-    for(let i = 0; i < points.length; i++)
-        for(let j = i + 1; j < points.length; j++)
+    for(let i = 0; i < vertexes.length; i++)
+        for(let j = i + 1; j < vertexes.length; j++)
         {
-            ctx.moveTo(points[i][0], points[i][1]);
-            ctx.lineTo(points[j][0], points[j][1]);
+            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
+            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
         }
     ctx.stroke();
     ctx.closePath();
@@ -316,20 +316,20 @@ function drawEdges()
 async function drawPath(path) 
 {
     clearCanvas();
-    drawPoints();
+    drawVertexess();
     //drawEdges();
 
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
-    for(let point = 0; point < path.length - 1; point++)
+    for(let v = 0; v < path.length - 1; v++)
     {
-        ctx.moveTo(points[path[point]][0], points[path[point]][1]);
-        ctx.lineTo(points[path[point + 1]][0], points[path[point + 1]][1]);
+        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
+        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
     }   
-    ctx.moveTo(points[path.at(-1)][0], points[path.at(-1)][1]);
-    ctx.lineTo(points[path[0]][0], points[path[0]][1]);
+    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
+    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
     ctx.stroke(); 
     ctx.closePath();
 }
@@ -346,26 +346,26 @@ canvas.addEventListener('click', function(e)
     const currY = (e.clientY - rect.top) * scaleY;
 
     // Добавлям точку в список точек
-    points.push([currX, currY]);
+    vertexes.push([currX, currY]);
 
     // Обновляем матрицу смежности
     {
         for(let i = 0; i < adj.length; i++)
         {
-            let dist = ((points[i][0] - points.at(-1)[0]) ** 2 + (points[i][1] - points.at(-1)[1]) ** 2) ** 0.5;
+            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
             adj[i].push(dist);
         }
         let newRow = [];
-        for(let i = 0; i < points.length; i++)
+        for(let i = 0; i < vertexes.length; i++)
         {
-            let dist = ((points[i][0] - points.at(-1)[0]) ** 2 + (points[i][1] - points.at(-1)[1]) ** 2) ** 0.5;
+            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
             newRow.push(dist);
         }
         adj.push(newRow);
     }
 
     // Отрисовка точки в месте клика  
-    drawPoints(false);
+    drawVertexess(false);
 
     
     if(isWorking)
@@ -416,7 +416,7 @@ document.getElementById('clear_button').addEventListener('click', () =>
 
     // Подчищаем за собой
     clearCanvas();
-    points = [];
+    vertexes = [];
     adj = [];
     console.clear();
 });
