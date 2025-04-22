@@ -251,7 +251,7 @@ async function genetic()
         }
         
         // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0)
+        if (gen % UPDATE_RATE === 0 && gen != 0)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
@@ -276,17 +276,17 @@ function clearCanvas()
 function drawGraph()
 {
     // Отрисовка всех рёбер
-    ctx.strokeStyle = edgeColor;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for(let i = 0; i < points.length; i++)
-        for(let j = i + 1; j < points.length; j++)
-        {
-            ctx.moveTo(points[i][0], points[i][1]);
-            ctx.lineTo(points[j][0], points[j][1]);
-        }
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.strokeStyle = edgeColor;
+    // ctx.lineWidth = 1;
+    // ctx.beginPath();
+    // for(let i = 0; i < points.length; i++)
+    //     for(let j = i + 1; j < points.length; j++)
+    //     {
+    //         ctx.moveTo(points[i][0], points[i][1]);
+    //         ctx.lineTo(points[j][0], points[j][1]);
+    //     }
+    // ctx.stroke();
+    // ctx.closePath();
 
     // Отрисовка всех точек
     ctx.fillStyle = "#5a5a5a";
@@ -308,7 +308,7 @@ async function drawPath(path)
 
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.beginPath();
     for(let point = 0; point < path.length - 1; point++)
     {

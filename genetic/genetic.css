@@ -145,24 +145,62 @@ header .container .menu button:hover{
         display: flex;
         flex-direction: column;
         margin-left: 10%;
-        gap: 30px;
 
-        .input_name{
+        .input_header{
+            display: inline-flex;
+            margin-top: 20px;
             margin-bottom: 5px;
+            gap: 10px;
+
+            .input_name{
+                width: 180px;
+                color: rgb(255, 255, 255);
+            }
+            .info_icon {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                background-color: #3498db;
+                color: rgb(255, 255, 255);
+                border-radius: 50%;
+                text-align: center;
+                line-height: 20px;
+                cursor: help;
+                position: relative;
+            }
+    
+            .info_tooltip {
+                visibility: hidden;
+                width: 200px;
+                background-color: #333;
+                color: rgb(255, 255, 255);
+                text-align: center;
+                border-radius: 6px;
+                padding: 10px;
+                position: absolute;
+                z-index: 100;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+    
+            .info_icon:hover .info_tooltip {
+                visibility: visible;
+                opacity: 1;
+            }
         }
         input{
             height: 20px;
-            width: 150px;
+            width: 200px;
             
             border-radius: 5px;
 
             color: rgba(0, 0, 0);
         }
-        div{
-            color: rgb(255, 255, 255);
-        }
+        
     }
-
 
     #clear_button{
 
