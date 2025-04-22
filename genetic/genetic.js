@@ -7,6 +7,7 @@ let points = [];
 let adj = []; 
 
 let controller = new AbortController();
+let isWorking = false;
 
 let pointColor  = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
@@ -272,39 +273,51 @@ function clearCanvas()
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-// Отрисовка графа
-function drawGraph()
+// Отрисовка вершин графа
+function drawPoints(all = true)
 {
-    // Отрисовка всех рёбер
-    // ctx.strokeStyle = edgeColor;
-    // ctx.lineWidth = 1;
-    // ctx.beginPath();
-    // for(let i = 0; i < points.length; i++)
-    //     for(let j = i + 1; j < points.length; j++)
-    //     {
-    //         ctx.moveTo(points[i][0], points[i][1]);
-    //         ctx.lineTo(points[j][0], points[j][1]);
-    //     }
-    // ctx.stroke();
-    // ctx.closePath();
-
-    // Отрисовка всех точек
-    ctx.fillStyle = "#5a5a5a";
-    ctx.strokeStyle = pointColor;
-    for(let i in points)
+    ctx.fillStyle = pointColor;
+    if (all)
+    {
+        for(let i in points)
+        {
+            ctx.beginPath();
+            ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+    else
     {
         ctx.beginPath();
-        ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
+        ctx.arc(points.at(-1)[0], points.at(-1)[1], 5, 0, 2 * Math.PI, true);
         ctx.fill();
         ctx.closePath();
     }
+}
+
+// Отрисовка рёбер графа
+function drawEdges()
+{
+    ctx.strokeStyle = edgeColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i = 0; i < points.length; i++)
+        for(let j = i + 1; j < points.length; j++)
+        {
+            ctx.moveTo(points[i][0], points[i][1]);
+            ctx.lineTo(points[j][0], points[j][1]);
+        }
+    ctx.stroke();
+    ctx.closePath();
 }
 
 // Отрисовка найденного пути
 async function drawPath(path) 
 {
     clearCanvas();
-    drawGraph();
+    drawPoints();
+    //drawEdges();
 
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
@@ -351,16 +364,11 @@ canvas.addEventListener('click', function(e)
         adj.push(newRow);
     }
 
-    //drawGraph();
-
-    // Отрисовка точки в месте клика     
-    ctx.beginPath();
-    ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
-    ctx.fill();
-    ctx.closePath();
+    // Отрисовка точки в месте клика  
+    drawPoints(false);
 
     
-    if(!controller.signal.aborted)
+    if(isWorking)
     {   
         controller.abort();
         setTimeout(() =>
@@ -374,11 +382,12 @@ canvas.addEventListener('click', function(e)
 controlButton = document.getElementById('control_button');
 controlButton.addEventListener('click', () =>
 {
-    if (controller.signal.aborted)
+    if (!isWorking)
     {
         controlButton.textContent = "STOP";
 
         controller = new AbortController();
+        isWorking = true;
     
         // Берём пользовательские значения констант алгоритма
         {
@@ -395,12 +404,15 @@ controlButton.addEventListener('click', () =>
     {
         controlButton.textContent = "START";
         controller.abort();
+        isWorking = false;
     }
 });
 
 document.getElementById('clear_button').addEventListener('click', () =>
 {
+    controlButton.textContent = "START";
     controller.abort();
+    isWorking = false;
 
     // Подчищаем за собой
     clearCanvas();
