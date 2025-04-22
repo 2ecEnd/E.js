@@ -16,7 +16,7 @@ let adj = [];
 let controller = new AbortController();
 let isWorking = false;
 
-let vertexColor  = "rgb(0, 0, 0)";
+let vertexColor = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
 let pathColor   = "rgba(0, 200, 0, 0.8)";
 
@@ -139,7 +139,7 @@ function crossing(parent1, parent2)
 }
 
 // Динамическая мутация маршрута
-function adaptiveMutation(path, cataclysmic = false) 
+function adaptiveMutation(path) 
 {
     // "Лёгкая" мутация путём смены мест двух вершин 
     function lightMutation()
@@ -162,18 +162,6 @@ function adaptiveMutation(path, cataclysmic = false)
             i++;
             j--;
         }
-    }
-
-    if (cataclysmic)
-    {
-        let r;
-    }
-    else
-    {
-        if (vertexes.length <= 15)
-            lightMutation();
-        else
-            hardMutation();
     }
 }
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)

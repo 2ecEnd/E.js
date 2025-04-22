@@ -1,3 +1,16 @@
+// Инициализация холста
+let canvas = document.getElementsByTagName('canvas')[0];
+canvas.width  = 1024;
+canvas.height = 768;
+let ctx = canvas.getContext('2d');
+
+let vertexes = []; 
+let adj = []; 
+
+let vertexColor = "rgb(0, 0, 0)";
+let edgeColor   = "rgba(160, 160, 160, 0.1)";
+let pathColor   = "rgba(0, 200, 0, 0.8)";
+
 class Ant
 {
     path = [];
@@ -27,7 +40,6 @@ class Ant
         if (neighborVertexes.length == 0)
         {
             this.canContinue = false;
-            this.path.push(this.start);
             this.distance += adj[this.curr][this.start];
             return;
         }
@@ -48,7 +60,7 @@ class Ant
         for(let i = 0; i < neighborVertexes.length; i++)
         {
             probability.push(wishes[i] / summWishes);
-            if (i == 0)
+            if (i === 0)
                 choosingProbabilities[i] = probability.at(-1);
             else
                 choosingProbabilities[i] = choosingProbabilities[i - 1] + probability.at(-1);
@@ -88,23 +100,21 @@ class AntColonyOptimization
     kQ;
     kEvaporation;
 
-    adj = [];
     pheromoneMatrix = [];
 
     ants = [];
 
-    constructor(adj, alpha, beta, Q, evaporation)
+    constructor(alpha, beta, Q, evaporation)
     {
-        this.adj = adj;
         this.kAlpha = alpha;
         this.kBeta = beta;
         this.kQ = Q;
         this.kEvaporation = evaporation;
 
-        for(let i = 0; i < this.adj.length; i++)
+        for(let i = 0; i < adj.length; i++)
         {
             let row = []
-            for(let j = 0; j < this.adj.length; j++)
+            for(let j = 0; j < adj.length; j++)
                 if (i == j)
                     row.push(0.0);
                 else
@@ -116,7 +126,7 @@ class AntColonyOptimization
     createAnts()
     {
         this.ants = [];
-        for(let i = 0; i < this.adj.length; i++)
+        for(let i = 0; i < adj.length; i++)
             this.ants.push(new Ant(i));
     }
 
@@ -133,7 +143,7 @@ class AntColonyOptimization
 
     solveSalesmansProblem()
     {
-        if (this.adj.length == 0)
+        if (adj.length == 0)
             return;
 
         const maxIter = 100; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
@@ -146,10 +156,10 @@ class AntColonyOptimization
         {
             iter += 1;
             let lup = []; // lup - local update pheromone 
-            for(let i = 0; i < this.adj.length; i++)
+            for(let i = 0; i < adj.length; i++)
             {
                 let row = []
-                for(let j = 0; j < this.adj.length; j++)
+                for(let j = 0; j < adj.length; j++)
                     row.push(0);
                 lup.push(row);
             }
@@ -159,7 +169,7 @@ class AntColonyOptimization
             {
                 // Проходим каждым муравьём весь путь
                 while(ant.canContinue)
-                    ant.makeChoice(this.adj, this.pheromoneMatrix, this.kAlpha, this.kBeta);
+                    ant.makeChoice(adj, this.pheromoneMatrix, this.kAlpha, this.kBeta);
 
                 // Если путь муравья короче чем текущий, то записываем его
                 if (ant.distance < distance)
@@ -172,7 +182,7 @@ class AntColonyOptimization
                 // Обновление феромонов
                 for(let v = 0; v < ant.path.length - 1; v++)
                 {
-                    if (v == ant.path.length - 2)
+                    if (v === ant.path.length - 2)
                     {
                         lup[ant.path[v]][ant.path[0]] += this.kQ / ant.distance;
                         lup[ant.path[0]][ant.path[v]] += this.kQ / ant.distance;
@@ -200,36 +210,29 @@ async function clearCanvas()
     // Повторная отрисовка всех точек
     ctx.fillStyle = "#5a5a5a";
     ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
-    for(let i in points)
+    for(let i in vertexes)
     {
         ctx.beginPath();
-        ctx.arc(points[i][0], points[i][1], 5, 0, 2 * Math.PI, true);
+        ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
         ctx.fill();
         ctx.closePath();
     }
 
     // Повторная отрисовка всех рёбер
     ctx.beginPath();
-    for(let i = 0; i < points.length; i++)
-        for(let j = i + 1; j < points.length; j++)
+    for(let i = 0; i < vertexes.length; i++)
+        for(let j = i + 1; j < vertexes.length; j++)
         {
-            ctx.moveTo(points[i][0], points[i][1]);
-            ctx.lineTo(points[j][0], points[j][1]);
+            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
+            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
         }
     ctx.stroke();
     ctx.closePath();
 }
 
-// Инициализация холста
-let canvas = document.getElementsByTagName('canvas')[0];
-canvas.height = 600;
-canvas.width  = 800;
 
-// Точки, которые пользователь ставит на холсте
-let points = []; 
 
-//Работа с холстом
-let ctx = canvas.getContext('2d');
+//-=-=-=-Работа с холстом-=-=-=-
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -243,7 +246,23 @@ canvas.addEventListener('click', async function(e)
     clearCanvas();
 
     // Пушим точку в массив
-    points.push([currX, currY]);
+    vertexes.push([currX, currY]);
+
+    // Обновляем матрицу смежности
+    {
+        for(let i = 0; i < adj.length; i++)
+        {
+            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
+            adj[i].push(dist);
+        }
+        let newRow = [];
+        for(let i = 0; i < vertexes.length; i++)
+        {
+            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
+            newRow.push(dist);
+        }
+        adj.push(newRow);
+    }
 
     // Отрисовка точки в месте клика 
     ctx.fillStyle = "#5a5a5a";
@@ -255,36 +274,22 @@ canvas.addEventListener('click', async function(e)
     // Отрисовка рёбер
     ctx.beginPath();
     ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
-    for(let i = 0; i < points.length - 1; i++)
+    for(let i = 0; i < vertexes.length - 1; i++)
     {
         ctx.moveTo(currX, currY);
-        ctx.lineTo(points[i][0], points[i][1]);
+        ctx.lineTo(vertexes[i][0], vertexes[i][1]);
     }
     ctx.stroke();
     ctx.closePath();
 });
 
 
-// Активация алгоритма
-document.getElementById('dataForm').addEventListener('submit', async function(e)
+//-=-=-=-Взаимодействие с пользователем-=-=-=-
+document.getElementById('start').addEventListener('click', async function(e)
 {
-    // Отменяем перезагрузку страницы
-    e.preventDefault(); 
-
-    // Составление матрицы смежности
-    adj = [];
-    for(let i in points)
-    {
-        let row = []
-        for(let j in points)
-            row.push(((points[i][0] - points[j][0]) ** 2 + (points[i][1] - points[j][1]) ** 2) ** (0.5))
-        adj.push(row);
-    }
-
     // Инициализируем колонию
     let antColony = new AntColonyOptimization
-    (
-        adj, 
+    ( 
         parseInt(document.getElementById('alpha').value),
         parseInt(document.getElementById('beta').value),
         parseInt(document.getElementById('q').value),
@@ -300,15 +305,13 @@ document.getElementById('dataForm').addEventListener('submit', async function(e)
     // Отрисовка найденного пути 
     ctx.strokeStyle = "rgba(0, 155, 0, 0.6)";
     ctx.beginPath();
-    for(let point in path)
+    for(let v = 0; v < path.length - 1; v++)
     {
-        point = Number(point)
-        ctx.moveTo(points[path[point]][0], points[path[point]][1]);
-        if(point == path.length - 1)
-            ctx.lineTo(points[path[0]][0], points[path[0]][1]);
-        else
-            ctx.lineTo(points[path[point + 1]][0], points[path[point + 1]][1]);
+        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
+        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
     }   
+    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
+    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
     ctx.stroke(); 
     ctx.closePath();   
 });
