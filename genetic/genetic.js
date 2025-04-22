@@ -269,7 +269,7 @@ function clearCanvas()
 }
 
 // Отрисовка вершин графа
-function drawVertexess(all = true)
+function drawVertexes(all = true)
 {
     ctx.fillStyle = vertexColor;
     if (all)
@@ -311,7 +311,7 @@ function drawEdges()
 async function drawPath(path) 
 {
     clearCanvas();
-    drawVertexess();
+    drawVertexes();
     //drawEdges();
 
     // Отрисовка найденного пути 
@@ -360,7 +360,7 @@ canvas.addEventListener('click', function(e)
     }
 
     // Отрисовка точки в месте клика  
-    drawVertexess(false);
+    drawVertexes(false);
 
     
     if(isWorking)

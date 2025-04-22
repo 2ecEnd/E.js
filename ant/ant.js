@@ -233,6 +233,75 @@ async function clearCanvas()
 
 
 //-=-=-=-Работа с холстом-=-=-=-
+// Очистка холста
+function clearCanvas() 
+{
+    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Отрисовка вершин графа
+function drawVertexes(all = true)
+{
+    ctx.fillStyle = vertexColor;
+    if (all)
+    {
+        for(let i in vertexes)
+        {
+            ctx.beginPath();
+            ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+    else
+    {
+        ctx.beginPath();
+        ctx.arc(vertexes.at(-1)[0], vertexes.at(-1)[1], 5, 0, 2 * Math.PI, true);
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+// Отрисовка рёбер графа
+function drawEdges()
+{
+    ctx.strokeStyle = edgeColor;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for(let i = 0; i < vertexes.length; i++)
+        for(let j = i + 1; j < vertexes.length; j++)
+        {
+            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
+            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
+        }
+    ctx.stroke();
+    ctx.closePath();
+}
+
+// Отрисовка найденного пути
+function drawPath(path) 
+{
+    clearCanvas();
+    drawVertexes();
+
+    // Отрисовка найденного пути 
+    ctx.strokeStyle = pathColor;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let v = 0; v < path.length - 1; v++)
+    {
+        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
+        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
+    }   
+    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
+    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
+    ctx.stroke(); 
+    ctx.closePath();
+}
+
+
+//-=-=-=-Взаимодействие с пользователем-=-=-=-
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -242,10 +311,7 @@ canvas.addEventListener('click', async function(e)
     const currX = (e.clientX - rect.left) * scaleX;
     const currY = (e.clientY - rect.top) * scaleY;
 
-    // Очищаем холст
-    clearCanvas();
-
-    // Пушим точку в массив
+    // Добавлям точку в список точек
     vertexes.push([currX, currY]);
 
     // Обновляем матрицу смежности
@@ -264,27 +330,11 @@ canvas.addEventListener('click', async function(e)
         adj.push(newRow);
     }
 
-    // Отрисовка точки в месте клика 
-    ctx.fillStyle = "#5a5a5a";
-    ctx.beginPath();
-    ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
-    ctx.fill();
-    ctx.closePath();
-
-    // Отрисовка рёбер
-    ctx.beginPath();
-    ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
-    for(let i = 0; i < vertexes.length - 1; i++)
-    {
-        ctx.moveTo(currX, currY);
-        ctx.lineTo(vertexes[i][0], vertexes[i][1]);
-    }
-    ctx.stroke();
-    ctx.closePath();
+    // Отрисовка точки в месте клика  
+    drawVertexes(false);
 });
 
 
-//-=-=-=-Взаимодействие с пользователем-=-=-=-
 document.getElementById('start').addEventListener('click', async function(e)
 {
     // Инициализируем колонию
@@ -301,23 +351,8 @@ document.getElementById('start').addEventListener('click', async function(e)
 
     // Очищаем холст
     clearCanvas();
+    drawVertexes();
 
     // Отрисовка найденного пути 
-    ctx.strokeStyle = "rgba(0, 155, 0, 0.6)";
-    ctx.beginPath();
-    for(let v = 0; v < path.length - 1; v++)
-    {
-        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
-        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
-    }   
-    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
-    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
-    ctx.stroke(); 
-    ctx.closePath();   
-});
-
-const arrow = document.getElementById("arrow");
-
-arrow.addEventListener('click', async function(){
-    document.getElementById("header").classList.toggle("active");
+    drawPath(path);
 });
