@@ -1,6 +1,6 @@
 let canvas = document.getElementsByTagName('canvas')[0];
-canvas.height = 720;
-canvas.width  = 1280;
+canvas.width  = 1024;
+canvas.height = 768;
 let ctx = canvas.getContext('2d');
 
 let vertexes = []; 
