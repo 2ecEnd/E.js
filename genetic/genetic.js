@@ -6,7 +6,6 @@ let ctx = canvas.getContext('2d');
 let points = []; 
 let adj = []; 
 
-let stopFlag = true;
 let controller = new AbortController();
 
 let pointColor  = "rgb(0, 0, 0)";
@@ -53,13 +52,12 @@ function calculateDistance(path)
 
 
 //-=-=-=-Генетический алгоритм-=-=-=-
-// Константы для настройки алгоритма
-// TODO: Реализовать их не как константы
-let POPULATION_SIZE = 1000;     // Размер популяции
-let MUTATION_RATE = 0.1;        // Вероятность мутации
-let TOURNAMENT_SIZE = 16;        // Размер турнира для выбора родителя
-let stagnation = 0;             // Количество стагнации
-                                // иначе говоря, сколько поколений не меняется результат
+// Базовые значения констант для алгоритма
+let POPULATION_SIZE     = 1000; // Размер популяции
+let MUTATION_RATE       = 0.1;  // Вероятность мутации
+let STAGNATION_TRESHOLD = 0;    // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
+let UPDATE_RATE         = 50;   // Размер турнира для выбора родителя
 
 // Инициализация начальной популяции случайными маршрутами
 function initializePopulation() 
@@ -195,11 +193,13 @@ function getBestPath(population)
     return bestPath;
 }
 
+// Непосредственно алгоритм
 async function genetic() 
 {
     // Инициализация начальной популяции
     let population = initializePopulation();
-    let gen = 1;
+    let gen = 0;
+    let stagnation = 0;
     let bestPath;
 
     while(true)
@@ -209,7 +209,7 @@ async function genetic()
 
         // Создание нового поколения
         let newPopulation = [];
-        while (newPopulation.length < POPULATION_SIZE) 
+        for(let i = 0; i < POPULATION_SIZE; i++)
         {
             if (controller.signal.aborted)
                 break;
@@ -232,26 +232,34 @@ async function genetic()
 
         // Замена старой популяции новой
         population = newPopulation;
-        gen++;
 
-        if (stagnation === 50)
-            cataclysmicMutation(population);
-        
-        if (gen % 100 === 0)
+        // Проверка на отличие от последнего лучшего найденного пути
+        let newBestPath = getBestPath(population);
+        if (bestPath === newBestPath)
+            stagnation++;
+        else
         {
-            let newBestPath = getBestPath(population);
-            if (bestPath === newBestPath)
-                stagnation += 10;
-            else
-            {
-                stagnation = 0;
-                bestPath = newBestPath;
-            }
+            stagnation = 0;
+            bestPath = newBestPath;
+        }
+
+        // Если алгоритм застоялся, принимаем меры
+        if (stagnation === STAGNATION_TRESHOLD)
+        {
+            cataclysmicMutation(population);
+            stagnation = 0;
+        }
+        
+        // Если пришла пора для отрисовкиы
+        if (gen % UPDATE_RATE === 0)
+        {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
             await drawPath(bestPath);
             await new Promise(resolve => setTimeout(resolve, 50));
         }
+
+        gen++;
     }
 }
 
@@ -343,9 +351,9 @@ canvas.addEventListener('click', function(e)
         adj.push(newRow);
     }
 
-    // Отрисовка точки в месте клика 
     //drawGraph();
     
+    // Отрисовка точки в месте клика     
     ctx.beginPath();
     ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
     ctx.fill();
@@ -366,6 +374,16 @@ canvas.addEventListener('click', function(e)
 document.getElementById('start').addEventListener('click', function(e)
 {
     controller = new AbortController();
+
+    // Берём пользовательские значения констант алгоритма
+    {
+        POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
+        MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
+        STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
+        TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
+        UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+    }
+
     genetic(); 
 });
 
