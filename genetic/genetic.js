@@ -352,7 +352,7 @@ canvas.addEventListener('click', function(e)
     }
 
     //drawGraph();
-    
+
     // Отрисовка точки в месте клика     
     ctx.beginPath();
     ctx.arc(currX, currY, 5, 0, 2 * Math.PI, true);
@@ -371,28 +371,38 @@ canvas.addEventListener('click', function(e)
     }
 });
 
-document.getElementById('start').addEventListener('click', function(e)
+controlButton = document.getElementById('control_button');
+controlButton.addEventListener('click', () =>
 {
-    controller = new AbortController();
-
-    // Берём пользовательские значения констант алгоритма
+    if (controller.signal.aborted)
     {
-        POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
-        MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
-        STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
-        TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
-        UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+        controlButton.textContent = "STOP";
+
+        controller = new AbortController();
+    
+        // Берём пользовательские значения констант алгоритма
+        {
+            POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
+            MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
+            TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
+            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+        }
+    
+        genetic(); 
     }
-
-    genetic(); 
+    else
+    {
+        controlButton.textContent = "START";
+        controller.abort();
+    }
 });
 
-document.getElementById('stop').addEventListener('click', function(e)
-{
-    controller.abort();
-});
+// document.getElementById('stop').addEventListener('click', () =>
+// {
+// });
 
-document.getElementById('clear').addEventListener('click', function(e)
+document.getElementById('clear').addEventListener('click', () =>
 {
     controller.abort();
 
