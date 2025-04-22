@@ -4,6 +4,10 @@
     color: rgb(207, 233, 255);
 }
 
+button{
+    cursor: pointer;
+}
+
 body{
     margin: 0;
     padding: 0;
@@ -138,6 +142,8 @@ header .container .menu button:hover{
 
         border-radius: 10px;
         border: 3px solid rgba(0, 0, 0, 0.9);
+
+        cursor: crosshair;
     }
 
     #inputs
@@ -157,33 +163,46 @@ header .container .menu button:hover{
                 color: rgb(255, 255, 255);
             }
             .info_icon {
-                display: inline-block;
                 width: 20px;
                 height: 20px;
-                background-color: #3498db;
-                color: rgb(255, 255, 255);
-                border-radius: 50%;
+
+                display: inline-block;
                 text-align: center;
+
+                border-radius: 50%;
+
+                color: rgb(255, 255, 255);
                 line-height: 20px;
+
+                background-color: #3498db;
+
                 cursor: help;
                 position: relative;
             }
     
             .info_tooltip {
-                visibility: hidden;
-                width: 200px;
-                background-color: #333;
-                color: rgb(255, 255, 255);
-                text-align: center;
-                border-radius: 6px;
                 padding: 10px;
-                position: absolute;
-                z-index: 100;
+
+                width: 200px;
+
+                text-align: center;
+
+                visibility: hidden;
+
+                border-radius: 6px;
+
+                color: rgb(255, 255, 255);
+
+                background-color: #333;
+                
                 bottom: 100%;
                 left: 50%;
                 transform: translateX(-50%);
+
                 opacity: 0;
                 transition: opacity 0.3s;
+
+                position: absolute;
             }
     
             .info_icon:hover .info_tooltip {
@@ -203,17 +222,16 @@ header .container .menu button:hover{
     }
 
     #clear_button{
-
         height: 60px;
         width: 100px;
 
         color: rgb(207, 233, 255);
 
-        border: 1px solid rgb(27, 68, 111);
+        border: 1px solid rgb(71, 80, 98);
         border-radius: 5px;
-        box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
+        transition: border 0.1s;
 
-        background-color: rgb(27, 68, 111);
+        background-color: rgb(71, 80, 98);
     }
     #clear_button:hover{
         border: 1px solid rgb(207, 233, 255);
@@ -229,6 +247,7 @@ header .container .menu button:hover{
 
         border: 1px solid rgb(27, 68, 111);
         border-radius: 5px;
+        transition: border 0.1s;
         box-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
 
         background-color: rgb(27, 68, 111);
