@@ -398,11 +398,7 @@ controlButton.addEventListener('click', () =>
     }
 });
 
-// document.getElementById('stop').addEventListener('click', () =>
-// {
-// });
-
-document.getElementById('clear').addEventListener('click', () =>
+document.getElementById('clear_button').addEventListener('click', () =>
 {
     controller.abort();
 
