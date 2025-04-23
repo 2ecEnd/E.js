@@ -67,43 +67,43 @@
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Сколько особей будет в популяции.</span>
+                                    <span class="info_tooltip">Насколько сильно будет влиять количество феромонов между вершинами на следующий ход. Сильное влияние на алгоритмю.</span>
                                 </div>
-                                <div class="input_name">Размер популяции</div>
+                                <div class="input_name">Коэф. альфа</div>
                             </div>
                             <input type="text" id="alpha" value="1">
                         </div>
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Как часто особи будут мутировать. Чем выше вероятность, тем лучше алгоритм выбирается из локальных минимумов, однако слишком высокий шанс мутации может помешать поиску наилучшего пути.</span>
+                                    <span class="info_tooltip">Насколько сильно будет влиять расстояние между вершинами на следующий ход. Крайне сильное влияние на алгоритм</span>
                                 </div>
-                                <div class="input_name">Вероятность мутации</div>
+                                <div class="input_name">Коэф. бета</div>
                             </div>
-                            <input type="text" id="beta" value="2">
+                            <input type="text" id="beta" value="3">
                         </div>
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Сколько поколений должно пройти без улучшения результата, чтобы запустилась "катастрофическая мутация" (крайне агрессивная мутация с высокой степенью изменения генов особей).</span>
+                                    <span class="info_tooltip">Данная константа делится на общую длину пути муравья при обновлении феромонов. Слабое влияние на алгоритм</span>
                                 </div>
-                                <div class="input_name">Предел стагнации</div>
+                                <div class="input_name">Коэф. Q</div>
                             </div>
                             <input type="text" id="q" value="1000">
                         </div>  
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Среди данного числа случайных особей будет выбираться лучшая, которая станет одним из родителей для новой особи.</span>
+                                    <span class="info_tooltip">Насколько сильно будут испаряться феромоны. Среднее влияние на алгоритм.</span>
                                 </div>
-                                <div class="input_name">Размер "турнира"</div>
+                                <div class="input_name">Коэф. испарения</div>
                             </div>
-                            <input type="text" id="evaporation" value="0.2">
+                            <input type="text" id="evaporation" value="0.1">
                         </div>
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Каждые n поколений будет отрисовываться лучший на данный момент путь.</span>
+                                    <span class="info_tooltip">Каждые n итераций будет отрисовываться лучший на данный момент путь.</span>
                                 </div>
                                 <div class="input_name">Частота обновления</div>
                             </div>
@@ -112,7 +112,7 @@
                         <div>
                             <div class="input_header">
                                 <div class="info_icon">ℹ
-                                    <span class="info_tooltip">Каждые n поколений будет отрисовываться лучший на данный момент путь.</span>
+                                    <span class="info_tooltip">Сколько итераций спустя без улучшений проводить сброс феромонов.</span>
                                 </div>
                                 <div class="input_name">Предел стагнации</div>
                             </div>

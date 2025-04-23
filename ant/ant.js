@@ -24,13 +24,13 @@ let pathColor   = "rgba(0, 200, 0, 0.8)";
 
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
 let ALPHA               = 1;    // В эту степень возмодится кол-во феромонов между i и j городами
-let BETA                = 2;    // В эту степень возводится близость между i и j городами
+let BETA                = 3;    // В эту степень возводится близость между i и j городами
 let PHEROMONE_0         = 1;    // Базовое значение феромонов
-let Q                   = 1000;    // Константа, которая делится на длину пути, пройденного муравьём
-let EVAPORATION         = 0.2;  // Коэффициент испарения феромонов
+let Q                   = 1000; // Константа, которая делится на длину пути, пройденного муравьём
+let EVAPORATION         = 0.1;  // Коэффициент испарения феромонов
 let BASE_EVAPORATION    = EVAPORATION;
 let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
-let STAGNATION_TRESHOLD = 100;   // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+let STAGNATION_TRESHOLD = 100;  // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
 
 const MAX_PHEROMONE = 10;
 const MIN_PHEROMONE = 0.1;
@@ -241,7 +241,7 @@ async function antAlgorithm()
         else if (stagnation % Math.floor(STAGNATION_TRESHOLD / 10) === 0 && stagnation !== 0)
             EVAPORATION += 0.1;
 
-        
+
         globalUpdatePheromone(lup);
 
 
