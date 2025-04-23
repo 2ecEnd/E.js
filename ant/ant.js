@@ -12,10 +12,22 @@ let pathColor   = "rgba(0, 200, 0, 0.8)";
 
 
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
-let ALPHA       = 1;
-let BETA        = 2;
-let Q           = 5;
-let EVAPORATION = 0.2;
+let ALPHA       = 1;    // В эту степень возмодится кол-во феромонов между i и j городами
+let BETA        = 2;    // В эту степень возводится близость между i и j городами
+let PHEROMONE0  = 1;    // Базовое значение феромонов
+let Q           = 5;    // Константа, которая делится на длину пути, пройденного муравьём
+let EVAPORATION = 0.2;  // Коэффициент испарения феромонов
+
+let pheromoneMatrix = new Array();
+
+function initializePheromoneMatrix()
+{
+    pheromoneMatrix = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0));;
+    for(let i = 0; i < adj.length; i++)
+        for(let j = 0; j < adj.length; j++)
+            if (i !== j)
+                pheromoneMatrix[i][j] = PHEROMONE0;
+}
 
 class Ant
 {
@@ -33,7 +45,7 @@ class Ant
     }
 
     // Метод выбора следующей вершины
-    makeChoice(adj, pheromoneMatrix)
+    makeChoice(adj)
     {
         if (this.path.length == 0)
         {
@@ -100,23 +112,7 @@ class Ant
 }
 class AntColonyOptimization
 {
-    pheromoneMatrix = [];
-
     ants = [];
-
-    constructor()
-    {
-        for(let i = 0; i < adj.length; i++)
-        {
-            let row = []
-            for(let j = 0; j < adj.length; j++)
-                if (i == j)
-                    row.push(0.0);
-                else
-                    row.push(Q);
-            this.pheromoneMatrix.push(row);
-        }
-    }
 
     createAnts()
     {
@@ -130,9 +126,9 @@ class AntColonyOptimization
         for(let i = 0; i < lup.length; i++)
             for(let j = 0; j < lup.length; j++)
             {
-                this.pheromoneMatrix[i][j] = EVAPORATION * this.pheromoneMatrix[i][j] + lup[i][j];
-                if(this.pheromoneMatrix[i][j] < 0.01 && i != j)
-                    this.pheromoneMatrix[i][j] = 0.01;
+                pheromoneMatrix[i][j] = EVAPORATION * pheromoneMatrix[i][j] + lup[i][j];
+                if(pheromoneMatrix[i][j] < 0.01 && i != j)
+                    pheromoneMatrix[i][j] = 0.01;
             }
     }
 
@@ -164,7 +160,7 @@ class AntColonyOptimization
             {
                 // Проходим каждым муравьём весь путь
                 while(ant.canContinue)
-                    ant.makeChoice(adj, this.pheromoneMatrix);
+                    ant.makeChoice(adj);
 
                 // Если путь муравья короче чем текущий, то записываем его
                 if (ant.distance < distance)
@@ -308,6 +304,7 @@ document.getElementById('start').addEventListener('click', async function(e)
     EVAPORATION = parseFloat(document.getElementById('evaporation').value);
 
     // Инициализируем колонию
+    initializePheromoneMatrix();
     let antColony = new AntColonyOptimization();
 
     // Решение задачи
