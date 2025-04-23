@@ -20,6 +20,7 @@ let BETA        = 2;    // В эту степень возводится бли�
 let PHEROMONE0  = 1;    // Базовое значение феромонов
 let Q           = 5;    // Константа, которая делится на длину пути, пройденного муравьём
 let EVAPORATION = 0.2;  // Коэффициент испарения феромонов
+let UPDATE_RATE = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
 
 let pheromoneMatrix = new Array();
 
@@ -122,6 +123,8 @@ async function antAlgorithm()
 
     if (adj.length == 0)
         return;
+
+    let iter = 0;
     
     let path = [];
     let distance = Infinity;
@@ -168,9 +171,12 @@ async function antAlgorithm()
 
         globalUpdatePheromone(lup);
 
-        console.log(distance);
-        await drawPath(path);
-        await new Promise(resolve => setTimeout(resolve, 50));
+        if (iter % UPDATE_RATE === 0 && iter !== 0)
+        {
+            console.log(distance);
+            await drawPath(path);
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
         
         iter += 1;
     }
@@ -297,7 +303,7 @@ controlButton.addEventListener('click', () =>
             MUTATION_RATE       = parseFloat(document.getElementById('beta').value);
             STAGNATION_TRESHOLD = parseInt(document.getElementById('q').value);
             TOURNAMENT_SIZE     = parseInt(document.getElementById('evaporation').value);
-            //UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
         }
     
         antAlgorithm(); 
