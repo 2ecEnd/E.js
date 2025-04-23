@@ -1,4 +1,3 @@
-// Инициализация холста
 let canvas = document.getElementsByTagName('canvas')[0];
 canvas.width  = 1024;
 canvas.height = 768;
@@ -10,6 +9,13 @@ let adj = [];
 let vertexColor = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
 let pathColor   = "rgba(0, 200, 0, 0.8)";
+
+
+//-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
+let ALPHA       = 1;
+let BETA        = 2;
+let Q           = 5;
+let EVAPORATION = 0.2;
 
 class Ant
 {
@@ -27,7 +33,7 @@ class Ant
     }
 
     // Метод выбора следующей вершины
-    makeChoice(adj, pheromoneMatrix, a, b)
+    makeChoice(adj, pheromoneMatrix)
     {
         if (this.path.length == 0)
         {
@@ -54,7 +60,7 @@ class Ant
             let pheromone = pheromoneMatrix[this.curr][neighbor];
             let proximity = 1 / adj[this.curr][neighbor];
 
-            wishes.push(Math.pow(pheromone, a) * Math.pow(proximity, b));
+            wishes.push(Math.pow(pheromone, ALPHA) * Math.pow(proximity, BETA));
             summWishes += wishes.at(-1);
         }
         for(let i = 0; i < neighborVertexes.length; i++)
@@ -94,23 +100,12 @@ class Ant
 }
 class AntColonyOptimization
 {
-    kAlpha;
-    kBeta;
-    kPheromone = 1;
-    kQ;
-    kEvaporation;
-
     pheromoneMatrix = [];
 
     ants = [];
 
-    constructor(alpha, beta, Q, evaporation)
+    constructor()
     {
-        this.kAlpha = alpha;
-        this.kBeta = beta;
-        this.kQ = Q;
-        this.kEvaporation = evaporation;
-
         for(let i = 0; i < adj.length; i++)
         {
             let row = []
@@ -118,7 +113,7 @@ class AntColonyOptimization
                 if (i == j)
                     row.push(0.0);
                 else
-                    row.push(this.kQ);
+                    row.push(Q);
             this.pheromoneMatrix.push(row);
         }
     }
@@ -135,7 +130,7 @@ class AntColonyOptimization
         for(let i = 0; i < lup.length; i++)
             for(let j = 0; j < lup.length; j++)
             {
-                this.pheromoneMatrix[i][j] = (1 - this.kEvaporation) * this.pheromoneMatrix[i][j] + lup[i][j];
+                this.pheromoneMatrix[i][j] = EVAPORATION * this.pheromoneMatrix[i][j] + lup[i][j];
                 if(this.pheromoneMatrix[i][j] < 0.01 && i != j)
                     this.pheromoneMatrix[i][j] = 0.01;
             }
@@ -169,7 +164,7 @@ class AntColonyOptimization
             {
                 // Проходим каждым муравьём весь путь
                 while(ant.canContinue)
-                    ant.makeChoice(adj, this.pheromoneMatrix, this.kAlpha, this.kBeta);
+                    ant.makeChoice(adj, this.pheromoneMatrix);
 
                 // Если путь муравья короче чем текущий, то записываем его
                 if (ant.distance < distance)
@@ -184,13 +179,13 @@ class AntColonyOptimization
                 {
                     if (v === ant.path.length - 2)
                     {
-                        lup[ant.path[v]][ant.path[0]] += this.kQ / ant.distance;
-                        lup[ant.path[0]][ant.path[v]] += this.kQ / ant.distance;
+                        lup[ant.path[v]][ant.path[0]] += Q / ant.distance;
+                        lup[ant.path[0]][ant.path[v]] += Q / ant.distance;
                     }
                     else
                     {
-                        lup[ant.path[v]][ant.path[v + 1]] += this.kQ / ant.distance;
-                        lup[ant.path[v + 1]][ant.path[v]] += this.kQ / ant.distance;
+                        lup[ant.path[v]][ant.path[v + 1]] += Q / ant.distance;
+                        lup[ant.path[v + 1]][ant.path[v]] += Q / ant.distance;
                     }
                 }
             }
@@ -201,38 +196,8 @@ class AntColonyOptimization
     }
 }
 
-async function clearCanvas() 
-{
-    // Очистка холста
-    ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Повторная отрисовка всех точек
-    ctx.fillStyle = "#5a5a5a";
-    ctx.strokeStyle = "rgba(120, 120, 120, 0.2)";
-    for(let i in vertexes)
-    {
-        ctx.beginPath();
-        ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
-        ctx.fill();
-        ctx.closePath();
-    }
-
-    // Повторная отрисовка всех рёбер
-    ctx.beginPath();
-    for(let i = 0; i < vertexes.length; i++)
-        for(let j = i + 1; j < vertexes.length; j++)
-        {
-            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
-            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
-        }
-    ctx.stroke();
-    ctx.closePath();
-}
-
-
-
-//-=-=-=-Работа с холстом-=-=-=-
+//-=-=-=-=-=- Работа с холстом -=-=-=-=-=-
 // Очистка холста
 function clearCanvas() 
 {
@@ -301,7 +266,7 @@ function drawPath(path)
 }
 
 
-//-=-=-=-Взаимодействие с пользователем-=-=-=-
+//-=-=-=-=-=- Взаимодействие с пользователем -=-=-=-=-=-
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -337,14 +302,13 @@ canvas.addEventListener('click', async function(e)
 
 document.getElementById('start').addEventListener('click', async function(e)
 {
+    ALPHA = parseInt(document.getElementById('alpha').value);
+    BETA = parseInt(document.getElementById('beta').value);
+    Q = parseInt(document.getElementById('q').value);
+    EVAPORATION = parseFloat(document.getElementById('evaporation').value);
+
     // Инициализируем колонию
-    let antColony = new AntColonyOptimization
-    ( 
-        parseInt(document.getElementById('alpha').value),
-        parseInt(document.getElementById('beta').value),
-        parseInt(document.getElementById('q').value),
-        parseInt(document.getElementById('evaporation').value),
-    );
+    let antColony = new AntColonyOptimization();
 
     // Решение задачи
     let path = antColony.solveSalesmansProblem();
