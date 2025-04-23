@@ -163,6 +163,11 @@ function adaptiveMutation(path)
             j--;
         }
     }
+
+    if (adj.length < 20)
+        lightMutation();
+    else
+        hardMutation();
 }
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)
 function cataclysmicMutation(population) 
@@ -196,7 +201,7 @@ async function genetic()
     let population = initializePopulation();
     let gen = 0;
     let stagnation = 0;
-    let bestPath;
+    let bestPath = [];
 
     while(true)
     {
@@ -231,12 +236,17 @@ async function genetic()
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        if (bestPath === newBestPath)
-            stagnation++;
+        if (bestPath.length == 0)
+            bestPath = newBestPath;
         else
         {
-            stagnation = 0;
-            bestPath = newBestPath;
+            if (calculateDistance(bestPath) === calculateDistance(newBestPath))
+                stagnation++;
+            else
+            {
+                stagnation = 0;
+                bestPath = newBestPath;
+            }
         }
 
         // Если алгоритм застоялся, принимаем меры

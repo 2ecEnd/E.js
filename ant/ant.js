@@ -1,5 +1,4 @@
 // TODO:
-// Адаптивное испарение феромонов
 // Элитарность
 // Бинарный поиск в выборе следующей вершины
 // Заменить список соседних вершин на множество соседних вершин
@@ -205,9 +204,7 @@ async function antAlgorithm()
                 bestPath = newBestPath;
             else
             {
-                let newBestDist = calculateDistance(newBestPath);
-                let bestDist = calculateDistance(bestPath);
-                if (newBestDist >= bestDist)
+                if (calculateDistance(newBestPath) >= calculateDistance(bestPath))
                     stagnation++;
                 else
                 {
