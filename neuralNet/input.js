@@ -2,9 +2,12 @@ const pica = window.pica();
 
 function getInputFromImage(imageUrl, callback){
     const image = new Image();
+    image.crossOrigin = "Anonymous";
 
     image.onload = function(){
-        const targetCanvas = document.getElementById("drawingCanvas");
+        const targetCanvas = document.createElement("canvas");
+        targetCanvas.width = 50;
+        targetCanvas.height = 50;
 
         pica.resize(image, targetCanvas, {
             quality: 3,
@@ -72,10 +75,15 @@ function centering(input, canvas, context){
     tempContext.fillStyle = "white";
     tempContext.fillRect(0, 0, 50, 50);
 
-    tempContext.drawImage(canvas, offsetX, offsetY);
-    context.drawImage(canvas, offsetX, offsetY);
+    const scale = Math.min(35/digitWidth, 35/digitHeight);
 
-    document.getElementById('body').appendChild(tempCanvas);
+    tempContext.save();
+    tempContext.translate(25, 25);
+    tempContext.scale(scale, scale);
+    tempContext.drawImage(canvas, offsetX - 25, offsetY - 25);
+    tempContext.restore();
+
+    //document.getElementById('body').appendChild(tempCanvas);
 
     const newImageData = tempContext.getImageData(0, 0, 50, 50).data;
 

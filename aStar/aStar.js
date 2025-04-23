@@ -4,6 +4,10 @@ let n;
 let start = 0;
 let finish = 0;
 
+let sleepTime = 25;
+let animOn = true;
+
+let wallDrawing = false;
 
 function createMap(){ // Создание таблицы размером n*n
     let table = document.createElement('table');
@@ -20,7 +24,24 @@ function createMap(){ // Создание таблицы размером n*n
             cell.classList.add('free');
 
             let cellNumber = number
-            cell.addEventListener('click', function(){toggleWall(cell, cellNumber)})
+            cell.addEventListener('mousedown', function(){
+                if(brushMode == 'wall'){
+                    wallDrawing = true;
+                    toggleWall(cell, cellNumber);
+                    cell.preventDefault()
+                }
+            });
+            cell.addEventListener('mousemove', function(){
+                if(brushMode == 'wall' && wallDrawing){
+                    toggleWall(cell, cellNumber);
+                    cell.preventDefault()
+                }
+            });
+            cell.addEventListener('click', function(){
+                if(brushMode != 'wall'){
+                    toggleWall(cell, cellNumber);
+                }
+            });
 
             graphNodes[number] = new Node(number);
 
@@ -28,18 +49,20 @@ function createMap(){ // Создание таблицы размером n*n
         }
     }
 
-    document.getElementById("modelsContainer").appendChild(table);
-    createMapEditorContainer();
+    document.getElementById("tableContainer").appendChild(table);
 }
+
+document.addEventListener('mouseup', () => {
+    wallDrawing = false;
+});
 
 
 function toggleWall(cell, cellNumber){ // Функция превращает клетку в wall или start-finish, в зависимости от текущей кисти (brushMode)
     if (brushMode == 'wall'){
-        cell.classList.toggle('wall')
-        cell.classList.toggle('free')
+        cell.classList.add('wall')
+        cell.classList.remove('free')
 
-        if (!graphNodes[cellNumber].isWall) graphNodes[cellNumber].isWall = true;
-        else graphNodes[cellNumber].isWall = false;
+        graphNodes[cellNumber].isWall = true;
     }
     else{
         if(!startIsSet){
@@ -150,21 +173,15 @@ async function aStar(){
             }
         }
 
-        await sleep(10);
+        if (animOn) await sleep(sleepTime);
     }
 
 
     if (flag){
         showPath(startNode, finishNode);
-
-        document.getElementById("modelsContainer").removeChild(document.getElementById("mapEditorContainer"));
-
+        document.getElementById("editorContainer").removeChild(document.getElementById("findPath"));
         createClearPathButton(startNode, finishNode);
     }
-    else{
-        alert("Нет пути");
-    }
-
 
     clearGraphNodes();
 }

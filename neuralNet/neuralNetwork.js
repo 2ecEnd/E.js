@@ -16,35 +16,44 @@ const intervals = [1033, 1171, 1044, 1087, 1018, 948, 1034, 1100, 1015, 1047];
 let averageLoss;
 
 async function trainingTenNumbers(){
-    averageLoss = 0;
+    let losses = [];
 
-    const totalIterations = 42000;
-    const batchSize = 100;
+    for(let t = 0; t < 50; t++){
+        averageLoss = 0;
 
-    for (let j = 0; j < totalIterations; j+= batchSize){
-        const promises = [];
+        const totalIterations = 42000;
+        const batchSize = 100;
 
-        for(let i = j; i < j+batchSize; i++){
-            const promise = new Promise((resolve) => {
-                let targetVector = new Array(10).fill(0);
-                let randomNum = Math.floor(Math.random() * 10);
-                let randomFolder = Math.floor(Math.random() * 4 + 1);
-                targetVector[randomNum] = 1;
-    
-                getInputFromImage(`images/${randomNum}/${randomFolder}/${randomNum} (${Math.floor(Math.random() * intervals[randomNum]) + 1}).jpg`, (data) => {
-                    calculatePrediction(data, targetVector, 0);
-                    resolve();
+        for (let j = 0; j < totalIterations; j+= batchSize){
+            const promises = [];
+
+            for(let i = j; i < j+batchSize; i++){
+                const promise = new Promise((resolve) => {
+                    let targetVector = new Array(10).fill(0);
+                    let randomNum = Math.floor(Math.random() * 10);
+                    let randomFolder = Math.floor(Math.random() * 4 + 1);
+                    targetVector[randomNum] = 1;
+        
+                    getInputFromImage(`images/${randomNum}/${randomFolder}/${randomNum} (${Math.floor(Math.random() * intervals[randomNum]) + 1}).jpg`, (data) => {
+                        calculatePrediction(data, targetVector, 0);
+                        resolve();
+                    });
                 });
-            });
-            promises.push(promise);
+                promises.push(promise);
+            }
+
+            await Promise.all(promises);
+
+            document.getElementById("inputFile").innerHTML = `${j}, ${t}`;
         }
 
-        await Promise.all(promises);
-
-        document.getElementById("inputFile").innerHTML = j;
+        losses.push((averageLoss/42000).toFixed(2));
+        //alert(`Средний Loss за эпоху составил: ${(averageLoss/42000).toFixed(2)}`);
     }
 
-    alert(`Средний Loss за эпоху составил: ${(averageLoss/42000).toFixed(2)}`);
+    for(let i = 0; i < 50; i++){
+        alert(`Средний Loss за эпоху составил: ${losses[i]}`);
+    }
 }
 
 

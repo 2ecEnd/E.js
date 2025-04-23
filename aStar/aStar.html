@@ -4,27 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../style.css">
     <link rel="stylesheet" type="text/css" href="aStar.css">
 </head>
 <body>
-    <header class="container-fluid">
+    <header class="container-fluid active" id="header">
+        <div class="arrow" id="arrow">
+            <img src="../design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
+        </div>
         <div class="container d-flex">
-            <img class="normal-img" src="images/logo-uralvagonzavod.png" alt="">
-            <nav class="menu">
-                <button onclick=openTub(this)>Модельный Ряд</button>
-                <button>Бренд</button>
-                <button>Дилеры</button>
+            <nav class="menu d-flex">
+                <button id="algorithm1" class="mainPage">
+                    <img src="../design_Images/main 30px.png" alt="">
+                    Главная страница
+                </button>
+                <a href="aStar/aStar.html">
+                    <button id="algorithm2">
+                        <img src="../design_Images/Astar 30px.png" alt="">
+                        Поиск пути
+                    </button>
+                </a>
+                <button id="algorithm3">
+                    <img src="../design_Images/cluster 30px.png" alt="">
+                    Кластеризация
+                </button>
+                <button id="algorithm4">
+                    <img src="../design_Images/genetic 30px.png" alt="">
+                    Генетический алгоритм
+                </button>
+                <button id="algorithm5">
+                    <img src="../design_Images/ant 30px.png" alt="">
+                    Муравьиный алгоритм
+                </button>
+                <button id="algorithm6">
+                    <img src="../design_Images/tree 30px.png" alt="">
+                    Дерево решений
+                </button>
+                <button id="algorithm7">
+                    <img src="../design_Images/neural 30px.png" alt="">
+                    Нейронная сеть
+                </button>
             </nav>
-            <div class="search d-flex">
-                <input type="text" name="search" placeholder="Поиск по моделям">
-            </div>
         </div>
     </header>
-    <div id="modelsContainer" class="modelsContainer d-flex">
-        <form id="sizeForm" class="sizeForm">
-            <input type="text" id="size" class="sizeInput" placeholder="Введите размер">
-            <input type="submit" class="submitInput" value="Сделать карту">
-        </form>
+    <div class="mainContainer">
+        <div id="tableContainer" class="tableContainer">
+            <form id="sizeForm" class="sizeForm">
+                <input type="text" id="size" class="sizeInput" placeholder="Введите размер">
+                <input type="submit" class="submitInput" value="Сделать карту">
+            </form>
+        </div>
+        <div id="editorContainer" class="editorContainer">
+            <label class="switch" id="animSwitch">
+                <input type="checkbox" class="toggle-input" id="toggle-input" checked>
+                <div class="border active">
+                    <div class="square"></div>
+                </div >
+                Анимация
+            </label >
+            <div id="sliderContainer" class="sliderContainer">
+                <img src="images/speedMin_30px.png" alt="">
+                <input type="range" id="speedSlider" min="0" max="50" value="25">
+                <img src="images/speedMax_30px.png" alt="">
+            </div>
+            <button id="generateMaze" class="deactiveButton">
+                <img src="images/maze_30px.png" alt="">
+                Лабиринт
+            </button>
+            <button id="wallBrush" class="deactiveButton">
+                <img src="images/bricks_30px.png" alt="">
+                Рисовать стены
+            </button>
+            <button id="start-finishBrush" class="deactiveButton">
+                <img src="images/geo_30px.png" alt="">
+                Старт-Финиш
+            </button>
+            <button id="findPath" class="deactiveButton">
+                <img src="../design_Images/Astar 30px.png" alt = "">
+                Проложить путь
+            </button>
+        </div>
+        <div id="deleteContainer" class="deleteContainer">
+            
+        </div>
     </div>
     <div class="background"></div>
     <script src="front.js"></script>
