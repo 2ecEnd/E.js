@@ -6,6 +6,9 @@ let ctx = canvas.getContext('2d');
 let vertexes = []; 
 let adj = []; 
 
+let controller = new AbortController();
+let isWorking = false;
+
 let vertexColor = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
 let pathColor   = "rgba(0, 200, 0, 0.8)";
@@ -20,6 +23,7 @@ let EVAPORATION = 0.2;  // Коэффициент испарения фером�
 
 let pheromoneMatrix = new Array();
 
+// Инициализация матрицы феромонов начальными значениями
 function initializePheromoneMatrix()
 {
     pheromoneMatrix = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0));
@@ -29,23 +33,40 @@ function initializePheromoneMatrix()
                 pheromoneMatrix[i][j] = PHEROMONE0;
 }
 
-// Расчет расстояния для маршрута
-function calculateDistance(path) 
+// Создание муравьёв
+function createAnts()
 {
-    let distance = adj[path.at(-1)][path[0]];
-    for (let i = 0; i < path.length - 1; i++) 
-        distance += adj[path[i]][path[i + 1]];
+    ants = [];
+    for(let i = 0; i < adj.length; i++)
+        ants.push([i]);
+
+    return ants;
+}
+
+// Расчет расстояния для пути муравья
+function calculateDistance(ant) 
+{
+    let distance = adj[ant.at(-1)][ant[0]];
+    for (let i = 0; i < ant.length - 1; i++) 
+        distance += adj[ant[i]][ant[i + 1]];
 
     return distance;
+}
+
+// Получение соседних, ещё не посещённых муравьём вершин
+function getNeighborVertexes(ant)
+{
+    let neighbors = [];
+    for(let v = 0; v < adj.length; v++)
+        if (!ant.includes(v))
+            neighbors.push(v);
+    return neighbors;
 }
 
 // Метод выбора следующей вершины
 function makeChoice(ant)
 {
-    // Если соседей не оказалось = весь путь был пройден
     let neighborVertexes = getNeighborVertexes(ant);
-    if (neighborVertexes.length == 0)
-        return; 
 
     // Подсчёт вероятности перехода муравья в соседние вершины
     let choosingProbabilities = new Array(neighborVertexes.length);
@@ -82,26 +103,6 @@ function makeChoice(ant)
     ant.push(nextVertex);
 }
 
-// Получение соседних ещё не посещённых вершин
-function getNeighborVertexes(ant)
-{
-    let neighbors = [];
-    for(let v = 0; v < adj.length; v++)
-        if (!ant.includes(v))
-            neighbors.push(v);
-    return neighbors;
-}
-
-// Создание муравьёв
-function createAnts()
-{
-    ants = [];
-    for(let i = 0; i < adj.length; i++)
-        ants.push([i]);
-
-    return ants;
-}
-
 // Глобальное обновление феромонов
 function globalUpdatePheromone(lup)
 {
@@ -117,22 +118,27 @@ function globalUpdatePheromone(lup)
 // Муравьинный алгоритм
 async function antAlgorithm()
 {
+    initializePheromoneMatrix();
+
     if (adj.length == 0)
         return;
-
-    const maxIter = 100; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
-    let iter = 0;
     
     let path = [];
     let distance = Infinity;
 
-    while (iter < maxIter)
+    while (true)
     {
+        if (controller.signal.aborted)
+            break;
+
         let lup = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0)); // lup - local update pheromone
         let ants = createAnts();
 
         for(let ant of ants)
         {
+            if (controller.signal.aborted)
+                break;
+
             // Проходим каждым муравьём весь путь
             for(let i = 0; i < adj.length - 1; i++)
                 makeChoice(ant);
@@ -157,7 +163,14 @@ async function antAlgorithm()
             lup[ant.at(-1)][ant[0]] += T_ijk;
             lup[ant[0]][ant.at(-1)] += T_ijk;
         }
+        if (controller.signal.aborted)
+            break;
+
         globalUpdatePheromone(lup);
+
+        console.log(distance);
+        await drawPath(path);
+        await new Promise(resolve => setTimeout(resolve, 50));
         
         iter += 1;
     }
@@ -268,23 +281,44 @@ canvas.addEventListener('click', async function(e)
 });
 
 
-document.getElementById('start').addEventListener('click', async function(e)
+controlButton = document.getElementById('control_button');
+controlButton.addEventListener('click', () =>
 {
-    ALPHA = parseInt(document.getElementById('alpha').value);
-    BETA = parseInt(document.getElementById('beta').value);
-    Q = parseInt(document.getElementById('q').value);
-    EVAPORATION = parseFloat(document.getElementById('evaporation').value);
+    if (!isWorking)
+    {
+        controlButton.textContent = "STOP";
 
-    // Инициализируем колонию
-    initializePheromoneMatrix();
+        controller = new AbortController();
+        isWorking = true;
+    
+        // Берём пользовательские значения констант алгоритма
+        {
+            POPULATION_SIZE     = parseInt(document.getElementById('alpha').value);
+            MUTATION_RATE       = parseFloat(document.getElementById('beta').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('q').value);
+            TOURNAMENT_SIZE     = parseInt(document.getElementById('evaporation').value);
+            //UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+        }
+    
+        antAlgorithm(); 
+    }
+    else
+    {
+        controlButton.textContent = "START";
+        controller.abort();
+        isWorking = false;
+    }
+});
 
-    // Решение задачи
-    let path = await antAlgorithm();
+document.getElementById('clear_button').addEventListener('click', () =>
+{
+    controlButton.textContent = "START";
+    controller.abort();
+    isWorking = false;
 
-    // Очищаем холст
+    // Подчищаем за собой
     clearCanvas();
-    drawVertexes();
-
-    // Отрисовка найденного пути 
-    drawPath(path);
+    vertexes = [];
+    adj = [];
+    console.clear();
 });
