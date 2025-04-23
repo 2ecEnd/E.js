@@ -29,86 +29,67 @@ function initializePheromoneMatrix()
                 pheromoneMatrix[i][j] = PHEROMONE0;
 }
 
-class Ant
+// Расчет расстояния для маршрута
+function calculateDistance(path) 
 {
-    path = [];
-    distance = 0;
-    visited = new Set();
-    start = 0;
-    curr = 0;
-    canContinue = true;
+    let distance = adj[path.at(-1)][path[0]];
+    for (let i = 0; i < path.length - 1; i++) 
+        distance += adj[path[i]][path[i + 1]];
 
-    constructor(start = 0)
+    return distance;
+}
+
+// Метод выбора следующей вершины
+function makeChoice(ant)
+{
+    // Если соседей не оказалось = весь путь был пройден
+    let neighborVertexes = getNeighborVertexes(ant);
+    if (neighborVertexes.length == 0)
+        return; 
+
+    // Подсчёт вероятности перехода муравья в соседние вершины
+    let choosingProbabilities = new Array(neighborVertexes.length);
+    let wishes = [];
+    let probability = [];
+    let summWishes = 0.0;
+    for(let neighbor of neighborVertexes)
     {
-        this.start = start;
-        this.curr = start;
+        let pheromone = pheromoneMatrix[ant.at(-1)][neighbor];
+        let proximity = 1 / adj[ant.at(-1)][neighbor];
+
+        wishes.push(Math.pow(pheromone, ALPHA) * Math.pow(proximity, BETA));
+        summWishes += wishes.at(-1);
     }
 
-    // Метод выбора следующей вершины
-    makeChoice(adj)
+    probability.push(wishes[0] / summWishes);
+    choosingProbabilities[0] = probability.at(-1);
+    for(let i = 1; i < neighborVertexes.length; i++)
     {
-        if (this.path.length == 0)
-        {
-            this.path.push(this.curr);
-            this.visited.add(this.curr); 
-        }
-
-        // Если соседей не оказалось = весь путь был пройден
-        let neighborVertexes = this.getNeighborVertexes(adj);
-        if (neighborVertexes.length == 0)
-        {
-            this.canContinue = false;
-            this.distance += adj[this.curr][this.start];
-            return;
-        }
-
-        // Подсчёт вероятности перехода муравья в соседние вершины
-        let choosingProbabilities = [];
-        let wishes = [];
-        let probability = [];
-        let summWishes = 0.0;
-        for(let neighbor of neighborVertexes)
-        {
-            let pheromone = pheromoneMatrix[this.curr][neighbor];
-            let proximity = 1 / adj[this.curr][neighbor];
-
-            wishes.push(Math.pow(pheromone, ALPHA) * Math.pow(proximity, BETA));
-            summWishes += wishes.at(-1);
-        }
-        for(let i = 0; i < neighborVertexes.length; i++)
-        {
-            probability.push(wishes[i] / summWishes);
-            if (i === 0)
-                choosingProbabilities[i] = probability.at(-1);
-            else
-                choosingProbabilities[i] = choosingProbabilities[i - 1] + probability.at(-1);
-        }
-
-        //Выбор следующей вершины
-        let nextVertex;
-        let choose = Math.random();
-        for(let i = 0; i < neighborVertexes.length; i++)
-            if (choose <= choosingProbabilities[i])
-            {
-                nextVertex = neighborVertexes[i];
-                break;
-            }
-
-        this.path.push(nextVertex);
-        this.distance += adj[this.curr][nextVertex];
-        this.visited.add(nextVertex);
-        this.curr = nextVertex;
+        probability.push(wishes[i] / summWishes);
+        choosingProbabilities[i] = choosingProbabilities[i - 1] + probability.at(-1);
     }
-    
-    // Получение соседних ещё не посещённых вершин
-    getNeighborVertexes(adj)
-    {
-        let neighbors = [];
-        for(let v = 0; v < adj.length; v++)
-            if (!this.visited.has(v))
-                neighbors.push(v);
-        return neighbors;
-    }
+
+    //Выбор следующей вершины
+    let nextVertex;
+    let choose = Math.random();
+    for(let i = 0; i < neighborVertexes.length; i++)
+        if (choose <= choosingProbabilities[i])
+        {
+            nextVertex = neighborVertexes[i];
+            break;
+        }
+
+    ant.push(nextVertex);
+}
+
+// Получение соседних ещё не посещённых вершин
+function getNeighborVertexes(ant)
+{
+    let neighbors = [];
+    for(let v = 0; v < adj.length; v++)
+        if (!ant.includes(v))
+            neighbors.push(v);
+    return neighbors;
 }
 
 // Создание муравьёв
@@ -116,7 +97,7 @@ function createAnts()
 {
     ants = [];
     for(let i = 0; i < adj.length; i++)
-        ants.push(new Ant(i));
+        ants.push([i]);
 
     return ants;
 }
@@ -133,6 +114,7 @@ function globalUpdatePheromone(lup)
         }
 }
 
+// Муравьинный алгоритм
 async function antAlgorithm()
 {
     if (adj.length == 0)
@@ -152,31 +134,28 @@ async function antAlgorithm()
         for(let ant of ants)
         {
             // Проходим каждым муравьём весь путь
-            while(ant.canContinue)
-                ant.makeChoice(adj);
+            for(let i = 0; i < adj.length - 1; i++)
+                makeChoice(ant);
+
+            let antDist = calculateDistance(ant);
 
             // Если путь муравья короче чем текущий, то записываем его
-            if (ant.distance < distance)
+            if (antDist < distance)
             {
-                path = ant.path;
-                distance = ant.distance;
+                path = ant;
+                distance = antDist;
                 iter = 0;
             }
 
             // Обновление феромонов
-            for(let v = 0; v < ant.path.length - 1; v++)
+            let T_ijk = Q / antDist;
+            for(let v = 0; v < ant.length - 1; v++)
             {
-                if (v === ant.path.length - 2)
-                {
-                    lup[ant.path[v]][ant.path[0]] += Q / ant.distance;
-                    lup[ant.path[0]][ant.path[v]] += Q / ant.distance;
-                }
-                else
-                {
-                    lup[ant.path[v]][ant.path[v + 1]] += Q / ant.distance;
-                    lup[ant.path[v + 1]][ant.path[v]] += Q / ant.distance;
-                }
+                lup[ant[v]][ant[v + 1]] += T_ijk;
+                lup[ant[v + 1]][ant[v]] += T_ijk;
             }
+            lup[ant.at(-1)][ant[0]] += T_ijk;
+            lup[ant[0]][ant.at(-1)] += T_ijk;
         }
         globalUpdatePheromone(lup);
         
