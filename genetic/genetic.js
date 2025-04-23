@@ -63,9 +63,9 @@ function calculateDistance(path)
 // Базовые значения констант для алгоритма
 let POPULATION_SIZE     = 1000; // Размер популяции
 let MUTATION_RATE       = 0.1;  // Вероятность мутации
-let STAGNATION_TRESHOLD = 0;    // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
 let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
 let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let STAGNATION_TRESHOLD = 0;    // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
 
 // Инициализация начальной популяции случайными маршрутами
 function initializePopulation() 
@@ -388,9 +388,9 @@ controlButton.addEventListener('click', () =>
         {
             POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
             MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
             TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
             UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
         }
     
         genetic(); 

@@ -23,12 +23,14 @@ let pathColor   = "rgba(0, 200, 0, 0.8)";
 
 
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
-let ALPHA       = 1;    // В эту степень возмодится кол-во феромонов между i и j городами
-let BETA        = 2;    // В эту степень возводится близость между i и j городами
-let PHEROMONE_0 = 1;    // Базовое значение феромонов
-let Q           = 5;    // Константа, которая делится на длину пути, пройденного муравьём
-let EVAPORATION = 0.2;  // Коэффициент испарения феромонов
-let UPDATE_RATE = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let ALPHA               = 1;    // В эту степень возмодится кол-во феромонов между i и j городами
+let BETA                = 2;    // В эту степень возводится близость между i и j городами
+let PHEROMONE_0         = 1;    // Базовое значение феромонов
+let Q                   = 1000;    // Константа, которая делится на длину пути, пройденного муравьём
+let EVAPORATION         = 0.2;  // Коэффициент испарения феромонов
+let BASE_EVAPORATION    = EVAPORATION;
+let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let STAGNATION_TRESHOLD = 100;   // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
 
 const MAX_PHEROMONE = 10;
 const MIN_PHEROMONE = 0.1;
@@ -67,6 +69,23 @@ function calculateDistance(ant)
         distance += adj[ant[i]][ant[i + 1]];
 
     return distance;
+}
+
+// Поиск лучшего маршрута в колонии
+function getBestPath(ants) 
+{
+    let bestPath = ants[0];
+    let bestDistance = calculateDistance(bestPath);
+    for (let path of ants) 
+    {
+        let distance = calculateDistance(path);
+        if (distance < bestDistance) 
+        {
+            bestPath = path;
+            bestDistance = distance;
+        }
+    }
+    return bestPath;
 }
 
 // Получение соседних, ещё не посещённых муравьём вершин
@@ -145,9 +164,9 @@ async function antAlgorithm()
     initializePheromoneMatrix();
 
     let iter = 0;
+    let stagnation = 0;
     
-    let path = [];
-    let distance = Infinity;
+    let bestPath = [];
 
     while (!controller.signal.aborted)
     {
@@ -163,18 +182,10 @@ async function antAlgorithm()
             for(let i = 0; i < adj.length - 1; i++)
                 makeChoice(ant);
 
-            let antDist = calculateDistance(ant);
-
-            // Если путь муравья короче чем текущий, то записываем его
-            if (antDist < distance)
-            {
-                path = ant;
-                distance = antDist;
-                iter = 0;
-            }
+            let dist = calculateDistance(ant);
 
             // Обновление феромонов
-            let T_ijk = Q / antDist;
+            let T_ijk = Q / dist;
             for(let v = 0; v < ant.length - 1; v++)
             {
                 lup[ant[v]][ant[v + 1]] += T_ijk;
@@ -186,19 +197,64 @@ async function antAlgorithm()
         if (controller.signal.aborted)
             break;
 
+
+        // Проверка на отличие от последнего лучшего найденного пути
+        {
+            let newBestPath = getBestPath(ants); 
+            if (bestPath.length == 0)
+                bestPath = newBestPath;
+            else
+            {
+                let newBestDist = calculateDistance(newBestPath);
+                let bestDist = calculateDistance(bestPath);
+                if (newBestDist >= bestDist)
+                    stagnation++;
+                else
+                {
+                    bestPath = newBestPath;
+                    stagnation = 0;
+                }
+            }
+        }
+
+        // Если алгоритм застоялся, принимаем меры
+        if (stagnation === STAGNATION_TRESHOLD)
+        {
+            EVAPORATION = BASE_EVAPORATION;
+            stagnation = 0;
+
+            initializePheromoneMatrix();
+
+            let dist = calculateDistance(bestPath);
+            lup = new Array(adj.length).fill(1 / (1 - EVAPORATION)).map(() => new Array(adj.length).fill(1 / (1 - EVAPORATION)));
+
+            let T_ijk = Q / dist;
+            for(let v = 0; v < bestPath.length - 1; v++)
+            {
+                lup[bestPath[v]][bestPath[v + 1]] += 0.2 * T_ijk;
+                lup[bestPath[v + 1]][bestPath[v]] += 0.2 * T_ijk;
+            }
+            lup[bestPath.at(-1)][bestPath[0]] += 0.2 * T_ijk;
+            lup[bestPath[0]][bestPath.at(-1)] += 0.2 * T_ijk;
+
+        }
+        else if (stagnation % Math.floor(STAGNATION_TRESHOLD / 10) === 0 && stagnation !== 0)
+            EVAPORATION += 0.1;
+
+        
         globalUpdatePheromone(lup);
 
+
+        // Если пришла пора для отрисовкиы
         if (iter % UPDATE_RATE === 0 && iter !== 0)
         {
-            console.log(distance);
-            await drawPath(path);
+            console.log(calculateDistance(bestPath));
+            await drawPath(bestPath);
             await new Promise(resolve => setTimeout(resolve, 50));
         }
         
         iter += 1;
     }
-
-    return path;
 }
 
 
@@ -328,11 +384,13 @@ controlButton.addEventListener('click', () =>
     
         // Берём пользовательские значения констант алгоритма
         {
-            ALPHA       = parseInt(document.getElementById('alpha').value);
-            BETA        = parseFloat(document.getElementById('beta').value);
-            Q           = parseInt(document.getElementById('q').value);
-            EVAPORATION = parseInt(document.getElementById('evaporation').value);
-            UPDATE_RATE = parseInt(document.getElementById('update_rate').value);
+            ALPHA               = parseInt(document.getElementById('alpha').value);
+            BETA                = parseInt(document.getElementById('beta').value);
+            Q                   = parseInt(document.getElementById('q').value);
+            EVAPORATION         = parseFloat(document.getElementById('evaporation').value);
+            BASE_EVAPORATION    = parseFloat(document.getElementById('evaporation').value);
+            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
         }
     
         antAlgorithm(); 
