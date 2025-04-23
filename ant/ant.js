@@ -22,7 +22,7 @@ let pheromoneMatrix = new Array();
 
 function initializePheromoneMatrix()
 {
-    pheromoneMatrix = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0));;
+    pheromoneMatrix = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0));
     for(let i = 0; i < adj.length; i++)
         for(let j = 0; j < adj.length; j++)
             if (i !== j)
@@ -110,88 +110,81 @@ class Ant
         return neighbors;
     }
 }
-class AntColonyOptimization
+
+// Создание муравьёв
+function createAnts()
 {
     ants = [];
+    for(let i = 0; i < adj.length; i++)
+        ants.push(new Ant(i));
 
-    createAnts()
-    {
-        this.ants = [];
-        for(let i = 0; i < adj.length; i++)
-            this.ants.push(new Ant(i));
-    }
-
-    updatePheromone(lup)
-    {
-        for(let i = 0; i < lup.length; i++)
-            for(let j = 0; j < lup.length; j++)
-            {
-                pheromoneMatrix[i][j] = EVAPORATION * pheromoneMatrix[i][j] + lup[i][j];
-                if(pheromoneMatrix[i][j] < 0.01 && i != j)
-                    pheromoneMatrix[i][j] = 0.01;
-            }
-    }
-
-    solveSalesmansProblem()
-    {
-        if (adj.length == 0)
-            return;
-
-        const maxIter = 100; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
-        let iter = 0;
-        
-        let path = [];
-        let distance = Infinity;
-
-        while (iter < maxIter)
-        {
-            iter += 1;
-            let lup = []; // lup - local update pheromone 
-            for(let i = 0; i < adj.length; i++)
-            {
-                let row = []
-                for(let j = 0; j < adj.length; j++)
-                    row.push(0);
-                lup.push(row);
-            }
-            this.createAnts();
-
-            for(let ant of this.ants)
-            {
-                // Проходим каждым муравьём весь путь
-                while(ant.canContinue)
-                    ant.makeChoice(adj);
-
-                // Если путь муравья короче чем текущий, то записываем его
-                if (ant.distance < distance)
-                {
-                    path = ant.path;
-                    distance = ant.distance;
-                    iter = 0;
-                }
-
-                // Обновление феромонов
-                for(let v = 0; v < ant.path.length - 1; v++)
-                {
-                    if (v === ant.path.length - 2)
-                    {
-                        lup[ant.path[v]][ant.path[0]] += Q / ant.distance;
-                        lup[ant.path[0]][ant.path[v]] += Q / ant.distance;
-                    }
-                    else
-                    {
-                        lup[ant.path[v]][ant.path[v + 1]] += Q / ant.distance;
-                        lup[ant.path[v + 1]][ant.path[v]] += Q / ant.distance;
-                    }
-                }
-            }
-            this.updatePheromone(lup);
-        }
-
-        return path;
-    }
+    return ants;
 }
 
+// Глобальное обновление феромонов
+function globalUpdatePheromone(lup)
+{
+    for(let i = 0; i < lup.length; i++)
+        for(let j = 0; j < lup.length; j++)
+        {
+            pheromoneMatrix[i][j] = EVAPORATION * pheromoneMatrix[i][j] + lup[i][j];
+            if(pheromoneMatrix[i][j] < 0.01 && i != j)
+                pheromoneMatrix[i][j] = 0.01;
+        }
+}
+
+async function antAlgorithm()
+{
+    if (adj.length == 0)
+        return;
+
+    const maxIter = 100; // Через какое кол-во итераций прекратить после того, как путь перестал улучшаться
+    let iter = 0;
+    
+    let path = [];
+    let distance = Infinity;
+
+    while (iter < maxIter)
+    {
+        let lup = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0)); // lup - local update pheromone
+        let ants = createAnts();
+
+        for(let ant of ants)
+        {
+            // Проходим каждым муравьём весь путь
+            while(ant.canContinue)
+                ant.makeChoice(adj);
+
+            // Если путь муравья короче чем текущий, то записываем его
+            if (ant.distance < distance)
+            {
+                path = ant.path;
+                distance = ant.distance;
+                iter = 0;
+            }
+
+            // Обновление феромонов
+            for(let v = 0; v < ant.path.length - 1; v++)
+            {
+                if (v === ant.path.length - 2)
+                {
+                    lup[ant.path[v]][ant.path[0]] += Q / ant.distance;
+                    lup[ant.path[0]][ant.path[v]] += Q / ant.distance;
+                }
+                else
+                {
+                    lup[ant.path[v]][ant.path[v + 1]] += Q / ant.distance;
+                    lup[ant.path[v + 1]][ant.path[v]] += Q / ant.distance;
+                }
+            }
+        }
+        globalUpdatePheromone(lup);
+        
+        iter += 1;
+    }
+
+    return path;
+}
 
 //-=-=-=-=-=- Работа с холстом -=-=-=-=-=-
 // Очистка холста
@@ -305,10 +298,9 @@ document.getElementById('start').addEventListener('click', async function(e)
 
     // Инициализируем колонию
     initializePheromoneMatrix();
-    let antColony = new AntColonyOptimization();
 
     // Решение задачи
-    let path = antColony.solveSalesmansProblem();
+    let path = await antAlgorithm();
 
     // Очищаем холст
     clearCanvas();
