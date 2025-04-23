@@ -1,3 +1,13 @@
+// TODO:
+// Адаптивное испарение феромонов
+// MMAS (Min-Max кол-во феромонов на путях)
+// Элитарность
+// Бинарный поиск в выборе следующей вершины
+// Заменить список соседних вершин на множество соседних вершин
+// Валидация входных данных
+// Может быть 2-opt (слишком затратно)
+// Ограничить кол-во муравьёв
+
 let canvas = document.getElementsByTagName('canvas')[0];
 canvas.width  = 1024;
 canvas.height = 768;
@@ -55,7 +65,7 @@ function calculateDistance(ant)
 }
 
 // Получение соседних, ещё не посещённых муравьём вершин
-function getNeighborVertexes(ant)
+function getNeighbourVertexes(ant)
 {
     let neighbors = [];
     for(let v = 0; v < adj.length; v++)
@@ -67,37 +77,39 @@ function getNeighborVertexes(ant)
 // Метод выбора следующей вершины
 function makeChoice(ant)
 {
-    let neighborVertexes = getNeighborVertexes(ant);
+    let neighbourVertexes = getNeighbourVertexes(ant);
 
     // Подсчёт вероятности перехода муравья в соседние вершины
-    let choosingProbabilities = new Array(neighborVertexes.length);
+    let choosingProbabilities = new Array(neighbourVertexes.length);
     let wishes = [];
-    let probability = [];
     let summWishes = 0.0;
-    for(let neighbor of neighborVertexes)
+    for(let neighbour of neighbourVertexes)
     {
-        let pheromone = pheromoneMatrix[ant.at(-1)][neighbor];
-        let proximity = 1 / adj[ant.at(-1)][neighbor];
+        let pheromone = pheromoneMatrix[ant.at(-1)][neighbour];  // Кол-во феромона между текущим городом и neighbour
+        let proximity = 1 / adj[ant.at(-1)][neighbour];
 
-        wishes.push(Math.pow(pheromone, ALPHA) * Math.pow(proximity, BETA));
-        summWishes += wishes.at(-1);
+        let wish = Math.pow(pheromone, ALPHA) * Math.pow(proximity, BETA)
+
+        wishes.push(wish);
+        summWishes += wish;
     }
 
-    probability.push(wishes[0] / summWishes);
-    choosingProbabilities[0] = probability.at(-1);
-    for(let i = 1; i < neighborVertexes.length; i++)
+    let probabilities = [];
+    probabilities.push(wishes[0] / summWishes);
+    choosingProbabilities[0] = probabilities.at(-1);
+    for(let i = 1; i < neighbourVertexes.length; i++)
     {
-        probability.push(wishes[i] / summWishes);
-        choosingProbabilities[i] = choosingProbabilities[i - 1] + probability.at(-1);
+        probabilities.push(wishes[i] / summWishes);
+        choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
 
     //Выбор следующей вершины
     let nextVertex;
     let choose = Math.random();
-    for(let i = 0; i < neighborVertexes.length; i++)
+    for(let i = 0; i < neighbourVertexes.length; i++)
         if (choose <= choosingProbabilities[i])
         {
-            nextVertex = neighborVertexes[i];
+            nextVertex = neighbourVertexes[i];
             break;
         }
 
@@ -110,7 +122,7 @@ function globalUpdatePheromone(lup)
     for(let i = 0; i < lup.length; i++)
         for(let j = 0; j < lup.length; j++)
         {
-            pheromoneMatrix[i][j] = EVAPORATION * pheromoneMatrix[i][j] + lup[i][j];
+            pheromoneMatrix[i][j] = (1 - EVAPORATION) * pheromoneMatrix[i][j] + lup[i][j];
             if(pheromoneMatrix[i][j] < 0.01 && i != j)
                 pheromoneMatrix[i][j] = 0.01;
         }
@@ -119,10 +131,10 @@ function globalUpdatePheromone(lup)
 // Муравьинный алгоритм
 async function antAlgorithm()
 {
-    initializePheromoneMatrix();
-
-    if (adj.length == 0)
+    if (adj.length < 2)
         return;
+
+    initializePheromoneMatrix();
 
     let iter = 0;
     
@@ -310,11 +322,11 @@ controlButton.addEventListener('click', () =>
     
         // Берём пользовательские значения констант алгоритма
         {
-            POPULATION_SIZE     = parseInt(document.getElementById('alpha').value);
-            MUTATION_RATE       = parseFloat(document.getElementById('beta').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('q').value);
-            TOURNAMENT_SIZE     = parseInt(document.getElementById('evaporation').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
+            ALPHA       = parseInt(document.getElementById('alpha').value);
+            BETA        = parseFloat(document.getElementById('beta').value);
+            Q           = parseInt(document.getElementById('q').value);
+            EVAPORATION = parseInt(document.getElementById('evaporation').value);
+            UPDATE_RATE = parseInt(document.getElementById('update_rate').value);
         }
     
         antAlgorithm(); 
