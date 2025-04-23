@@ -284,6 +284,17 @@ canvas.addEventListener('click', async function(e)
 
     // Отрисовка точки в месте клика  
     drawVertexes(false);
+
+    
+    if(isWorking)
+    {   
+        controller.abort();
+        setTimeout(() =>
+        {
+            controller = new AbortController();
+            antAlgorithm();
+        }, 50);
+    }
 });
 
 
