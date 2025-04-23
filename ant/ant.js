@@ -1,12 +1,10 @@
 // TODO:
 // Адаптивное испарение феромонов
-// MMAS (Min-Max кол-во феромонов на путях)
 // Элитарность
 // Бинарный поиск в выборе следующей вершины
 // Заменить список соседних вершин на множество соседних вершин
 // Валидация входных данных
 // Может быть 2-opt (слишком затратно)
-// Ограничить кол-во муравьёв
 
 let canvas = document.getElementsByTagName('canvas')[0];
 canvas.width  = 1024;
@@ -27,10 +25,13 @@ let pathColor   = "rgba(0, 200, 0, 0.8)";
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
 let ALPHA       = 1;    // В эту степень возмодится кол-во феромонов между i и j городами
 let BETA        = 2;    // В эту степень возводится близость между i и j городами
-let PHEROMONE0  = 1;    // Базовое значение феромонов
+let PHEROMONE_0 = 1;    // Базовое значение феромонов
 let Q           = 5;    // Константа, которая делится на длину пути, пройденного муравьём
 let EVAPORATION = 0.2;  // Коэффициент испарения феромонов
 let UPDATE_RATE = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+
+const MAX_PHEROMONE = 10;
+const MIN_PHEROMONE = 0.1;
 
 let pheromoneMatrix = new Array();
 
@@ -41,15 +42,19 @@ function initializePheromoneMatrix()
     for(let i = 0; i < adj.length; i++)
         for(let j = 0; j < adj.length; j++)
             if (i !== j)
-                pheromoneMatrix[i][j] = PHEROMONE0;
+                pheromoneMatrix[i][j] = PHEROMONE_0;
 }
 
 // Создание муравьёв
 function createAnts()
 {
-    ants = [];
-    for(let i = 0; i < adj.length; i++)
-        ants.push([i]);
+    // Ограничиваем кол-во муравьёв до 20, чтобы облегчить вычисления
+    let antsCount = Math.min(adj.length, 20);
+    ants = new Array(antsCount);
+
+    // Случайный выбор начальной вершины муравья
+    for(let i = 0; i < antsCount; i++)
+        ants[i] = [Math.floor(Math.random() * (adj.length - 1))];
 
     return ants;
 }
@@ -123,8 +128,11 @@ function globalUpdatePheromone(lup)
         for(let j = 0; j < lup.length; j++)
         {
             pheromoneMatrix[i][j] = (1 - EVAPORATION) * pheromoneMatrix[i][j] + lup[i][j];
-            if(pheromoneMatrix[i][j] < 0.01 && i != j)
-                pheromoneMatrix[i][j] = 0.01;
+
+            if(pheromoneMatrix[i][j] < MIN_PHEROMONE)
+                pheromoneMatrix[i][j] = MIN_PHEROMONE;
+            else if(pheromoneMatrix[i][j] > MAX_PHEROMONE)
+                pheromoneMatrix[i][j] = MAX_PHEROMONE;
         }
 }
 
@@ -141,11 +149,8 @@ async function antAlgorithm()
     let path = [];
     let distance = Infinity;
 
-    while (true)
+    while (!controller.signal.aborted)
     {
-        if (controller.signal.aborted)
-            break;
-
         let lup = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0)); // lup - local update pheromone
         let ants = createAnts();
 
@@ -195,6 +200,7 @@ async function antAlgorithm()
 
     return path;
 }
+
 
 //-=-=-=-=-=- Работа с холстом -=-=-=-=-=-
 // Очистка холста
