@@ -1,4 +1,3 @@
-
 let decisionTree; 
 const MAX_DEPTH = 25; // Максимальная глубина дерева 
 
@@ -23,7 +22,7 @@ class DecisionTree {
             return this.createLeaf(data); 
         }
 
-        // Получаем все значения целевого признака
+        // Получаю все значения целевого признака
         let targetValues = data.map(line => line[this.target]);
 
 
@@ -32,7 +31,7 @@ class DecisionTree {
             return this.createLeaf(data);
         }
 
-        // Ищем лучшее разбиение по критерию информационного прироста
+        // Ищу лучшее разбиение по критерию информационного прироста
         let bestSplit = this.findBestSplit(data, attributes);
 
         let bestAttribute = bestSplit[0];
@@ -45,7 +44,7 @@ class DecisionTree {
             return this.createLeaf(data);
         }
 
-        // Разделяем данные на две части
+        // Разделяю данные на две части
 
         let splitTree = this.splitTree(data, bestAttribute, bestValue);
 
@@ -53,13 +52,13 @@ class DecisionTree {
         let rightData = splitTree[1];
 
 
-        // Удаляем использованный признак из доступных
+        // Удаляю использованный признак из доступных
         
         // Рекурсивно строим поддеревья
         let leftChild = this.buildTree(leftData, attributes, depth + 1);
         let rightChild = this.buildTree(rightData, attributes, depth + 1);
 
-        // Возвращаем узел дерева
+        // Возвращаю узел дерева
 
         return {
             type: 'node', 
@@ -93,7 +92,7 @@ class DecisionTree {
             if (!isNaN(parseFloat(data[0][attribute]))) {
                 // Для числовых
 
-                // Собираем все уникальные значения признака
+                // Собираю все уникальные значения признака
                 let uniqueValues = [];
                 let valuesSet = new Set(); 
 
@@ -107,13 +106,13 @@ class DecisionTree {
                 }
                 uniqueValues.sort((a, b) => a - b);
     
-                // Перебираем возможные пороги для разделения
+                // Перебираю возможные пороги для разделения
 
                 for (let i = 0; i < uniqueValues.length - 1; i++) {
 
                     let threshold = (uniqueValues[i] + uniqueValues[i + 1]) / 2;
                     
-                    // Разделяем данные на две группы
+                    // Разделяю данные на две группы
                     let leftData = [];
                     let rightData = [];
 
@@ -130,7 +129,7 @@ class DecisionTree {
 
                     if (leftData.length === 0 || rightData.length === 0) continue;
     
-                    // Вычисляем информационный прирост
+                    // Вычисляю информационный прирост
 
                     let leftTargets = []; 
                     let rightTargets = [];
@@ -146,7 +145,7 @@ class DecisionTree {
                         rightTargets.push(line[this.target]); 
                     }
 
-                    // Вычисляем информационный прирост для этого разделения
+                    // Вычисляю информационный прирост для этого разделения
                     let gain = this.calculateInformationGain(currentEntropy, leftTargets, rightTargets);
 
 
@@ -304,10 +303,10 @@ class DecisionTree {
         return new Set(values).size === 1;
     }
 
-    // Создание листа дерева
+
     
 
-    // Создаёт лист дерева решений (конечный узел)
+    // Создаю лист дерева
     createLeaf(data) {
 
         return {
@@ -321,7 +320,118 @@ class DecisionTree {
     
 }
 
+let nodeDataVisualization = new Map();
 
+// Визуализация дерева решения
+function visualizeTree() {
+    let visualization = document.getElementById('treeVisualization');
+    visualization.innerHTML = '';
+    nodeDataVisualization.clear();
+
+
+    let treeVisualization = d3.select(visualization).style('width', '100%').style('height', '600px'); 
+
+
+    // Создаю SVG холст 
+    let svg = treeVisualization.append('svg').attr('width', 2000).attr('height', 2000);
+
+    // Функция масштабирования
+    let zoomFunction = d3.zoom().scaleExtent([0.5, 3]).on('zoom', (event) => {
+        treeElements.attr('transform', event.transform);
+    });
+
+    svg.call(zoomFunction);
+
+    // Все элементы дерева помещаю в одну группу
+    let treeElements = svg.append('g');
+
+
+
+ 
+    let treePosition = d3.tree().nodeSize([120, 200]).separation(() => 3);
+
+  
+
+
+    // Преобразую данные в формат иерархический формат для d3
+    let treeHierarchy = d3.hierarchy(decisionTree.root, function(node) {
+
+        if (node.type === 'node') {
+            return [node.left, node.right]; 
+        }
+        return []; 
+    });
+
+    treePosition(treeHierarchy);
+
+    
+
+    // Рисую линии между узлами
+    treeElements.selectAll('.line') 
+        .data(treeHierarchy.links()) // Привязываю данные о связях
+        .enter() // Для каждого нового элемента
+        .append('path') // Создаю SVG-путь 
+        .attr('class', 'line')
+        .attr('d', d3.linkVertical() 
+            .x(d => d.x) 
+            .y(d => d.y) 
+        );
+
+    
+
+    // Создаю узлы 
+    let nodes = treeElements.selectAll('.node') 
+        .data(treeHierarchy.descendants()) // Привязываю данные узлов
+        .enter() // Для каждого нового узла
+        .append('g') // Создаю группу для каждого узла
+
+        .attr('class', 'node')
+        .attr('type', d => `${d.data.type}`)
+
+        .attr('transform', d => `translate(${d.x},${d.y})`)
+
+        .each(function(d) {
+            // Сохраняю связь между данными и DOM-элементом
+            nodeDataVisualization.set(d.data, this);
+        });
+
+
+    
+
+    // Рисую узлы
+    nodes.append('rect')
+        .attr('width', 150) 
+        .attr('height', 50) 
+        .attr('x', -75) 
+        .attr('y', -25) 
+    
+    
+
+    // Текст узла
+    nodes.append('text')
+        .attr('dy', 4) 
+        .attr('text-anchor', 'middle') 
+        .style('font-size', '14px') 
+        .text(d => {
+
+            if (d.data.type === 'leaf') {
+
+                return `${d.data.value}`;
+            }
+
+            else {
+                if (!isNaN(d.data.value)) {
+                    return `${d.data.attribute} <= ${d.data.value}`;
+                }
+
+                else {
+                    return `${d.data.attribute} = ${d.data.value}`;
+                }
+            }
+
+        });
+    
+}
 
 
 
@@ -347,6 +457,20 @@ function findPath(line) {
 }
 
 
+// Подсветка узлов на пути
+function highlightPath(path) {
+    d3.selectAll('.node').classed('active', false); // Сбрасываю подсветку
+    
+    // Подсвечиваю все узлы на пути
+    path.forEach(node => {
+        let elementHTML = nodeDataVisualization.get(node);
+        d3.select(elementHTML).classed('active', true);
+    });
+}
+
+
+
+
 
 // Функция для принятия решений
 function makeDecision() {
@@ -366,11 +490,14 @@ function makeDecision() {
 
     let userData = parseCSV(csvData);
 
+    // Сбрасываю подсветку
+    d3.selectAll('.node').classed('active', false);
 
 
-    // Формируем HTML с результатами
 
-    let resultHTML = '<h3>Prediction Results:</h3>';
+    // Формирую HTML с результатами
+
+    let resultHTML = '<h2>Решения:</h2>';
 
     userData.forEach((line, index) => {
         let path = findPath(line);
@@ -378,7 +505,7 @@ function makeDecision() {
         resultHTML += `
             <div class="decisionLine">
                 <strong>Строка ${index + 1}:</strong> ${decision}
-                <button class="highlight-btn" data-index="${index}">Показать путь</button>
+                <button class="highlightButton" data-index="${index}">Показать путь</button>
             </div>
         `;
     });
@@ -386,7 +513,14 @@ function makeDecision() {
 
     document.getElementById('decisionResult').innerHTML = resultHTML;
 
-
+    document.querySelectorAll('.highlightButton').forEach(button => {
+        button.addEventListener('click', () => {
+            let index = parseInt(this.getAttribute('data-index'));
+            let line = userData[index];
+            let path = findPath(line);
+            highlightPath(path); // Подсвечиваем путь
+        });
+    });
 }
 
 // Сравнение значений с учетом типа
@@ -436,14 +570,16 @@ document.getElementById('buildTreeButton').addEventListener('click', () => {
         return;
     }
 
-    // Определяем целевую переменную (последний столбец)
+    // Определяю целевую переменную 
     let targetColumn = Object.keys(data[0]).pop();
 
     
-    // Строим дерево
+    // Строю дерево
     decisionTree = new DecisionTree(MAX_DEPTH, targetColumn);
     decisionTree.startBuildTree(data, Object.keys(data[0]).filter(column => column !== targetColumn));
+    visualizeTree()
 });
 
 // Обработчик кнопки предсказания
-document.getElementById('predictButton').addEventListener('click', makeDecision);
+document.getElementById('decisionButton').addEventListener('click', makeDecision);
+

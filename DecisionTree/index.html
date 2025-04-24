@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Дерево решений</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="main">
         <h1>Дерево решений</h1>
         
         <div class="inputSection">
@@ -15,16 +14,17 @@
         </div>
 
         <div class="visualization-section">
-            <div id="treeDiagram"></div>
+            <div id="treeVisualization"></div>
         </div>
 
         <div class="decisionSection">
             <textarea id="decisionData" placeholder="Введите данные в формате csv-текста для принятия решения по дереву"></textarea>
-            <button id="predictButton">Принять решение</button>
+            <button id="decisionButton">Принять решение</button>
             <div id="decisionResult"></div>
         </div>
     </div>
 
     <script src="script.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
 </body>
 </html>
