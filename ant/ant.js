@@ -3,6 +3,7 @@
 // Бинарный поиск в выборе следующей вершины
 // Заменить список соседних вершин на множество соседних вершин
 // Может быть 2-opt (слишком затратно)
+// Добавить опсиание алгоритма
 
 let canvas = document.getElementsByTagName('canvas')[0];
 canvas.width  = 1024;
@@ -125,29 +126,24 @@ function makeChoice(ant)
         choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
 
-    // Бинарный поиск
-    // let choose = Math.random();
-    // let left = 0;
-    // let right = neighbourVertexes.length - 1
-    // let mid;
-
-	// while (left <= right)
-	// {
-	// 	mid = Math.floor((left + right) / 2);
-
-	// 	if (choosingProbabilities[mid] > choose)
-	// 		right = mid - 1;
-	// 	else if (choosingProbabilities[mid] < choose)
-	// 		left = mid + 1;
-	// 	else
-    //     {
-    //         ant.push(neighbourVertexes[mid]);
-    //         break;
-    //     }
-	// }
-
-    //Выбор следующей вершины
+    // Выбор следующей вершины бинарным поиском
     let choose = Math.random();
+    let left = 0;
+    let right = neighbourVertexes.length - 1
+    let mid = Math.floor((left + right) / 2);
+
+	while (left <= right)
+	{
+	 	mid = Math.floor((left + right) / 2);
+
+	 	if (choosingProbabilities[mid] > choose)
+	 		right = mid - 1;
+		else if (choosingProbabilities[mid] < choose)
+	 		left = mid + 1;
+	}
+    ant.push(neighbourVertexes[left]);
+
+    /*let choose = Math.random();
     let nextVertex;
     for(let i = 0; i < neighbourVertexes.length; i++)
         if (choose <= choosingProbabilities[i])
@@ -156,7 +152,7 @@ function makeChoice(ant)
             break;
         }
 
-    ant.push(nextVertex);
+    ant.push(nextVertex);*/
 }
 
 // Глобальное обновление феромонов
@@ -405,7 +401,7 @@ controlButton.addEventListener('click', () =>
                 return;
             }
 
-        controlButton.textContent = "STOP";
+        controlButton.textContent = "ОСТАНОВИТЬ";
 
         controller = new AbortController();
         isWorking = true;
@@ -425,7 +421,7 @@ controlButton.addEventListener('click', () =>
     }
     else
     {
-        controlButton.textContent = "START";
+        controlButton.textContent = "НАЧАТЬ";
         controller.abort();
         isWorking = false;
     }
@@ -433,7 +429,7 @@ controlButton.addEventListener('click', () =>
 
 document.getElementById('clear_button').addEventListener('click', () =>
 {
-    controlButton.textContent = "START";
+    controlButton.textContent = "НАЧАТЬ";
     controller.abort();
     isWorking = false;
 
