@@ -1,5 +1,4 @@
 // TODO:
-// Сделать валидацию пользовательсокго ввода
 // Улучшить скрещивание особей
 // Увеличить гибкость мутации
 // Добавить элитизм
@@ -400,7 +399,7 @@ controlButton.addEventListener('click', () =>
                 return;
             }
 
-        controlButton.textContent = "STOP";
+        controlButton.textContent = "ОСТАНОВИТЬ";
 
         controller = new AbortController();
         isWorking = true;
@@ -418,7 +417,7 @@ controlButton.addEventListener('click', () =>
     }
     else
     {
-        controlButton.textContent = "START";
+        controlButton.textContent = "НАЧАТЬ";
         controller.abort();
         isWorking = false;
     }
@@ -426,7 +425,7 @@ controlButton.addEventListener('click', () =>
 
 document.getElementById('clear_button').addEventListener('click', () =>
 {
-    controlButton.textContent = "START";
+    controlButton.textContent = "НАЧАТЬ";
     controller.abort();
     isWorking = false;
 
