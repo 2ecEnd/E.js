@@ -68,7 +68,7 @@ body{
     
             .info_tooltip {
                 padding: 10px;
-                width: 200px;
+                width: 250px;
                 text-align: center;
                 visibility: hidden;
                 border-radius: 6px;
@@ -80,6 +80,11 @@ body{
                 opacity: 0;
                 transition: opacity 0.3s;
                 position: absolute;
+
+                .degree{
+                    font-style: italic;
+                    color: rgb(255, 255, 255);
+                }
             }
     
             .info_icon:hover .info_tooltip {
