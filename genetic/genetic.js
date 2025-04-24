@@ -389,6 +389,17 @@ controlButton.addEventListener('click', () =>
 {
     if (!isWorking)
     {
+        // Валидация ввода
+        if (isNaN(parseInt(document.getElementById('popilation_size').value)) || 
+            isNaN(parseFloat(document.getElementById('mutation_rate').value)) || 
+            isNaN(parseInt(document.getElementById('tournament_size').value)) || 
+            isNaN(parseInt(document.getElementById('update_rate').value)) || 
+            isNaN(parseInt(document.getElementById('stagnation_treshold').value)))
+            {
+                showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
+                return;
+            }
+
         controlButton.textContent = "STOP";
 
         controller = new AbortController();
