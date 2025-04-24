@@ -1,95 +1,102 @@
-let canvas = document.querySelector("#canvas"); 
-let contextCanvas = canvas.getContext('2d'); 
-let clusterButton = document.getElementById("cluster"); 
-let clearButton = document.getElementById("clear"); 
-let clusterInfo = document.getElementById("cluster-info");
+let inputCanvas = document.getElementById('input-canvas');
+let kmeansEuclideanCanvas = document.getElementById('kmeans-euclidean-canvas');
+let hierarchicalEuclideanCanvas = document.getElementById('hierarchical-euclidean-canvas');
+let kmeansManhattanCanvas = document.getElementById('kmeans-manhattan-canvas');
+let hierarchicalManhattanCanvas = document.getElementById('hierarchical-manhattan-canvas');
+let kmeansChebyshevCanvas = document.getElementById('kmeans-chebyshev-canvas');
+let hierarchicalChebyshevCanvas = document.getElementById('hierarchical-chebyshev-canvas');
 
-let points = []; 
-let clusters = []; 
-let colours = []; 
+let clusterButton = document.getElementById('cluster');
+let clearButton = document.getElementById('clear');
+let clusterInfo = document.getElementById('cluster-info');
+let kInput = document.getElementById('k-input');
 
 
+let inputCtx = inputCanvas.getContext('2d');
+let kmeansEuclideanCtx = kmeansEuclideanCanvas.getContext('2d');
+let hierarchicalEuclideanCtx = hierarchicalEuclideanCanvas.getContext('2d');
+let kmeansManhattanCtx = kmeansManhattanCanvas.getContext('2d');
+let hierarchicalManhattanCtx = hierarchicalManhattanCanvas.getContext('2d');
+let kmeansChebyshevCtx = kmeansChebyshevCanvas.getContext('2d');
+let hierarchicalChebyshevCtx = hierarchicalChebyshevCanvas.getContext('2d');
+
+let points = [];
+let colours = [];
 
 
-function generateClusterColours(k) {
-    let hueStep = 360 / k;
-    
+function generateColors(k) {
+    colours = [];
+    const hueStep = 360 / k;
     for (let i = 0; i < k; i++) {
-        let hue = Math.round(i * hueStep);
-        colours.push(`hsl(${hue}, 60%, 50%)`);
+        colours.push(`hsl(${i * hueStep}, 70%, 60%)`);
     }
 }
 
 
+function draw(context, pointsData, centers = []) {
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
-function draw() {
-    contextCanvas.clearRect(0, 0, canvas.width, canvas.height);
-    
-    clusters.forEach((center, i) => {
-        contextCanvas.beginPath();
-        contextCanvas.arc(center.x, center.y, 8, 0, Math.PI * 2);
-        contextCanvas.fillStyle = colours[i];
-        contextCanvas.fill();
-        contextCanvas.strokeStyle = "black";
-        contextCanvas.lineWidth = 2;
-        contextCanvas.stroke();
+    pointsData.forEach(point => {
+        context.beginPath();
+        context.arc(point.x, point.y, 5, 0, Math.PI * 2);
+        context.fillStyle = point.cluster !== undefined ? colours[point.cluster] : 'black';
+        context.fill();
     });
-    
-    for (let point of points) {
-        contextCanvas.beginPath();
-        contextCanvas.arc(point.x, point.y, 8, 0, Math.PI * 2);
-        contextCanvas.fillStyle = point.cluster !== undefined ? colours[point.cluster] : "black";
-        contextCanvas.fill();
-    }
 }
 
 
-canvas.addEventListener("click", (event) => {
-    let rect = canvas.getBoundingClientRect();
-    let x = event.clientX - rect.left;
-    let y = event.clientY - rect.top;
+inputCanvas.addEventListener('click', (event) => {
+    const rect = inputCanvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
     
-    points.push({ x, y, cluster: undefined});
-    draw();
+    points.push({ x, y });
+    draw(inputCtx, points);
 });
 
 
+function euclideanDistance(a, b) {
+    return Math.sqrt(Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2));
+}
+
+function manhattanDistance(a, b) {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
+function chebyshevDistance(a, b) {
+    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}
 
 
-
-function kMeansPlusPlus(k) {
-    
+function kMeansPlusPlus(k, distanceFunction) {
     let centers = [];
     
+
     let firstIndex = Math.floor(Math.random() * points.length);
-    centers.push({x: points[firstIndex].x,  y: points[firstIndex].y,  count: 1});
+    centers.push({x: points[firstIndex].x, y: points[firstIndex].y});
     
 
     for (let i = 1; i < k; i++) {
-
         let distances = [];
+        let totalSum = 0;
+        
+
         for (let point of points) {
-            let minDistance = Infinity; 
-
+            let minDistance = Infinity;
             for (let center of centers) {
-                let dist = Math.sqrt(Math.pow(point.x - center.x, 2) + Math.pow(point.y - center.y, 2));
-
+                let dist = distanceFunction(point, center);
                 if (dist < minDistance) {
                     minDistance = dist;
                 }
             }
-            distances.push(minDistance); 
-        }
-
-        let totalSum = 0;
-        for (let dist of distances) {
-            totalSum+= dist;
+            distances.push(minDistance * minDistance); 
+            totalSum += minDistance * minDistance;
         }
         
-        let rand = Math.random() * totalSum; 
-        let selectedIndex;
-        let sum = 0; 
-
+        let rand = Math.random() * totalSum;
+        let sum = 0;
+        let selectedIndex = 0;
+        
         for (let j = 0; j < distances.length; j++) {
             sum += distances[j];
             if (sum > rand) {
@@ -98,135 +105,185 @@ function kMeansPlusPlus(k) {
             }
         }
         
-        centers.push({x: points[selectedIndex].x, y: points[selectedIndex].y, count: 1});
+        centers.push({x: points[selectedIndex].x, y: points[selectedIndex].y});
     }
     
-    let changed = true; 
+
+    let changed = true;
+    let clusters = Array(points.length).fill(-1);
     
     while (changed) {
         changed = false;
         
-        let clusterSums = [];
-        for ( i = 0; i < k; i++) {
-            clusterSums.push({x: 0, y: 0, count: 0}); 
-        }
 
-        for (let point of points) {
+        for (let i = 0; i < points.length; i++) {
             let minDistance = Infinity;
-            let currentDistance;
-            let clusterIndex;
+            let newCluster = -1;
             
-
-            for (let centerIndex = 0; centerIndex < centers.length; centerIndex++) {
-                currentDistance = Math.sqrt(Math.pow(point.x - centers[centerIndex].x, 2) + Math.pow(point.y - centers[centerIndex].y, 2));
-
-                if (currentDistance < minDistance) {
-                    minDistance = currentDistance;
-                    clusterIndex = centerIndex;
+            for (let j = 0; j < centers.length; j++) {
+                let dist = distanceFunction(points[i], centers[j]);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    newCluster = j;
                 }
             }
             
-
-            if (point.cluster !== clusterIndex) {
-                point.cluster = clusterIndex;
+            if (clusters[i] !== newCluster) {
+                clusters[i] = newCluster;
                 changed = true;
             }
-            
-            clusterSums[point.cluster].x += point.x;
-            clusterSums[point.cluster].y += point.y;
-            clusterSums[point.cluster].count++;
         }
         
-        for (let centerIndex = 0; centerIndex < centers.length; centerIndex++) {
-            if (clusterSums[centerIndex].count > 0) {
-                centers[centerIndex].x = clusterSums[centerIndex].x / clusterSums[centerIndex].count;
-                centers[centerIndex].y = clusterSums[centerIndex].y / clusterSums[centerIndex].count;
-                centers[centerIndex].count = clusterSums[centerIndex].count;
+
+        let newCenters = Array(k).fill().map(() => ({x: 0, y: 0, count: 0}));
+        
+        for (let i = 0; i < points.length; i++) {
+            let cluster = clusters[i];
+            newCenters[cluster].x += points[i].x;
+            newCenters[cluster].y += points[i].y;
+            newCenters[cluster].count++;
+        }
+        
+        for (let j = 0; j < k; j++) {
+            if (newCenters[j].count > 0) {
+                centers[j].x = newCenters[j].x / newCenters[j].count;
+                centers[j].y = newCenters[j].y / newCenters[j].count;
             }
         }
     }
-            
     
-    return centers;
+
+    let resultPoints = points;
+    for (let i = 0; i < resultPoints.length; i++) {
+        resultPoints[i].cluster = clusters[i];
+    }
+    
+    return {
+        points: resultPoints,
+        centers: centers
+    };
 }
 
 
-function findOptimalK() {
-    let maxK = 10;
-
-    if (points.length < 2) return 1;
-    maxK = Math.min(maxK, points.length); 
-
-    let distances = []; 
-
+function hierarchicalClustering(k, distanceFunction) {
+    let pointsCopy = points;
+    let clusters = pointsCopy.map(point => ({
+        points: [point],
+        centroid: {x: point.x, y: point.y}
+    }));
     
-    for (let k = 1; k <= maxK; k++) {
-        clusters = kMeansPlusPlus(k);
+    while (clusters.length > k) {
+        let minDistance = Infinity;
+        let cluster1 = -1, cluster2 = -1;
+        
 
-
-        let withInClusterSum = 0;
-        for (let point of points) {
-            let center = clusters[point.cluster];
-            withInClusterSum += Math.pow(point.x - center.x, 2) + Math.pow(point.y - center.y, 2);
+        for (let i = 0; i < clusters.length; i++) {
+            for (let j = i + 1; j < clusters.length; j++) {
+                let distance = distanceFunction(clusters[i].centroid, clusters[j].centroid);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    cluster1 = i;
+                    cluster2 = j;
+                }
+            }
         }
         
-        distances.push(withInClusterSum);
-    
-    }
-    
-    let optimalK = 1;
-    let minDiffference = Infinity;
-    
-    for (let k = 1; k < distances.length - 1; k++) {
-        let difference1 = distances[k + 1] - distances[k];
-        let difference2 = distances[k] - distances[k - 1];
-        let relativeDifference = difference1 / difference2;
+        if (cluster1 !== -1 && cluster2 !== -1) {
 
-        if (relativeDifference < minDiffference && relativeDifference > 0 && distances[k] < distances[k - 1])  {
-            minDiffference = relativeDifference;
-            optimalK = k + 1;
+            let mergedPoints = [...clusters[cluster1].points, ...clusters[cluster2].points];
+            
+
+            let sumX = 0, sumY = 0;
+            mergedPoints.forEach(point => {
+                sumX += point.x;
+                sumY += point.y;
+            });
+            
+            let mergedCentroid = {
+                x: sumX / mergedPoints.length,
+                y: sumY / mergedPoints.length
+            };
+            
+
+            clusters.splice(cluster2, 1);
+            clusters.splice(cluster1, 1);
+            clusters.push({
+                points: mergedPoints,
+                centroid: mergedCentroid
+            });
         }
     }
+    
 
-    return optimalK;
+    let resultPoints = points;
+    clusters.forEach((cluster, clusterIndex) => {
+        cluster.points.forEach(clusterPoint => {
+            resultPoints.forEach(point => {
+                if (point.x === clusterPoint.x && point.y === clusterPoint.y) {
+                    point.cluster = clusterIndex;
+                }
+            });
+        });
+    });
+    
+    return {
+        points: resultPoints,
+        centers: clusters.map(cluster => cluster.centroid)
+    };
 }
 
 
 function performClustering() {
-    if (clusters.length == 0) {
-        if (points.length < 2) {
-            clusterInfo.textContent = "Нужно как минимум 2 точки для кластеризации";
-            return;
-        }
-        
-        optimalK = findOptimalK();
-        clusterInfo.textContent = `Оптимальное число кластеров: ${optimalK}`;
-        
-
-        clusters = kMeansPlusPlus(optimalK);
-        generateClusterColours(optimalK);
-
-        draw();
+    const k = parseInt(kInput.value);
+    if (isNaN(k) || k < 1 || k > 10) {
+        clusterInfo.textContent = "Введите число кластеров от 1 до 10";
+        return;
     }
-
-    else {
-        clusterInfo.textContent = "Очистите плоскость";
+    
+    if (points.length < k) {
+        clusterInfo.textContent = `Нужно как минимум ${k} точек для кластеризации`;
+        return;
     }
+    
+    generateColors(k);
+    
+
+    let euclideanKmeans = kMeansPlusPlus(k, euclideanDistance);
+    draw(kmeansEuclideanCtx, euclideanKmeans.points, euclideanKmeans.centers);
+    
+    let euclideanHierarchical = hierarchicalClustering(k, euclideanDistance);
+    draw(hierarchicalEuclideanCtx, euclideanHierarchical.points, euclideanHierarchical.centers);
+    
+
+    let manhattanKmeans = kMeansPlusPlus(k, manhattanDistance);
+    draw(kmeansManhattanCtx, manhattanKmeans.points, manhattanKmeans.centers);
+    
+    let manhattanHierarchical = hierarchicalClustering(k, manhattanDistance);
+    draw(hierarchicalManhattanCtx, manhattanHierarchical.points, manhattanHierarchical.centers);
+    
+
+    let chebyshevKmeans = kMeansPlusPlus(k, chebyshevDistance);
+    draw(kmeansChebyshevCtx, chebyshevKmeans.points, chebyshevKmeans.centers);
+    
+    let chebyshevHierarchical = hierarchicalClustering(k, chebyshevDistance);
+    draw(hierarchicalChebyshevCtx, chebyshevHierarchical.points, chebyshevHierarchical.centers);
+    
+    clusterInfo.textContent = `Кластеризация выполнена с ${k} кластерами`;
 }
 
 
+function clearAll() {
+    points = [];
+    draw(inputCtx, points);
+    draw(kmeansEuclideanCtx, []);
+    draw(hierarchicalEuclideanCtx, []);
+    draw(kmeansManhattanCtx, []);
+    draw(hierarchicalManhattanCtx, []);
+    draw(kmeansChebyshevCtx, []);
+    draw(hierarchicalChebyshevCtx, []);
+    clusterInfo.textContent = 'Поставьте точки на плоскости для кластеризации';
+}
 
 
 clusterButton.addEventListener('click', performClustering);
-
-
-clearButton.addEventListener('click', () => {
-    points = []; 
-    clusters = []; 
-    colours = [];
-    optimalK = 0; 
-    clusterInfo.textContent = ''; 
-    draw(); 
-});
-
-
+clearButton.addEventListener('click', clearAll);
