@@ -125,9 +125,30 @@ function makeChoice(ant)
         choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
 
+    // Бинарный поиск
+    // let choose = Math.random();
+    // let left = 0;
+    // let right = neighbourVertexes.length - 1
+    // let mid;
+
+	// while (left <= right)
+	// {
+	// 	mid = Math.floor((left + right) / 2);
+
+	// 	if (choosingProbabilities[mid] > choose)
+	// 		right = mid - 1;
+	// 	else if (choosingProbabilities[mid] < choose)
+	// 		left = mid + 1;
+	// 	else
+    //     {
+    //         ant.push(neighbourVertexes[mid]);
+    //         break;
+    //     }
+	// }
+
     //Выбор следующей вершины
-    let nextVertex;
     let choose = Math.random();
+    let nextVertex;
     for(let i = 0; i < neighbourVertexes.length; i++)
         if (choose <= choosingProbabilities[i])
         {
