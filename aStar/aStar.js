@@ -9,9 +9,13 @@ let animOn = true;
 
 let wallDrawing = false;
 
+let map;
+
 function createMap(){ // Создание таблицы размером n*n
     let table = document.createElement('table');
     table.classList.add("map");
+    table.classList.add("mapWall");
+    map = table;
     let number = 0;
 
     graphNodes = new Array(n*n);
@@ -25,20 +29,20 @@ function createMap(){ // Создание таблицы размером n*n
 
             let cellNumber = number
             cell.addEventListener('mousedown', function(){
-                if(brushMode == 'wall'){
+                if(brushMode == 'wall' || brushMode == 'eraser'){
                     wallDrawing = true;
                     toggleWall(cell, cellNumber);
                     cell.preventDefault()
                 }
             });
             cell.addEventListener('mousemove', function(){
-                if(brushMode == 'wall' && wallDrawing){
+                if((brushMode == 'wall' || brushMode == 'eraser') && wallDrawing){
                     toggleWall(cell, cellNumber);
                     cell.preventDefault()
                 }
             });
             cell.addEventListener('click', function(){
-                if(brushMode != 'wall'){
+                if(brushMode != 'wall' && brushMode != 'eraser'){
                     toggleWall(cell, cellNumber);
                 }
             });
@@ -63,6 +67,12 @@ function toggleWall(cell, cellNumber){ // Функция превращает к
         cell.classList.remove('free')
 
         graphNodes[cellNumber].isWall = true;
+    }
+    else if(brushMode == 'eraser'){
+        cell.classList.remove('wall')
+        cell.classList.add('free')
+
+        graphNodes[cellNumber].isWall = false;
     }
     else{
         if(!startIsSet){
@@ -180,6 +190,7 @@ async function aStar(){
     if (flag){
         showPath(startNode, finishNode);
         document.getElementById("editorContainer").removeChild(document.getElementById("findPath"));
+        activateButtons();
         createClearPathButton(startNode, finishNode);
     }
 

@@ -16,6 +16,72 @@
         display: flex;
         justify-content: center;
         align-items: center;
+
+        .sizeForm{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+
+            border: 4px solid rgb(32, 47, 62);
+            border-radius: 10px;
+            height: 250px;
+            width: 250px;
+
+            .sizeInput{
+                display: flex;
+                align-items: center;
+
+                border: 4px solid rgb(32, 47, 62);
+                border-radius: 10px;
+                height: 50px;
+                width: 200px;
+                background-color: rgb(32, 47, 62) !important;
+
+                text-align: left;
+                outline: none;
+                background: none;
+                text-decoration: none;
+                font-size: 23px;
+                color: rgb(255, 255, 255);
+                margin: 0 30px;
+
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: clip;
+            }
+
+            .submitInput{
+                display: flex;
+                align-items: center;
+
+                border: 4px solid rgb(32, 47, 62);
+                border-radius: 10px;
+                height: 50px;
+                width: 200px;
+
+                position: relative;
+                transition: transform 0.3s ease, width 0.3s ease;
+
+                text-align: left;
+                outline: none;
+                background: none;
+                text-decoration: none;
+                font-size: 23px;
+                color: rgb(255, 255, 255);
+                margin: 0 30px;
+
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: clip;
+            }
+
+            .submitInput:hover{
+                background-color: rgb(27, 68, 111);
+                cursor: pointer;
+                transform: translateY(-6px);
+            }
+        }
     }
     
     .editorContainer{
@@ -144,6 +210,12 @@
         }
 
 
+        .active{
+            background-color: rgb(27, 68, 111);
+            transform: translateX(+4px);
+        }
+
+
         .button:hover{
             background-color: rgb(27, 68, 111);
             cursor: pointer;
@@ -156,6 +228,8 @@
     } 
 
     .deleteContainer{
+        display: flex;
+
         width: 700px;
         height: 70px;
         background-color: rgb(23, 33, 43);
@@ -163,8 +237,49 @@
 
         margin: 0 0 15px 200px;
 
+        flex-direction: row;
         justify-content: space-around;
         align-items: center;
+
+        button{
+            display: flex;
+            align-items: center;
+
+            opacity: 1;
+
+            border: 4px solid rgb(32, 47, 62);
+            border-radius: 10px;
+            height: 50px;
+            width: 245px;
+
+            position: relative;
+            transition: transform 0.3s ease, width 0.3s ease;
+
+            text-align: left;
+            outline: none;
+            background: none;
+            text-decoration: none;
+            font-size: 23px;
+            color: rgb(255, 255, 255);
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+
+            img{
+                margin: 0 5px 0 0;
+            }
+        }
+
+        .button:hover{
+            background-color: rgb(27, 68, 111);
+            cursor: pointer;
+            transform: translateY(-6px);
+        }
+
+        .deactiveButton{
+            opacity: 0.5;
+        }
     }
 }
 
@@ -205,4 +320,16 @@
         background-color: chocolate;
     }
 
+}
+
+.mapEraser{
+    cursor: url('images/brush_eraser.png') 0 0, auto;
+}
+
+.mapWall{
+    cursor: url('images/brush_wall.png') 0 0, auto;
+}
+
+.mapStartFinish{
+    cursor: url('images/brush_geo.png') 0 0, auto;
 }

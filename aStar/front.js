@@ -17,6 +17,10 @@ const findPathButton = document.getElementById("findPath");
 const generateMazeButton = document.getElementById("generateMaze");
 const slider = document.getElementById("speedSlider");
 const animSwitch = document.getElementById("toggle-input");
+const eraserButton = document.getElementById("eraserBrush");
+const changeSizeButton = document.getElementById("changeSize");
+const clearAllButton = document.getElementById("clearAll");
+
 
 slider.addEventListener("input", function() {
     if(this.value == 50) sleepTime = 0.01;
@@ -29,24 +33,68 @@ animSwitch.addEventListener("change", function() {
     this.checked ? animOn = true : animOn = false;
 });
 
-
 generateMazeButton.addEventListener('click', function(){
     if (buttonsAreActive) generateMaze();
 });
 
 wallButton.addEventListener('click', function(){
-    if (buttonsAreActive) brushMode = "wall";
+    if (buttonsAreActive){
+        brushMode = "wall";
+
+        map.classList.add("mapWall");
+        map.classList.remove("mapStartFinish");
+        map.classList.remove("mapEraser");
+
+        this.classList.add("active");
+        startfinishButton.classList.remove("active");
+        eraserButton.classList.remove("active");
+    }
+});
+
+eraserButton.addEventListener('click', function(){
+    if (buttonsAreActive){
+        brushMode = "eraser";
+
+        map.classList.add("mapEraser");
+        map.classList.remove("mapStartFinish");
+        map.classList.remove("mapWall");
+
+        this.classList.add("active");
+        startfinishButton.classList.remove("active");
+        wallButton.classList.remove("active");
+    }
 });
 
 startfinishButton.addEventListener('click', function(){
-    if (buttonsAreActive) brushMode = "start-finish";
+    if (buttonsAreActive){
+        brushMode = "start-finish";
+
+        map.classList.remove("mapWall");
+        map.classList.add("mapStartFinish");
+        map.classList.remove("mapEraser");
+
+        this.classList.add("active");
+        wallButton.classList.remove("active");
+        eraserButton.classList.remove("active");
+    }
 });
 
 findPathButton.addEventListener('click', function(){
     if (buttonsAreActive){
         aStar();
-        this.classList.remove("button");
-        this.classList.add("deactiveButton");
+        deactivateButtons();
+    }
+});
+
+changeSizeButton.addEventListener('click', function(){
+    if (buttonsAreActive){
+        
+    }
+});
+
+clearAllButton.addEventListener('click', function(){
+    if (buttonsAreActive){
+        clearAll();
     }
 });
 
@@ -78,8 +126,29 @@ form.addEventListener('submit', function(event) {
     document.getElementById('tableContainer').removeChild(form);
     createMap();
     activateButtons();
+    wallButton.classList.add("active");
     buttonsAreActive = true;
 });
+
+
+function clearAll(){
+    for (let i = 0; i < n*n; i++){
+        graphNodes[i].isWall = false;
+
+        const cell = document.getElementById(i);
+        cell.classList.add('free');
+        cell.classList.remove('wall');
+        cell.classList.remove('start');
+        cell.classList.remove('finish');
+    }
+    startIsSet = false;
+    finishIsSet = false;
+}
+
+
+function createSizeForm(){
+
+}
 
 
 function createMazeButton(){
@@ -93,10 +162,18 @@ function createMazeButton(){
 
 
 function activateButtons(){
-    const buttons = [wallButton, startfinishButton, findPathButton, generateMazeButton];
+    const buttons = [wallButton, startfinishButton, findPathButton, generateMazeButton, eraserButton, changeSizeButton, clearAllButton];
     for(let i = 0; i < buttons.length; i++){
         buttons[i].classList.remove("deactiveButton");
         buttons[i].classList.add("button");
+    }
+}
+
+function deactivateButtons(){
+    const buttons = [startfinishButton, findPathButton, generateMazeButton, changeSizeButton, clearAllButton];
+    for(let i = 0; i < buttons.length; i++){
+        buttons[i].classList.add("deactiveButton");
+        buttons[i].classList.remove("button");
     }
 }
 
@@ -131,8 +208,7 @@ function createShowPathButton(){
     findPathButton.id = "findPath";
     findPathButton.addEventListener('click', function(){
         aStar();
-        this.classList.remove("button");
-        this.classList.add("deactiveButton");
+        deactivateButtons();
     });
 
     const image = new Image();

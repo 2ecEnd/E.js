@@ -51,13 +51,13 @@
         <div id="tableContainer" class="tableContainer">
             <form id="sizeForm" class="sizeForm">
                 <input type="text" id="size" class="sizeInput" placeholder="Введите размер">
-                <input type="submit" class="submitInput" value="Сделать карту">
+                <input type="submit" class="submitInput" value="Создать карту">
             </form>
         </div>
         <div id="editorContainer" class="editorContainer">
             <label class="switch" id="animSwitch">
                 <input type="checkbox" class="toggle-input" id="toggle-input" checked>
-                <div class="border active">
+                <div class="border">
                     <div class="square"></div>
                 </div >
                 Анимация
@@ -70,6 +70,10 @@
             <button id="generateMaze" class="deactiveButton">
                 <img src="images/maze_30px.png" alt="">
                 Лабиринт
+            </button>
+            <button id="eraserBrush" class="deactiveButton">
+                <img src="images/eraser_30px.png" alt = "">
+                Удалять стены
             </button>
             <button id="wallBrush" class="deactiveButton">
                 <img src="images/bricks_30px.png" alt="">
@@ -85,7 +89,14 @@
             </button>
         </div>
         <div id="deleteContainer" class="deleteContainer">
-            
+            <button id="changeSize" class="deactiveButton">
+                <img src="images/grid_30px.png" alt = "">
+                Изменить размер
+            </button>
+            <button id="clearAll" class="deactiveButton">
+                <img src="images/trash-2_30px.png" alt = "">
+                Очистить всё
+            </button>
         </div>
     </div>
     <div class="background"></div>

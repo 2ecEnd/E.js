@@ -18,7 +18,7 @@ let averageLoss;
 async function trainingTenNumbers(){
     let losses = [];
 
-    for(let t = 0; t < 50; t++){
+    for(let t = 0; t < 10; t++){
         averageLoss = 0;
 
         const totalIterations = 42000;
@@ -51,7 +51,7 @@ async function trainingTenNumbers(){
         //alert(`Средний Loss за эпоху составил: ${(averageLoss/42000).toFixed(2)}`);
     }
 
-    for(let i = 0; i < 50; i++){
+    for(let i = 0; i < 10; i++){
         alert(`Средний Loss за эпоху составил: ${losses[i]}`);
     }
 }

@@ -28,8 +28,8 @@ context.lineJoin = 'round';
 
 function startDrawing(mouseEvent){
     isDrawing = true;
-    x = mouseEvent.offsetX / 10;
-    y = mouseEvent.offsetY / 10;
+    x = mouseEvent.offsetX / 14;
+    y = mouseEvent.offsetY / 14;
 }
 
 function draw(mouseEvent){
@@ -40,8 +40,8 @@ function draw(mouseEvent){
     context.lineTo(x, y);
     context.stroke();
 
-    x = mouseEvent.offsetX / 10;
-    y = mouseEvent.offsetY / 10;
+    x = mouseEvent.offsetX / 14;
+    y = mouseEvent.offsetY / 14;
 }
 
 function stopDrawing() {
