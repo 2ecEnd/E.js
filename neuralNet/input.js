@@ -1,6 +1,6 @@
 const pica = window.pica();
 
-function getInputFromImage(imageUrl, callback){
+function getInputFromImage(imageUrl, callback){ // Получение картинки из папки для обучения, увеличение до 50х50 с помощью pica и нормализация в вид 0-1
     const image = new Image();
     image.crossOrigin = "Anonymous";
 
@@ -30,7 +30,7 @@ function getInputFromImage(imageUrl, callback){
 }
 
 
-function getInput(){
+function getInput(){ // Получение картинки из холста, центрирование, мащтабирование и нормализация
     const canvas = document.getElementById("drawingCanvas");
     const context = canvas.getContext('2d');
 
@@ -45,10 +45,10 @@ function getInput(){
 }
 
 
-function centering(input, canvas, context){
+function centering(input, canvas, context){ // центрирование и маштабирование картинки
     let minX = 50, minY = 50, maxX = 0, maxY = 0;
 
-    for(let i = 0; i < 50; i++){
+    for(let i = 0; i < 50; i++){ // вычисление границ цифры
         for(let j = 0; j < 50; j++){
             if (input[(i*50) + j] > 0.5){
                 if (j < minX) minX = j;
@@ -64,7 +64,8 @@ function centering(input, canvas, context){
     const centerX = (minX + maxX) / 2;
     const centerY = (minY + maxY) / 2;
 
-    const offsetX = 25 - centerX;
+    // Вычисление сдвигов
+    const offsetX = 25 - centerX; 
     const offsetY = 25 - centerY;
 
     const tempCanvas = document.createElement("canvas");
@@ -77,11 +78,10 @@ function centering(input, canvas, context){
 
     const scale = Math.min(35/digitWidth, 35/digitHeight);
 
-    tempContext.save();
+    // Само маштабирование и центрирование
     tempContext.translate(25, 25);
     tempContext.scale(scale, scale);
     tempContext.drawImage(canvas, offsetX - 25, offsetY - 25);
-    tempContext.restore();
 
     //document.getElementById('body').appendChild(tempCanvas);
 
@@ -96,7 +96,7 @@ function centering(input, canvas, context){
 }
 
 
-function saveDataToJson(data, filename){
+function saveDataToJson(data, filename){ // сохранение весов в json файл
     const jsonData = JSON.stringify(data, null, 2);
 
     const blob = new Blob([jsonData], {type: 'application/json'});
