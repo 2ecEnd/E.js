@@ -190,6 +190,13 @@ async function aStar(){
         document.getElementById("editorContainer").removeChild(document.getElementById("findPath"));
         createClearPathButton(startNode, finishNode);
     }
+    else{
+        showError("Путь не найден!");
+        document.getElementById("editorContainer").removeChild(document.getElementById("findPath"));
+        clearPathCells();
+        createShowPathButton();
+        activateButtons();
+    }
 
     clearGraphNodes();
 }
