@@ -1,7 +1,7 @@
-var canvas = document.getElementsByTagName('canvas')[0];
+var canvas = document.getElementsByTagName("canvas")[0];
 canvas.width  = 1024;
 canvas.height = 768;
-var ctx = canvas.getContext('2d');
+var ctx = canvas.getContext("2d");
 
 let vertexColor = "rgb(0, 0, 0)";
 let edgeColor   = "rgba(160, 160, 160, 0.1)";
@@ -10,7 +10,7 @@ let pathColor   = "rgba(0, 200, 0, 0.8)";
 // Очистка холста
 function clearCanvas() 
 {
-    ctx.fillStyle = 'rgb(255, 255, 255)';
+    ctx.fillStyle = "rgb(255, 255, 255)";
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -58,6 +58,8 @@ async function drawPath(path)
 {
     clearCanvas();
 
+    if (DRAW_EDGES)
+        drawEdges();
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
     ctx.lineWidth = 2;

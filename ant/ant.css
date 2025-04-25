@@ -105,6 +105,10 @@ body{
             border-radius: 5px;
             color: rgba(0, 0, 0);
         }
+
+        .checkbox-input{
+            width: 200px;
+        }
     }
 
     #clear-button{

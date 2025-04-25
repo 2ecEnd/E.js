@@ -5,7 +5,7 @@ const context = canvas.getContext('2d');
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
-//canvas.addEventListener('mouseout', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
 
 context.clearRect(0, 0, canvas.width, canvas.height);
 context.fillStyle = 'white';
@@ -47,3 +47,16 @@ function draw(mouseEvent){
 function stopDrawing() {
     isDrawing = false;
 }
+
+const sizeInputField = document.getElementById('size-input')
+const sizeInputSlider = document.getElementById('size-slider')
+
+sizeInputSlider.addEventListener("input", function() {
+    context.lineWidth = this.value;
+    sizeInputField.value = this.value;
+});
+
+sizeInputField.addEventListener("input", function() {
+    context.lineWidth = this.value;
+    sizeInputSlider.value = this.value;
+});

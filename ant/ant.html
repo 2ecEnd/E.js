@@ -4,59 +4,62 @@
     <link rel="stylesheet" href="ant.css">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../error_window.css">
-    <title>Ant Algorithm</title>
+    <link rel="icon" href="../pictures/logo/hedgehog.png">
+    <title>Муравьиный алгоритм</title>
 </head>
 <body>
     <header class="container-fluid active" id="header">
         <div class="arrow" id="arrow">
-            <img src="../design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
+            <img src="../pictures/img/arrow_angle_15px.png" class="arrowIcon" alt="">
         </div>
+        <p id="name">E.js</p>
         <div class="container d-flex">
             <nav class="menu d-flex">
-                <a href="../index.html">
+                <a id="main-link" href="../index.html">
                     <button id="algorithm1">
-                        <img src="../design_Images/main 30px.png" alt="">
+                        <img src="../pictures/img/main 30px.png" alt="">
                         Главная страница
                     </button>
                 </a>
                 <a href="../aStar/aStar.html">
                     <button id="algorithm2">
-                        <img src="../design_Images/Astar 30px.png" alt="">
+                        <img src="../pictures/img/Astar 30px.png" alt="">
                         Поиск пути
                     </button>
                 </a>
                 <a href="../Clustering/index.html">
                     <button id="algorithm3">
-                        <img src="../design_Images/cluster 30px.png" alt="">
+                        <img src="../pictures/img/cluster 30px.png" alt="">
                         Кластеризация
                     </button>
                 </a>
                 <a href="../genetic/genetic.html">
                     <button id="algorithm4">
-                        <img src="../design_Images/genetic 30px.png" alt="">
+                        <img src="../pictures/img/genetic 30px.png" alt="">
                         Генетический алгоритм
                     </button>
                 </a>
                 <a href="../ant/ant.html">
                     <button id="algorithm5">
-                        <img src="../design_Images/ant 30px.png" alt="">
+                        <img src="../pictures/img/ant 30px.png" alt="">
                         Муравьиный алгоритм
                     </button>
                 </a>
-                <a href="..">
+                <a href="../DecisionTree/decisionTree.html">
                     <button id="algorithm6">
-                        <img src="../design_Images/tree 30px.png" alt="">
+                        <img src="../pictures/img/tree 30px.png" alt="">
                         Дерево решений
                     </button>
                 </a>
                 <a href="../neuralNet/neural.html">
                     <button id="algorithm7">
-                        <img src="../design_Images/neural 30px.png" alt="">
+                        <img src="../pictures/img/neural 30px.png" alt="">
                         Нейронная сеть
                     </button>
                 </a>
             </nav>
         </div>
+        <img id="hits-icon" src="../pictures/img/HITsIcon_200px.png" alt="">
     </header>
     <div class="mainContainer d-flex">
         <table>
@@ -100,7 +103,7 @@
                                 </div>
                                 <div class="input-name">Коэф. Q</div>
                             </div>
-                            <input type="number" class="text-input" id="q" value="1000">
+                            <input type="number" class="text-input" id="q" value="5000">
                         </div>  
                         <div>
                             <div class="input-header">
@@ -136,6 +139,17 @@
                                 <div class="input-name">Частота обновления</div>
                             </div>
                             <input type="range" class="range-input" id="update-rate" min="1" max="100" value="5">
+                        </div>
+                        <div>
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
+                                        На графе будут отрисовываться вообще все рёбра.
+                                    </span>
+                                </div>
+                                <div class="input-name">Отрисовка рёбер</div>
+                            </div>
+                            <input type="checkbox" class="checkbox-input" id="draw-edges">
                         </div>
                     </div>
                 </td>

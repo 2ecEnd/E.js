@@ -21,6 +21,7 @@ let EVAPORATION         = 0.1;  // Коэффициент испарения ф�
 let BASE_EVAPORATION    = EVAPORATION;
 let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
 let STAGNATION_TRESHOLD = 100;  // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+let DRAW_EDGES          = false;// Нужно ли отрисовывать рёбра
 
 const MAX_PHEROMONE = 10;
 const MIN_PHEROMONE = 0.1;
@@ -161,6 +162,37 @@ function globalUpdatePheromone(lup)
         }
 }
 
+// Решение задачи коммивояжёра жадным алгоритмом
+function greedyAlgorithm()
+{
+    let path = [0];
+    let visited = new Set();
+    visited.add(0);
+    for(let i = 1; i < adj.length; i++)
+    {
+        let v = path.at(-1);
+
+        let minDist = Infinity;
+        let nearestVertex;
+        for(let u = 0; u < adj.length; u++)
+        {
+            if(visited.has(u))
+                continue;
+
+            if (adj[v][u] < minDist)
+            {
+                minDist = adj[v][u];
+                nearestVertex = u
+            }
+        }
+
+        path.push(nearestVertex);
+        visited.add(nearestVertex);
+    }
+
+    return path;
+}
+
 // Муравьинный алгоритм
 async function antAlgorithm()
 {
@@ -172,7 +204,7 @@ async function antAlgorithm()
     let iter = 0;
     let stagnation = 0;
     
-    let bestPath = [];
+    let bestPath = greedyAlgorithm();
 
     while (!controller.signal.aborted)
     {
@@ -201,22 +233,14 @@ async function antAlgorithm()
             lup[ant[0]][ant.at(-1)] += T_ijk;
         }
 
-
         // Проверка на отличие от последнего лучшего найденного пути
+        let newBestPath = getBestPath(ants);
+        if (calculateDistance(newBestPath) >= calculateDistance(bestPath))
+            stagnation++;
+        else
         {
-            let newBestPath = getBestPath(ants); 
-            if (bestPath.length == 0)
-                bestPath = newBestPath;
-            else
-            {
-                if (calculateDistance(newBestPath) >= calculateDistance(bestPath))
-                    stagnation++;
-                else
-                {
-                    bestPath = newBestPath;
-                    stagnation = 0;
-                }
-            }
+            stagnation = 0;
+            bestPath = newBestPath;
         }
 
         // Если алгоритм застоялся, принимаем меры
@@ -250,12 +274,12 @@ async function antAlgorithm()
 
 
         // Если пришла пора для отрисовкиы
-        if (iter % UPDATE_RATE === 0 /*&& iter !== 0*/)
+        if (iter % UPDATE_RATE === 0)
         {
             console.log(calculateDistance(bestPath));
             await drawPath(bestPath);
         }
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve,1));
         
         iter += 1;
     }

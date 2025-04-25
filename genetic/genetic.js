@@ -1,7 +1,6 @@
 // TODO:
 // Улучшить скрещивание особей
 // Увеличить гибкость мутации
-// Добавить элитизм
 // Проверить читаемость кода
 // Добавить опсиание алгоритма
 
@@ -35,8 +34,9 @@ function shuffle(array)
 let POPULATION_SIZE     = 1000; // Размер популяции
 let MUTATION_RATE       = 0.1;  // Вероятность мутации
 let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
-let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
 let STAGNATION_TRESHOLD = 100;  // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let DRAW_EDGES          = false;// Нужно ли отрисовывать рёбра
 
 // Инициализация начальной популяции случайными маршрутами
 function initializePopulation() 
@@ -135,8 +135,8 @@ function crossing(parent1, parent2)
 // Динамическая мутация маршрута
 function adaptiveMutation(path) 
 {
-    // "Лёгкая" мутация путём смены мест двух вершин 
-    function lightMutation()
+    // Мутация перестановкой
+    function swapMutatuon()
     {
         const i = randomNumber(0, path.length);
         const j = randomNumber(0, path.length);
@@ -144,24 +144,61 @@ function adaptiveMutation(path)
         [path[i], path[j]] = [path[j], path[i]];
     }
 
-    // "Тяжёлая" (Агрессивная) мутация путём инверсии подмассива
-    function hardMutation()
+    // Мутация вставкой
+    function insertionMutatuon()
     {
-        let i = randomNumber(0, path.length - 1);
-        let j = randomNumber(i + 1, path.length);
-        
-        while (i < j)
-        {
-            [path[i], path[j]] = [path[j], path[i]];
-            i++;
-            j--;
-        }
+        const i = randomNumber(0, path.length);
+        const j = randomNumber(0, path.length);
+
+        let tmp = path[i];
+    
+        path.splice(i, 1);
+        path.splice(j, 0, tmp);
     }
 
+    // Мутация инверсией подмассива
+    function inverseMutation()
+    {
+        let i = randomNumber(0, path.length - 2);
+        let j = randomNumber(i + 1, path.length);
+        
+        let subPath = path.slice(i, j);
+        subPath.reverse();
+
+        path.splice(i, j-i);
+        path.splice(i, 0, ...subPath);
+    }
+    
+    // Мутация перемешиванием подмассива
+    function scrambleMutation()
+    {
+        let i = randomNumber(0, path.length - 2);
+        let j = randomNumber(i + 1, path.length);
+        
+        let subPath = path.slice(i, j);
+        shuffle(subPath);
+        
+        path.splice(i, j-i);
+        path.splice(i, 0, ...subPath);
+    }
+
+    let prob = Math.random();
     if (adj.length < 20)
-        lightMutation();
+    {
+        if (prob < 0.5)
+            swapMutatuon();
+        else
+            insertionMutatuon();
+    }
     else
-        hardMutation();
+    {
+        if (prob < 0.33)
+            insertionMutatuon();
+        else if (prob < 0.66)
+            inverseMutation();
+        else
+            scrambleMutation();
+    }
 }
 
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)
@@ -172,17 +209,50 @@ function cataclysmicMutation(population)
     population = newPopulation;
 }
 
+// Решение задачи коммивояжёра жадным алгоритмом
+function greedyAlgorithm()
+{
+    let path = [0];
+    let visited = new Set();
+    visited.add(0);
+    for(let i = 1; i < adj.length; i++)
+    {
+        let v = path.at(-1);
+
+        let minDist = Infinity;
+        let nearestVertex;
+        for(let u = 0; u < adj.length; u++)
+        {
+            if(visited.has(u))
+                continue;
+
+            if (adj[v][u] < minDist)
+            {
+                minDist = adj[v][u];
+                nearestVertex = u
+            }
+        }
+
+        path.push(nearestVertex);
+        visited.add(nearestVertex);
+    }
+
+    return path;
+}
+
 // Непосредственно алгоритм
 async function genetic() 
 {
     controller = new AbortController();
     isWorking = true;
     
-    // Инициализация начальной популяции
-    let population = initializePopulation();
+    // Инициализация начальной популяции путём, найденным жадным алгоритмом (сразу близким к оптимальному)
+    let bestPath = greedyAlgorithm();
+    let population = [];
+    for(let i = 0; i < adj.length; i++)
+        population.push(bestPath);
     let gen = 0;
     let stagnation = 0;
-    let bestPath = [];
 
     while(!controller.signal.aborted)
     {
@@ -191,7 +261,7 @@ async function genetic()
         for(let i = 0; i < POPULATION_SIZE; i++)
         {
             if (controller.signal.aborted)
-                break;
+                return;
 
             // Выбор родителей
             let parent1 = selectParent(population);
@@ -206,25 +276,18 @@ async function genetic()
 
             newPopulation.push(child);
         }
-        if (controller.signal.aborted)
-            break;
 
         // Замена старой популяции новой
         population = newPopulation;
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        if (bestPath.length === 0)
-            bestPath = newBestPath;
+        if (calculateDistance(newBestPath) >= calculateDistance(bestPath))
+            stagnation++;
         else
         {
-            if (calculateDistance(bestPath) === calculateDistance(newBestPath))
-                stagnation++;
-            else
-            {
-                stagnation = 0;
-                bestPath = newBestPath;
-            }
+            stagnation = 0;
+            bestPath = newBestPath;
         }
 
         // Если алгоритм застоялся, принимаем меры
@@ -234,14 +297,14 @@ async function genetic()
             stagnation = 0;
         }
         
-        // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0 /*&& gen !== 0*/)
+        // Если пришла пора для отрисовки
+        if (gen % UPDATE_RATE === 0)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
             await drawPath(bestPath);
         }
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve,1));
 
         gen++;
     }

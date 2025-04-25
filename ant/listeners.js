@@ -1,6 +1,7 @@
 const controlButton = document.getElementById('control-button');
 const clearButton = document.getElementById('clear-button');
 const updateRateSlider = document.getElementById('update-rate');
+const drawEdgesCheckbox = document.getElementById("draw-edges");
 
 canvas.addEventListener('click', async function(e)
 {
@@ -102,4 +103,9 @@ clearButton.addEventListener('click', () =>
 updateRateSlider.addEventListener('input', () =>
 {
     UPDATE_RATE = parseInt(updateRateSlider.value);
+});
+
+drawEdgesCheckbox.addEventListener("change", () =>
+{
+    DRAW_EDGES = drawEdgesCheckbox.checked;
 });

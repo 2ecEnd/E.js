@@ -58,6 +58,8 @@ function drawPath(path)
 {
     clearCanvas();
 
+    if (DRAW_EDGES)
+        drawEdges();
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
     ctx.lineWidth = 2;
