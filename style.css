@@ -159,6 +159,7 @@ body{
     transition: margin 0.4s ease;
 
     
+
     .row{
         text-align: center;
         justify-content: center;
@@ -166,10 +167,25 @@ body{
         
         margin: 15px;
 
-        img{
-            width: 500px;
-            border-radius: 10px;
-            box-shadow: 0 0 3px 3px rgba(13, 28, 43, 0.25);
+        a{
+            text-decoration: none;
+            color: rgb(255, 255, 255);
+
+            img{
+                width: 500px;
+                border-radius: 10px;
+                box-shadow: 0 0 3px 3px rgba(13, 28, 43, 0.25);
+                transition: box-shadow 0.2s ease;
+            }
+        }
+    
+        a:hover{
+            img{
+                box-shadow: 0 0 3px 3px rgb(27, 68, 111);
+            }
+            .description-content{
+                color: rgb(150, 150, 150);
+            }
         }
 
         .alg-description-right{
