@@ -9,53 +9,71 @@
 <body>
     <header class="container-fluid active" id="header">
         <div class="arrow" id="arrow">
-            <img src="design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
+            <img src="./design_Images/arrow_angle_15px.png" class="arrowIcon" alt="">
         </div>
         <div class="container d-flex">
             <nav class="menu d-flex">
-                <button id="algorithm1">
-                    <img src="design_Images/main 30px.png" alt="">
-                    Главная страница
-                </button>
-                <a href="aStar/aStar.html">
+                <a href="./index.html">
+                    <button id="algorithm1">
+                        <img src="./design_Images/main 30px.png" alt="">
+                        Главная страница
+                    </button>
+                </a>
+                <a href="./aStar/aStar.html">
                     <button id="algorithm2">
-                        <img src="design_Images/Astar 30px.png" alt="">
+                        <img src="./design_Images/Astar 30px.png" alt="">
                         Поиск пути
                     </button>
                 </a>
-                <button id="algorithm3">
-                    <img src="design_Images/cluster 30px.png" alt="">
-                    Кластеризация
-                </button>
-                <button id="algorithm4">
-                    <img src="design_Images/genetic 30px.png" alt="">
-                    Генетический алгоритм
-                </button>
-                <button id="algorithm5">
-                    <img src="design_Images/ant 30px.png" alt="">
-                    Муравьиный алгоритм
-                </button>
-                <button id="algorithm6">
-                    <img src="design_Images/tree 30px.png" alt="">
-                    Дерево решений
-                </button>
-                <button id="algorithm7">
-                    <img src="design_Images/neural 30px.png" alt="">
-                    Нейронная сеть
-                </button>
+                <a href="./Clustering/index.html">
+                    <button id="algorithm3">
+                        <img src="./design_Images/cluster 30px.png" alt="">
+                        Кластеризация
+                    </button>
+                </a>
+                <a href="./genetic/genetic.html">
+                    <button id="algorithm4">
+                        <img src="./design_Images/genetic 30px.png" alt="">
+                        Генетический алгоритм
+                    </button>
+                </a>
+                <a href="./ant/ant.html">
+                    <button id="algorithm5">
+                        <img src="./design_Images/ant 30px.png" alt="">
+                        Муравьиный алгоритм
+                    </button>
+                </a>
+                <a href="./DecisionTree/index.html">
+                    <button id="algorithm6">
+                        <img src="./design_Images/tree 30px.png" alt="">
+                        Дерево решений
+                    </button>
+                </a>
+                <a href="./neuralNet/newNeural.html">
+                    <button id="algorithm7">
+                        <img src="./design_Images/neural 30px.png" alt="">
+                        Нейронная сеть
+                    </button>
+                </a>
             </nav>
         </div>
     </header>
     <div class="mainContainer d-flex">
         <div class="row">
-            <span>
-                <img src="./gif/aStar.gif">
-            </span>
+            <a href="./aStar/aStar.html">
+                <span>
+                    <img src="./gif/aStar.gif">
+                </span>
+            </a>
             <span class="alg-description-right">
                 <div class="description-name">
                     A*
                 </div>
-                Алгоритм поиска кратчайшего пути в лабиринте. Постройте его сами или попросите компьютер сгенерировать его за вас. A* использует эвристику для оптимизации поиска, сочетая жадный подход с учетом уже пройденного пути.
+                <a href="./aStar/aStar.html">
+                    <div class="description-content">
+                        Алгоритм поиска кратчайшего пути в лабиринте. Постройте его сами или попросите компьютер сгенерировать его за вас. A* использует эвристику для оптимизации поиска, сочетая жадный подход с учетом уже пройденного пути.
+                    </div>
+                </a>
             </span>
         </div>
         <div class="row">
@@ -63,21 +81,33 @@
                 <div class="description-name">
                     Кластеризация
                 </div>
-                Метод машинного обучения для группировки точек данных в кластеры. Расставьте произвольные точки на плоскости и посмотрите различнве методы кластеризации, имея возможность наглядно сравнить их.
+                <a href="./Clustering/index.html">
+                    <div class="description-content">
+                        Метод машинного обучения для группировки точек данных в кластеры. Расставьте произвольные точки на плоскости и посмотрите различнве методы кластеризации, имея возможность наглядно сравнить их.
+                    </div>
+                </a>
             </span>
-            <span>
-                <img src="./gif/cluster.gif">
-            </span>
+            <a href="./Clustering/index.html">
+                <span>
+                    <img src="./gif/cluster.gif">
+                </span>
+            </a>
         </div>
         <div class="row">
-            <span>
-                <img src="./gif/genetic.gif">
-            </span>
+            <a href="./genetic/genetic.html">
+                <span>
+                    <img src="./gif/genetic.gif">
+                </span>
+            </a>
             <span class="alg-description-right">
                 <div class="description-name">
                     Генетический алгоритм
                 </div>
-                Эволюционный метод для решения задачи коммивояжёра. Расставьте веришны графа, подберите коэфициенты на своё усмотрение, запустите алгоритм и наблюдайте за процессом поиска наикратчайшего пути.
+                <a href="./genetic/genetic.html">
+                    <div class="description-content">
+                        Эволюционный метод для решения задачи коммивояжёра. Расставьте веришны графа, подберите коэфициенты на своё усмотрение, запустите алгоритм и наблюдайте за процессом поиска наикратчайшего пути.
+                    </div>
+                </a>
             </span>
         </div>
         <div class="row">
@@ -85,21 +115,33 @@
                 <div class="description-name">
                     Муравьиный алгоритм
                 </div>
-                Алгоритм, вдохновленный поведением муравьёв, оставляющих феромонные следы. Применяется для решения задачи коммивояжёра. Поставьте на плоскости точки в произвольном порядке и "муравьи" найдут кратчайший путь между ними.
+                <a href="./ant/ant.html">
+                    <div class="description-content">
+                        Алгоритм, вдохновленный поведением муравьёв, оставляющих феромонные следы. Применяется для решения задачи коммивояжёра. Поставьте на плоскости точки в произвольном порядке и "муравьи" найдут кратчайший путь между ними.
+                    </div>
+                </a>
             </span>
-            <span>
-                <img src="./gif/ant.gif">
-            </span>
+            <a href="./ant/ant.html">
+                <span>
+                    <img src="./gif/ant.gif">
+                </span>
+            </a>
         </div>
         <div class="row">
-            <span>
-                <img src="./gif/tree.gif">
-            </span>
+            <a href="./DecisionTree/index.html">
+                <span>
+                    <img src="./gif/tree.gif">
+                </span>
+            </a>
             <span class="alg-description-right">
                 <div class="description-name">
                     Дерево решений
                 </div>
-                Введите обучающую выборку в формате csv-текста, на основе которой строится дерево решений. Затем введите любые данные в формате csv-текста для принятия решения по дереву, чтобы увидеть принятое решение и его путь на каждом узле дерева.
+                <a href="./DecisionTree/index.html">
+                    <div class="description-content">
+                        Введите обучающую выборку в формате csv-текста, на основе которой строится дерево решений. Затем введите любые данные в формате csv-текста для принятия решения по дереву, чтобы увидеть принятое решение и его путь на каждом узле дерева.
+                    </div>
+                </a>
             </span>
         </div>
         <div class="row">
@@ -107,11 +149,17 @@
                 <div class="description-name">
                     Нейронная сеть
                 </div>
-                Рисуйте любые цифры и пусть нейросеть пытается отгадать, что вы изобразили, основываясь на датасете из более чем 42000 картинок.
+                <a href="./neuralNet/newNeural.html">
+                    <div class="description-content">
+                        Рисуйте любые цифры и пусть нейросеть пытается отгадать, что вы изобразили, основываясь на датасете из более чем 42000 картинок.
+                    </div> 
+                </a>
             </span>
-            <span>
-                <img src="./gif/nn.gif">
-            </span>
+            <a href="./neuralNet/newNeural.html">
+                <span>
+                    <img src="./gif/nn.gif">
+                </span>
+            </a>
         </div>
     </div>
     <script src="main.js"></script>
