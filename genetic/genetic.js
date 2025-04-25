@@ -5,20 +5,11 @@
 // Проверить читаемость кода
 // Добавить опсиание алгоритма
 
-let canvas = document.getElementsByTagName('canvas')[0];
-canvas.width  = 1024;
-canvas.height = 768;
-let ctx = canvas.getContext('2d');
+var vertexes = []; 
+var adj = []; 
 
-let vertexes = []; 
-let adj = []; 
-
-let controller = new AbortController();
-let isWorking = false;
-
-let vertexColor = "rgb(0, 0, 0)";
-let edgeColor   = "rgba(160, 160, 160, 0.1)";
-let pathColor   = "rgba(0, 200, 0, 0.8)";
+var controller = new AbortController();
+var isWorking = false;
 
 //-=-=-=-=-=- Утилитарные функции -=-=-=-=-=-
 // Генерация случайного числа в пределах [start; end)
@@ -30,22 +21,37 @@ function randomNumber(start, end)
 // Перемешивание элементов массива
 function shuffle(array) 
 {
-    let currentIndex = array.length;
-    while (currentIndex !== 0) 
+    for(let i in array)
     {
-        let randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
+        let j = Math.floor(Math.random() * array.length);
 
-        let temp = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temp;
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
-// "Усыпить" поготок на n мс
-function sleep(ms) 
+
+//-=-=-=-=-=- Генетический алгоритм -=-=-=-=-=-
+// Базовые значения констант для алгоритма
+let POPULATION_SIZE     = 1000; // Размер популяции
+let MUTATION_RATE       = 0.1;  // Вероятность мутации
+let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
+let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let STAGNATION_TRESHOLD = 100;  // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+
+// Инициализация начальной популяции случайными маршрутами
+function initializePopulation() 
 {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    let population = [];
+    for (let i = 0; i < POPULATION_SIZE; i++) 
+    {
+        let path = [];
+        for (let j in adj) 
+            path.push(j);
+        shuffle(path); // Перемешивание городов
+
+        population.push(path);
+    }
+    return population;
 }
 
 // Расчет расстояния для маршрута
@@ -58,29 +64,21 @@ function calculateDistance(path)
     return distance;
 }
 
-
-//-=-=-=-=-=- Генетический алгоритм -=-=-=-=-=-
-// Базовые значения констант для алгоритма
-let POPULATION_SIZE     = 1000; // Размер популяции
-let MUTATION_RATE       = 0.1;  // Вероятность мутации
-let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
-let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
-let STAGNATION_TRESHOLD = 0;    // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
-
-// Инициализация начальной популяции случайными маршрутами
-function initializePopulation() 
+// Поиск лучшего маршрута в популяции
+function getBestPath(population) 
 {
-    let population = [];
-    for (let i = 0; i < POPULATION_SIZE; i++) 
+    let bestPath = population[0];
+    let bestDistance = calculateDistance(bestPath);
+    for (let path of population) 
     {
-        let path = [];
-        for (let j = 0; j < adj.length; j++) 
-            path.push(j);
-        shuffle(path); // Перемешивание городов
-
-        population.push(path);
+        let distance = calculateDistance(path);
+        if (distance < bestDistance) 
+        {
+            bestPath = path;
+            bestDistance = distance;
+        }
     }
-    return population;
+    return bestPath;
 }
 
 // Выбор родителя из популяции турнирным способом
@@ -112,11 +110,7 @@ function crossing(parent1, parent2)
     let start = randomNumber(0, parent1.length);
     let end = randomNumber(0, parent1.length);
     if (start > end) 
-    {
-        let temp = start;
-        start = end;
-        end = temp;
-    }
+        [start, end] = [end, start];
 
     // Копирование части маршрута из первого родителя
     for (let i = start; i < end; i++) 
@@ -169,6 +163,7 @@ function adaptiveMutation(path)
     else
         hardMutation();
 }
+
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)
 function cataclysmicMutation(population) 
 {
@@ -177,37 +172,20 @@ function cataclysmicMutation(population)
     population = newPopulation;
 }
 
-// Поиск лучшего маршрута в популяции
-function getBestPath(population) 
-{
-    let bestPath = population[0];
-    let bestDistance = calculateDistance(bestPath);
-    for (let path of population) 
-    {
-        let distance = calculateDistance(path);
-        if (distance < bestDistance) 
-        {
-            bestPath = path;
-            bestDistance = distance;
-        }
-    }
-    return bestPath;
-}
-
 // Непосредственно алгоритм
 async function genetic() 
 {
+    controller = new AbortController();
+    isWorking = true;
+    
     // Инициализация начальной популяции
     let population = initializePopulation();
     let gen = 0;
     let stagnation = 0;
     let bestPath = [];
 
-    while(true)
+    while(!controller.signal.aborted)
     {
-        if (controller.signal.aborted)
-            break;
-
         // Создание нового поколения
         let newPopulation = [];
         for(let i = 0; i < POPULATION_SIZE; i++)
@@ -236,7 +214,7 @@ async function genetic()
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        if (bestPath.length == 0)
+        if (bestPath.length === 0)
             bestPath = newBestPath;
         else
         {
@@ -257,182 +235,14 @@ async function genetic()
         }
         
         // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0 && gen != 0)
+        if (gen % UPDATE_RATE === 0 /*&& gen !== 0*/)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
             await drawPath(bestPath);
-            await new Promise(resolve => setTimeout(resolve, 50));
         }
+        await new Promise(resolve => setTimeout(resolve, 50));
 
         gen++;
     }
 }
-
-
-//-=-=-=-=-=- Работа с холстом -=-=-=-=-=-
-// Очистка холста
-function clearCanvas() 
-{
-    ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// Отрисовка вершин графа
-function drawVertexes(all = true)
-{
-    ctx.fillStyle = vertexColor;
-    if (all)
-    {
-        for(let i in vertexes)
-        {
-            ctx.beginPath();
-            ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
-            ctx.fill();
-            ctx.closePath();
-        }
-    }
-    else
-    {
-        ctx.beginPath();
-        ctx.arc(vertexes.at(-1)[0], vertexes.at(-1)[1], 5, 0, 2 * Math.PI, true);
-        ctx.fill();
-        ctx.closePath();
-    }
-}
-
-// Отрисовка рёбер графа
-function drawEdges()
-{
-    ctx.strokeStyle = edgeColor;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for(let i = 0; i < vertexes.length; i++)
-        for(let j = i + 1; j < vertexes.length; j++)
-        {
-            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
-            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
-        }
-    ctx.stroke();
-    ctx.closePath();
-}
-
-// Отрисовка найденного пути
-async function drawPath(path) 
-{
-    clearCanvas();
-    drawVertexes();
-    //drawEdges();
-
-    // Отрисовка найденного пути 
-    ctx.strokeStyle = pathColor;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for(let v = 0; v < path.length - 1; v++)
-    {
-        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
-        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
-    }   
-    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
-    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
-    ctx.stroke(); 
-    ctx.closePath();
-}
-
-
-//-=-=-=-=-=- Взаимодействие с пользователем -=-=-=-=-=-
-canvas.addEventListener('click', function(e)
-{
-    // Преобразование координат курсора, чтобы точки отрисовывались корректно
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / canvas.clientWidth;
-    const scaleY = canvas.height / canvas.clientHeight;
-    const currX = (e.clientX - rect.left) * scaleX;
-    const currY = (e.clientY - rect.top) * scaleY;
-
-    // Добавлям точку в список точек
-    vertexes.push([currX, currY]);
-
-    // Обновляем матрицу смежности
-    {
-        for(let i = 0; i < adj.length; i++)
-        {
-            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
-            adj[i].push(dist);
-        }
-        let newRow = [];
-        for(let i = 0; i < vertexes.length; i++)
-        {
-            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
-            newRow.push(dist);
-        }
-        adj.push(newRow);
-    }
-
-    // Отрисовка точки в месте клика  
-    drawVertexes(false);
-
-    
-    if(isWorking)
-    {   
-        controller.abort();
-        setTimeout(() =>
-        {
-            controller = new AbortController();
-            genetic();
-        }, 50);
-    }
-});
-
-controlButton = document.getElementById('control_button');
-controlButton.addEventListener('click', () =>
-{
-    if (!isWorking)
-    {
-        // Валидация ввода
-        if (isNaN(parseInt(document.getElementById('popilation_size').value)) || 
-            isNaN(parseFloat(document.getElementById('mutation_rate').value)) || 
-            isNaN(parseInt(document.getElementById('tournament_size').value)) || 
-            isNaN(parseInt(document.getElementById('update_rate').value)) || 
-            isNaN(parseInt(document.getElementById('stagnation_treshold').value)))
-            {
-                showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
-                return;
-            }
-
-        controlButton.textContent = "ОСТАНОВИТЬ";
-
-        controller = new AbortController();
-        isWorking = true;
-    
-        // Берём пользовательские значения констант алгоритма
-        {
-            POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
-            MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
-            TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
-        }
-    
-        genetic(); 
-    }
-    else
-    {
-        controlButton.textContent = "НАЧАТЬ";
-        controller.abort();
-        isWorking = false;
-    }
-});
-
-document.getElementById('clear_button').addEventListener('click', () =>
-{
-    controlButton.textContent = "НАЧАТЬ";
-    controller.abort();
-    isWorking = false;
-
-    // Подчищаем за собой
-    clearCanvas();
-    vertexes = [];
-    adj = [];
-    console.clear();
-});

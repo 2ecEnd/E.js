@@ -5,20 +5,11 @@
 // Может быть 2-opt (слишком затратно)
 // Добавить опсиание алгоритма
 
-let canvas = document.getElementsByTagName('canvas')[0];
-canvas.width  = 1024;
-canvas.height = 768;
-let ctx = canvas.getContext('2d');
+var vertexes = []; 
+var adj = []; 
 
-let vertexes = []; 
-let adj = []; 
-
-let controller = new AbortController();
-let isWorking = false;
-
-let vertexColor = "rgb(0, 0, 0)";
-let edgeColor   = "rgba(160, 160, 160, 0.1)";
-let pathColor   = "rgba(0, 200, 0, 0.8)";
+var controller = new AbortController();
+var isWorking = false;
 
 
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
@@ -173,8 +164,8 @@ function globalUpdatePheromone(lup)
 // Муравьинный алгоритм
 async function antAlgorithm()
 {
-    if (adj.length < 2)
-        return;
+    controller = new AbortController();
+    isWorking = true;
 
     initializePheromoneMatrix();
 
@@ -191,7 +182,7 @@ async function antAlgorithm()
         for(let ant of ants)
         {
             if (controller.signal.aborted)
-                break;
+                return;
 
             // Проходим каждым муравьём весь путь
             for(let i = 0; i < adj.length - 1; i++)
@@ -209,8 +200,6 @@ async function antAlgorithm()
             lup[ant.at(-1)][ant[0]] += T_ijk;
             lup[ant[0]][ant.at(-1)] += T_ijk;
         }
-        if (controller.signal.aborted)
-            break;
 
 
         // Проверка на отличие от последнего лучшего найденного пути
@@ -244,6 +233,8 @@ async function antAlgorithm()
             let T_ijk = Q / dist;
             for(let v = 0; v < bestPath.length - 1; v++)
             {
+                if (controller.signal.aborted)
+                    return;
                 lup[bestPath[v]][bestPath[v + 1]] += 0.2 * T_ijk;
                 lup[bestPath[v + 1]][bestPath[v]] += 0.2 * T_ijk;
             }
@@ -259,183 +250,15 @@ async function antAlgorithm()
 
 
         // Если пришла пора для отрисовкиы
-        if (iter % UPDATE_RATE === 0 && iter !== 0)
+        if (iter % UPDATE_RATE === 0 /*&& iter !== 0*/)
         {
             console.log(calculateDistance(bestPath));
             await drawPath(bestPath);
-            await new Promise(resolve => setTimeout(resolve, 50));
         }
+        await new Promise(resolve => setTimeout(resolve, 50));
         
         iter += 1;
     }
-}
 
-
-//-=-=-=-=-=- Работа с холстом -=-=-=-=-=-
-// Очистка холста
-function clearCanvas() 
-{
-    ctx.fillStyle = 'rgb(255, 255, 255)';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// Отрисовка вершин графа
-function drawVertexes(all = true)
-{
-    ctx.fillStyle = vertexColor;
-    if (all)
-    {
-        for(let i in vertexes)
-        {
-            ctx.beginPath();
-            ctx.arc(vertexes[i][0], vertexes[i][1], 5, 0, 2 * Math.PI, true);
-            ctx.fill();
-            ctx.closePath();
-        }
-    }
-    else
-    {
-        ctx.beginPath();
-        ctx.arc(vertexes.at(-1)[0], vertexes.at(-1)[1], 5, 0, 2 * Math.PI, true);
-        ctx.fill();
-        ctx.closePath();
-    }
-}
-
-// Отрисовка рёбер графа
-function drawEdges()
-{
-    ctx.strokeStyle = edgeColor;
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    for(let i = 0; i < vertexes.length; i++)
-        for(let j = i + 1; j < vertexes.length; j++)
-        {
-            ctx.moveTo(vertexes[i][0], vertexes[i][1]);
-            ctx.lineTo(vertexes[j][0], vertexes[j][1]);
-        }
-    ctx.stroke();
-    ctx.closePath();
-}
-
-// Отрисовка найденного пути
-function drawPath(path) 
-{
-    clearCanvas();
-    drawVertexes();
-
-    // Отрисовка найденного пути 
-    ctx.strokeStyle = pathColor;
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    for(let v = 0; v < path.length - 1; v++)
-    {
-        ctx.moveTo(vertexes[path[v]][0], vertexes[path[v]][1]);
-        ctx.lineTo(vertexes[path[v + 1]][0], vertexes[path[v + 1]][1]);
-    }   
-    ctx.moveTo(vertexes[path.at(-1)][0], vertexes[path.at(-1)][1]);
-    ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
-    ctx.stroke(); 
-    ctx.closePath();
-}
-
-
-//-=-=-=-=-=- Взаимодействие с пользователем -=-=-=-=-=-
-canvas.addEventListener('click', async function(e)
-{
-    // Преобразование координат курсора, чтобы точки отрисовывались корректно
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / canvas.clientWidth;
-    const scaleY = canvas.height / canvas.clientHeight;
-    const currX = (e.clientX - rect.left) * scaleX;
-    const currY = (e.clientY - rect.top) * scaleY;
-
-    // Добавлям точку в список точек
-    vertexes.push([currX, currY]);
-
-    // Обновляем матрицу смежности
-    {
-        for(let i = 0; i < adj.length; i++)
-        {
-            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
-            adj[i].push(dist);
-        }
-        let newRow = [];
-        for(let i = 0; i < vertexes.length; i++)
-        {
-            let dist = ((vertexes[i][0] - vertexes.at(-1)[0]) ** 2 + (vertexes[i][1] - vertexes.at(-1)[1]) ** 2) ** 0.5;
-            newRow.push(dist);
-        }
-        adj.push(newRow);
-    }
-
-    // Отрисовка точки в месте клика  
-    drawVertexes(false);
-
-    
-    if(isWorking)
-    {   
-        controller.abort();
-        setTimeout(() =>
-        {
-            controller = new AbortController();
-            antAlgorithm();
-        }, 50);
-    }
-});
-
-controlButton = document.getElementById('control_button');
-controlButton.addEventListener('click', () =>
-{
-    if (!isWorking)
-    {
-        // Валидация ввода
-        if (isNaN(parseInt(document.getElementById('alpha').value)) || 
-            isNaN(parseInt(document.getElementById('beta').value)) || 
-            isNaN(parseInt(document.getElementById('q').value)) || 
-            isNaN(parseFloat(document.getElementById('evaporation').value)) || 
-            isNaN(parseInt(document.getElementById('update_rate').value)) || 
-            isNaN(parseInt(document.getElementById('stagnation_treshold').value)))
-            {
-                showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
-                return;
-            }
-
-        controlButton.textContent = "ОСТАНОВИТЬ";
-
-        controller = new AbortController();
-        isWorking = true;
-    
-        // Берём пользовательские значения констант алгоритма
-        {
-            ALPHA               = parseInt(document.getElementById('alpha').value);
-            BETA                = parseInt(document.getElementById('beta').value);
-            Q                   = parseInt(document.getElementById('q').value);
-            EVAPORATION         = parseFloat(document.getElementById('evaporation').value);
-            BASE_EVAPORATION    = parseFloat(document.getElementById('evaporation').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
-        }
-
-        antAlgorithm(); 
-    }
-    else
-    {
-        controlButton.textContent = "НАЧАТЬ";
-        controller.abort();
-        isWorking = false;
-    }
-});
-
-document.getElementById('clear_button').addEventListener('click', () =>
-{
-    controlButton.textContent = "НАЧАТЬ";
-    controller.abort();
     isWorking = false;
-
-    // Подчищаем за собой
-    clearCanvas();
-    vertexes = [];
-    adj = [];
-    console.clear();
-});
+}

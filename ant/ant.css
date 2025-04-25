@@ -42,18 +42,18 @@ body{
         flex-direction: column;
         margin-left: 10%;
 
-        .input_header{
+        .input-header{
             display: inline-flex;
             margin-top: 20px;
             margin-bottom: 5px;
             gap: 10px;
 
-            .input_name{
+            .input-name{
                 width: 180px;
                 color: rgb(255, 255, 255);
             }
 
-            .info_icon {
+            .info-icon {
                 width: 20px;
                 height: 20px;
                 display: inline-block;
@@ -66,7 +66,7 @@ body{
                 position: relative;
             }
     
-            .info_tooltip {
+            .info-tooltip {
                 padding: 10px;
                 width: 250px;
                 text-align: center;
@@ -87,21 +87,27 @@ body{
                 }
             }
     
-            .info_icon:hover .info_tooltip {
+            .info-icon:hover .info-tooltip {
                 visibility: visible;
                 opacity: 1;
             }
         } 
 
-        input{
+        .text-input{
             height: 20px;
+            width: 200px;
+            border-radius: 5px;
+            color: rgba(0, 0, 0);
+        }
+
+        .range-input{
             width: 200px;
             border-radius: 5px;
             color: rgba(0, 0, 0);
         }
     }
 
-    #clear_button{
+    #clear-button{
         margin-left: 10px;
         height: 60px;
         width: 90px;
@@ -112,11 +118,11 @@ body{
         background-color: rgb(71, 80, 98);
     }
 
-    #clear_button:hover{
+    #clear-button:hover{
         border: 1px solid rgb(207, 233, 255);
     }
 
-    #control_button{
+    #control-button{
         margin-left: 312px;
         height: 50px;
         width: 200px;
@@ -129,7 +135,7 @@ body{
         background-color: rgb(27, 68, 111);
     }
 
-    #control_button:hover{
+    #control-button:hover{
         border: 1px solid rgb(207, 233, 255);
     }
 }
