@@ -39,11 +39,14 @@ let UPDATE_RATE         = 5;    // Спустя сколько итераций 
 let DRAW_EDGES          = false;// Нужно ли отрисовывать рёбра
 
 // Инициализация начальной популяции случайными маршрутами
-function initializePopulation() 
+function initializePopulation()     
 {
     let population = [];
     for (let i = 0; i < POPULATION_SIZE; i++) 
     {
+        if (controller.signal.aborted)
+            return;
+
         let path = [];
         for (let j in adj) 
             path.push(j);
@@ -71,6 +74,9 @@ function getBestPath(population)
     let bestDistance = calculateDistance(bestPath);
     for (let path of population) 
     {
+        if (controller.signal.aborted)
+            return;
+
         let distance = calculateDistance(path);
         if (distance < bestDistance) 
         {
@@ -92,6 +98,9 @@ function selectParent(population)
     let minDist = calculateDistance(candidates[0]);
     for (let i = 1; i < candidates.length; i++)
     {
+        if (controller.signal.aborted)
+            return;
+
         let tmpDist = calculateDistance(candidates[i]);
         if (tmpDist < minDist)
         {
@@ -120,6 +129,9 @@ function crossing(parent1, parent2)
     let childIndex = 0;
     for (let i = 0; i < parent2.length; i++) 
     {
+        if (controller.signal.aborted)
+            return;
+
         let currentCity = parent2[i];
         if (!child.includes(currentCity)) 
         {
@@ -217,12 +229,17 @@ function greedyAlgorithm()
     visited.add(0);
     for(let i = 1; i < adj.length; i++)
     {
+        if (controller.signal.aborted)
+            return;
+
         let v = path.at(-1);
 
         let minDist = Infinity;
         let nearestVertex;
         for(let u = 0; u < adj.length; u++)
         {
+            if (controller.signal.aborted)
+                return;
             if(visited.has(u))
                 continue;
 
