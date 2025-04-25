@@ -25,15 +25,11 @@ function randomNumber(start, end)
 // Перемешивание элементов массива
 function shuffle(array) 
 {
-    let currentIndex = array.length;
-    while (currentIndex !== 0) 
+    for(let i in array)
     {
-        let randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
+        let j = Math.floor(Math.random() * array.length);
 
-        let temp = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temp;
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
@@ -53,7 +49,7 @@ function initializePopulation()
     for (let i = 0; i < POPULATION_SIZE; i++) 
     {
         let path = [];
-        for (let j = 0; j < adj.length; j++) 
+        for (let j in adj) 
             path.push(j);
         shuffle(path); // Перемешивание городов
 
@@ -118,11 +114,7 @@ function crossing(parent1, parent2)
     let start = randomNumber(0, parent1.length);
     let end = randomNumber(0, parent1.length);
     if (start > end) 
-    {
-        let temp = start;
-        start = end;
-        end = temp;
-    }
+        [start, end] = [end, start];
 
     // Копирование части маршрута из первого родителя
     for (let i = start; i < end; i++) 
@@ -193,11 +185,8 @@ async function genetic()
     let stagnation = 0;
     let bestPath = [];
 
-    while(true)
+    while(!controller.signal.aborted)
     {
-        if (controller.signal.aborted)
-            break;
-
         // Создание нового поколения
         let newPopulation = [];
         for(let i = 0; i < POPULATION_SIZE; i++)
@@ -226,7 +215,7 @@ async function genetic()
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        if (bestPath.length == 0)
+        if (bestPath.length === 0)
             bestPath = newBestPath;
         else
         {
@@ -247,7 +236,7 @@ async function genetic()
         }
         
         // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0 && gen != 0)
+        if (gen % UPDATE_RATE === 0 && gen !== 0)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
