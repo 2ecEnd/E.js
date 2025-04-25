@@ -11,7 +11,6 @@ let findingThePath = false;
 //                                                          \/                                                                    //
 
 
-const arrow = document.getElementById("arrow");
 const wallButton = document.getElementById("wallBrush");
 const startfinishButton = document.getElementById("start-finishBrush");
 let findPathButton = document.getElementById("findPath");
@@ -98,11 +97,6 @@ clearAllButton.addEventListener('click', function(){
         clearAll();
     }
 });
-
-arrow.addEventListener('click', async function(){
-    document.getElementById("header").classList.toggle("active");
-});
-
 
 const form = document.getElementById('sizeForm'); 
 form.addEventListener('submit', function(event) {

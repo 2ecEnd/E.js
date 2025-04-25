@@ -17,12 +17,13 @@ clearCanvasButton.addEventListener('click', function(){
     context.fillRect(0, 0, canvas.width, canvas.height);
 });
 
+let brushSize = 3;
 let isDrawing = false;
 let x = 0;
 let y = 0;
 
 context.strokeStyle = '#000000';
-context.lineWidth = 3;
+context.lineWidth = brushSize;
 context.lineCap = 'round';
 context.lineJoin = 'round';
 
