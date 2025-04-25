@@ -254,8 +254,8 @@ async function antAlgorithm()
         {
             console.log(calculateDistance(bestPath));
             await drawPath(bestPath);
-            await new Promise(resolve => setTimeout(resolve, 50));
         }
+        await new Promise(resolve => setTimeout(resolve, 50));
         
         iter += 1;
     }

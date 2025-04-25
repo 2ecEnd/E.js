@@ -240,8 +240,8 @@ async function genetic()
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
             await drawPath(bestPath);
-            await new Promise(resolve => setTimeout(resolve, 50));
         }
+        await new Promise(resolve => setTimeout(resolve, 50));
 
         gen++;
     }
