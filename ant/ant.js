@@ -1,6 +1,5 @@
 // TODO:
 // Элитарность
-// Бинарный поиск в выборе следующей вершины
 // Заменить список соседних вершин на множество соседних вершин
 // Может быть 2-opt (слишком затратно)
 
@@ -141,27 +140,7 @@ function makeChoice(ant)
         choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
 
-    // Выбор следующей вершины бинарным поиском
     let choose = Math.random();
-    let left = 0;
-    let right = neighbourVertexes.length - 1
-    let mid = Math.floor((left + right) / 2);
-
-	while (left <= right)
-	{
-        if(controller.signal.aborted)
-            return;
-
-	 	mid = Math.floor((left + right) / 2);
-
-	 	if (choosingProbabilities[mid] > choose)
-	 		right = mid - 1;
-		else if (choosingProbabilities[mid] < choose)
-	 		left = mid + 1;
-	}
-    ant.push(neighbourVertexes[left]);
-
-    /*let choose = Math.random();
     let nextVertex;
     for(let i = 0; i < neighbourVertexes.length; i++)
         if (choose <= choosingProbabilities[i])
@@ -170,7 +149,7 @@ function makeChoice(ant)
             break;
         }
 
-    ant.push(nextVertex);*/
+    ant.push(nextVertex);
 }
 
 // Глобальное обновление феромонов
