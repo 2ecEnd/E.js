@@ -4,6 +4,13 @@
     color: rgb(207, 233, 255);
 }
 
+#algorithm4{
+    border: 4px solid rgb(27, 68, 111);
+    border-radius: 10px;
+    background-color: rgb(27, 68, 111);
+    transform: translateX(+8px);
+}
+
 button{
     cursor: pointer;
 }
