@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="input_name">Размер популяции</div>
                             </div>
-                            <input type="number" id="popilation_size" value="1000">
+                            <input type="number" class="text_input" id="popilation_size" value="1000">
                         </div>
                         <div>
                             <div class="input_header">
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="input_name">Вероятность мутации</div>
                             </div>
-                            <input type="number" id="mutation_rate" value="0.1">
+                            <input type="number" class="text_input" id="mutation_rate" value="0.1">
                         </div> 
                         <div>
                             <div class="input_header">
@@ -100,18 +100,7 @@
                                 </div>
                                 <div class="input_name">Размер "турнира"</div>
                             </div>
-                            <input type="number" id="tournament_size" value="16">
-                        </div>
-                        <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
-                                        Каждые n поколений будет отрисовываться лучший на данный момент путь.
-                                    </span>
-                                </div>
-                                <div class="input_name">Частота обновления</div>
-                            </div>
-                            <input type="number" id="update_rate" value="5">
+                            <input type="number" class="text_input" id="tournament_size" value="16">
                         </div>
                         <div>
                             <div class="input_header">
@@ -123,8 +112,19 @@
                                 </div>
                                 <div class="input_name">Предел стагнации</div>
                             </div>
-                            <input type="number" id="stagnation_treshold" value="100">
+                            <input type="number" class="text_input" id="stagnation_treshold" value="100">
                         </div> 
+                        <div>
+                            <div class="input_header">
+                                <div class="info_icon">ℹ
+                                    <span class="info_tooltip">
+                                        Каждые n поколений будет отрисовываться лучший на данный момент путь.
+                                    </span>
+                                </div>
+                                <div class="input_name">Частота обновления</div>
+                            </div>
+                            <input type="range" class="range_input" id="update_rate" min="1" max="100" value="5">
+                        </div>
                     </div>
                 </td>
             </tr>

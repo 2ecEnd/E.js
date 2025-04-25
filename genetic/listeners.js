@@ -1,3 +1,7 @@
+const controlButton = document.getElementById('control_button');
+const clearButton = document.getElementById('clear_button');
+const updateRateSlider = document.getElementById('update_rate');
+
 canvas.addEventListener('click', function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -40,7 +44,6 @@ canvas.addEventListener('click', function(e)
     }
 });
 
-let controlButton = document.getElementById('control_button');
 controlButton.addEventListener('click', () =>
 {
     if (!isWorking)
@@ -77,7 +80,7 @@ controlButton.addEventListener('click', () =>
     }
 });
 
-document.getElementById('clear_button').addEventListener('click', () =>
+clearButton.addEventListener('click', () =>
 {
     controlButton.textContent = "НАЧАТЬ";
     controller.abort();
@@ -88,4 +91,9 @@ document.getElementById('clear_button').addEventListener('click', () =>
     vertexes = [];
     adj = [];
     console.clear();
+});
+
+updateRateSlider.addEventListener('input', () =>
+{
+    UPDATE_RATE = parseInt(updateRateSlider.value);
 });
