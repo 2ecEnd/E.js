@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>Кластеризация</title>
+    <link rel="stylesheet" href="clustering.css">
+</head>
+<body>
+    <div class="mainContainer">
+        <h1>Кластеризация</h1>
+        
+        <div class="controls">
+            <div class="inputGroup">
+                <label for="kInput">Количество кластеров:</label>
+                <input type="number" id="kInput" min="1" max="10" value="3">
+            </div>
+            
+            <div class="algorithmButtons">
+                <button id="kmeansButton" class="algorithmButton active">k-means</button>
+                <button id="kmeansPlusPlusButton" class="algorithmButton">k-means++</button>
+                <button id="hierarchicalButton" class="algorithmButton">Иерархическая</button>
+            </div>
+            
+            <div class="metricButtons">
+                <button id="euclideanButton" class="metricButton active">Евклидова</button>
+                <button id="manhattanButton" class="metricButton">Манхэттенская</button>
+                <button id="chebyshevButton" class="metricButton">Чебышёва</button>
+            </div>
+            
+            <div class="actionButtons">
+                <button id="clusterButton">Кластеризовать</button>
+                <button id="clearButton">Очистить</button>
+            </div>
+            
+            <div class="canvasContainer">
+                <canvas id="inputCanvas"></canvas>
+            </div>
+            
+            <div id="clusterInfo">Поставьте точки на плоскости для кластеризации</div>
+        </div>
+    </div>
+
+    <script src="clustering.js"></script>
+</body>
+</html>
