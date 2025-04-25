@@ -208,17 +208,50 @@ function cataclysmicMutation(population)
     population = newPopulation;
 }
 
+// Решение задачи коммивояжёра жадным алгоритмом
+function greedyAlgorithm()
+{
+    let path = [0];
+    let visited = new Set();
+    visited.add(0);
+    for(let i = 1; i < adj.length; i++)
+    {
+        let v = path.at(-1);
+
+        let minDist = Infinity;
+        let nearestVertex;
+        for(let u = 0; u < adj.length; u++)
+        {
+            if(visited.has(u))
+                continue;
+
+            if (adj[v][u] < minDist)
+            {
+                minDist = adj[v][u];
+                nearestVertex = u
+            }
+        }
+
+        path.push(nearestVertex);
+        visited.add(nearestVertex);
+    }
+
+    return path;
+}
+
 // Непосредственно алгоритм
 async function genetic() 
 {
     controller = new AbortController();
     isWorking = true;
     
-    // Инициализация начальной популяции
-    let population = initializePopulation();
+    // Инициализация начальной популяции путём, найденным жадным алгоритмом (сразу близким к оптимальному)
+    let bestPath = greedyAlgorithm();
+    let population = [];
+    for(let i = 0; i < adj.length; i++)
+        population.push(bestPath);
     let gen = 0;
     let stagnation = 0;
-    let bestPath = [];
 
     while(!controller.signal.aborted)
     {
@@ -248,17 +281,14 @@ async function genetic()
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        if (bestPath.length === 0)
-            bestPath = newBestPath;
+        let nbp = calculateDistance(newBestPath);
+        let bp = calculateDistance(bestPath);
+        if (nbp >= bp)
+            stagnation++;
         else
         {
-            if (calculateDistance(bestPath) === calculateDistance(newBestPath))
-                stagnation++;
-            else
-            {
-                stagnation = 0;
-                bestPath = newBestPath;
-            }
+            stagnation = 0;
+            bestPath = newBestPath;
         }
 
         // Если алгоритм застоялся, принимаем меры
@@ -268,14 +298,14 @@ async function genetic()
             stagnation = 0;
         }
         
-        // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0 /*&& gen !== 0*/)
+        // Если пришла пора для отрисовки
+        if (gen % UPDATE_RATE === 0)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);
             await drawPath(bestPath);
         }
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve,1));
 
         gen++;
     }
