@@ -212,7 +212,7 @@ function createShowPathButton(){
     });
 
     const image = new Image();
-    image.src = "../design_Images/Astar 30px.png"
+    image.src = "../pictures/img/Astar 30px.png";
 
     localfindPathButton.appendChild(image);
     const text = document.createElement('p');
@@ -245,12 +245,16 @@ function hidePath(startNode, finishNode){
         document.getElementById(currentNode).classList.toggle('path');
     }
 
-    for(let i = 0; i < n*n; i++){
-        const cell = document.getElementById(i);
-        if (cell.classList.contains('current')) cell.classList.remove('current');
-    }
+    clearPathCells();
 
     document.getElementById("editorContainer").removeChild(document.getElementById("clearPath"));
     createShowPathButton();
     activateButtons();
+}
+
+function clearPathCells(){
+    for(let i = 0; i < n*n; i++){
+        const cell = document.getElementById(i);
+        if (cell.classList.contains('current')) cell.classList.remove('current');
+    }
 }
