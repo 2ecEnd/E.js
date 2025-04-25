@@ -7,11 +7,11 @@ function visualizeTree() {
     nodeDataVisualization.clear();
 
 
-    let treeVisualization = d3.select(visualization).style('width', '1000px').style('height', '600px'); 
+    let treeVisualization = d3.select(visualization).style('width', '100%').style('height', '600px'); 
 
 
     // Создаю SVG холст 
-    let svg = treeVisualization.append('svg').attr('width', 1000).attr('height', 1000);
+    let svg = treeVisualization.append('svg').attr('width', 1330).attr('height', 1000);
 
     // Функция масштабирования
     let zoomFunction = d3.zoom().scaleExtent([0.5, 5]).on('zoom', (event) => {
