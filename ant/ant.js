@@ -162,6 +162,20 @@ function globalUpdatePheromone(lup)
         }
 }
 
+// Локальное обновление феромонов
+function localUpdatePheromone(lup, path, coef = 1)
+{
+    let distance = calculateDistance(path)
+    let T_ijk = Q / distance;
+    for(let v = 0; v < adj.length - 1; v++)
+    {
+        lup[path[v]][path[v + 1]] += coef * T_ijk;
+        lup[path[v + 1]][path[v]] += coef * T_ijk;
+    }
+    lup[path.at(-1)][path[0]] += coef * T_ijk;
+    lup[path[0]][path.at(-1)] += coef * T_ijk;
+}
+
 // Решение задачи коммивояжёра жадным алгоритмом
 function greedyAlgorithm()
 {
@@ -223,14 +237,7 @@ async function antAlgorithm()
             let dist = calculateDistance(ant);
 
             // Обновление феромонов
-            let T_ijk = Q / dist;
-            for(let v = 0; v < ant.length - 1; v++)
-            {
-                lup[ant[v]][ant[v + 1]] += T_ijk;
-                lup[ant[v + 1]][ant[v]] += T_ijk;
-            }
-            lup[ant.at(-1)][ant[0]] += T_ijk;
-            lup[ant[0]][ant.at(-1)] += T_ijk;
+            localUpdatePheromone(lup, ant);
         }
 
         // Проверка на отличие от последнего лучшего найденного пути
@@ -254,16 +261,7 @@ async function antAlgorithm()
             let dist = calculateDistance(bestPath);
             lup = new Array(adj.length).fill(1 / (1 - EVAPORATION)).map(() => new Array(adj.length).fill(1 / (1 - EVAPORATION)));
 
-            let T_ijk = Q / dist;
-            for(let v = 0; v < bestPath.length - 1; v++)
-            {
-                if (controller.signal.aborted)
-                    return;
-                lup[bestPath[v]][bestPath[v + 1]] += 0.2 * T_ijk;
-                lup[bestPath[v + 1]][bestPath[v]] += 0.2 * T_ijk;
-            }
-            lup[bestPath.at(-1)][bestPath[0]] += 0.2 * T_ijk;
-            lup[bestPath[0]][bestPath.at(-1)] += 0.2 * T_ijk;
+            localUpdatePheromone(lup, bestPath, 0.1);
 
         }
         else if (stagnation % Math.floor(STAGNATION_TRESHOLD / 10) === 0 && stagnation !== 0)
