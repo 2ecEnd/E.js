@@ -34,8 +34,9 @@ function shuffle(array)
 let POPULATION_SIZE     = 1000; // Размер популяции
 let MUTATION_RATE       = 0.1;  // Вероятность мутации
 let TOURNAMENT_SIZE     = 16;   // Размер турнира для выбора родителя
-let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
 let STAGNATION_TRESHOLD = 100;  // Сколько поколений без изменения результата нужно, для запуска агрессивной мутации
+let UPDATE_RATE         = 5;    // Спустя сколько итераций будет отрисовываться найденный путь
+let DRAW_EDGES          = false;
 
 // Инициализация начальной популяции случайными маршрутами
 function initializePopulation() 

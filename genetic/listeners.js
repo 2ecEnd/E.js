@@ -1,8 +1,9 @@
-const controlButton = document.getElementById('control-button');
-const clearButton = document.getElementById('clear-button');
-const updateRateSlider = document.getElementById('update-rate');
+const controlButton = document.getElementById("control-button");
+const clearButton = document.getElementById("clear-button");
+const updateRateSlider = document.getElementById("update-rate");
+const drawEdgesCheckbox = document.getElementById("draw-edges");
 
-canvas.addEventListener('click', function(e)
+canvas.addEventListener("click", function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
     const rect = canvas.getBoundingClientRect();
@@ -44,15 +45,15 @@ canvas.addEventListener('click', function(e)
     }
 });
 
-controlButton.addEventListener('click', () =>
+controlButton.addEventListener("click", () =>
 {
     if (!isWorking)
     {
         // Валидация ввода
-        if (isNaN(parseInt(document.getElementById('popilation-size').value)) || 
-            isNaN(parseFloat(document.getElementById('mutation-rate').value)) || 
-            isNaN(parseInt(document.getElementById('tournament-size').value)) || 
-            isNaN(parseInt(document.getElementById('stagnation-treshold').value)))
+        if (isNaN(parseInt(document.getElementById("popilation-size").value)) || 
+            isNaN(parseFloat(document.getElementById("mutation-rate").value)) || 
+            isNaN(parseInt(document.getElementById("tournament-size").value)) || 
+            isNaN(parseInt(document.getElementById("stagnation-treshold").value)))
             {
                 showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
                 return;
@@ -62,10 +63,10 @@ controlButton.addEventListener('click', () =>
     
         // Берём пользовательские значения констант алгоритма
         {
-            POPULATION_SIZE     = parseInt(document.getElementById('popilation-size').value);
-            MUTATION_RATE       = parseFloat(document.getElementById('mutation-rate').value);
-            TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament-size').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation-treshold').value);
+            POPULATION_SIZE     = parseInt(document.getElementById("popilation-size").value);
+            MUTATION_RATE       = parseFloat(document.getElementById("mutation-rate").value);
+            TOURNAMENT_SIZE     = parseInt(document.getElementById("tournament-size").value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById("stagnation-treshold").value);
         }
     
         genetic(); 
@@ -78,7 +79,7 @@ controlButton.addEventListener('click', () =>
     }
 });
 
-clearButton.addEventListener('click', () =>
+clearButton.addEventListener("click", () =>
 {
     controlButton.textContent = "НАЧАТЬ";
     controller.abort();
@@ -91,7 +92,12 @@ clearButton.addEventListener('click', () =>
     console.clear();
 });
 
-updateRateSlider.addEventListener('input', () =>
+updateRateSlider.addEventListener("input", () =>
 {
     UPDATE_RATE = parseInt(updateRateSlider.value);
+});
+
+drawEdgesCheckbox.addEventListener("change", () =>
+{
+    DRAW_EDGES = drawEdgesCheckbox.checked;
 });
