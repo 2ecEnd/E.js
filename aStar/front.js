@@ -205,8 +205,10 @@ function createShowPathButton(){
     const localfindPathButton = document.createElement('button');
     localfindPathButton.id = "findPath";
     localfindPathButton.addEventListener('click', function(){
-        aStar();
-        deactivateButtons();
+        if (buttonsAreActive && !findingThePath){
+            aStar();
+            deactivateButtons();
+        }
     });
 
     const image = new Image();
