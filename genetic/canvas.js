@@ -3,6 +3,10 @@ canvas.width  = 1024;
 canvas.height = 768;
 var ctx = canvas.getContext('2d');
 
+let vertexColor = "rgb(0, 0, 0)";
+let edgeColor   = "rgba(160, 160, 160, 0.1)";
+let pathColor   = "rgba(0, 200, 0, 0.8)";
+
 // Очистка холста
 function clearCanvas() 
 {

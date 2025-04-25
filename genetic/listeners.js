@@ -35,7 +35,6 @@ canvas.addEventListener('click', function(e)
         controller.abort();
         setTimeout(() =>
         {
-            controller = new AbortController();
             genetic();
         }, 50);
     }
@@ -58,9 +57,6 @@ controlButton.addEventListener('click', () =>
             }
 
         controlButton.textContent = "ОСТАНОВИТЬ";
-
-        controller = new AbortController();
-        isWorking = true;
     
         // Берём пользовательские значения констант алгоритма
         {

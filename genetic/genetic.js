@@ -5,15 +5,11 @@
 // Проверить читаемость кода
 // Добавить опсиание алгоритма
 
-let vertexes = []; 
-let adj = []; 
+var vertexes = []; 
+var adj = []; 
 
-let controller = new AbortController();
-let isWorking = false;
-
-let vertexColor = "rgb(0, 0, 0)";
-let edgeColor   = "rgba(160, 160, 160, 0.1)";
-let pathColor   = "rgba(0, 200, 0, 0.8)";
+var controller = new AbortController();
+var isWorking = false;
 
 //-=-=-=-=-=- Утилитарные функции -=-=-=-=-=-
 // Генерация случайного числа в пределах [start; end)
@@ -179,6 +175,9 @@ function cataclysmicMutation(population)
 // Непосредственно алгоритм
 async function genetic() 
 {
+    controller = new AbortController();
+    isWorking = true;
+    
     // Инициализация начальной популяции
     let population = initializePopulation();
     let gen = 0;
