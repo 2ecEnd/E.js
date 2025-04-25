@@ -57,7 +57,6 @@ controlButton.addEventListener('click', () =>
             isNaN(parseInt(document.getElementById('beta').value)) || 
             isNaN(parseInt(document.getElementById('q').value)) || 
             isNaN(parseFloat(document.getElementById('evaporation').value)) || 
-            isNaN(parseInt(document.getElementById('update-rate').value)) || 
             isNaN(parseInt(document.getElementById('stagnation-treshold').value)))
             {
                 showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
@@ -72,8 +71,7 @@ controlButton.addEventListener('click', () =>
             BETA                = parseInt(document.getElementById('beta').value);
             Q                   = parseInt(document.getElementById('q').value);
             EVAPORATION         = parseFloat(document.getElementById('evaporation').value);
-            BASE_EVAPORATION    = parseFloat(document.getElementById('evaporation').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update-rate').value);
+            BASE_EVAPORATION    = EVAPORATION;
             STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation-treshold').value);
         }
 

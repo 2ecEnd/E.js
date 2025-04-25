@@ -1,7 +1,5 @@
 // TODO:
-// Элитарность
-// Заменить список соседних вершин на множество соседних вершин
-// Может быть 2-opt (слишком затратно)
+// 2-opt
 
 var vertexes = []; 
 var adj = []; 
@@ -128,6 +126,7 @@ function makeChoice(ant)
         summWishes += wish;
     }
 
+    // Подсчёт вероятностей прехода в каждую из вершин
     let probabilities = [];
     probabilities.push(wishes[0] / summWishes);
     choosingProbabilities[0] = probabilities.at(-1);
@@ -140,6 +139,7 @@ function makeChoice(ant)
         choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
 
+    // Непосредственный выбор вершины, куда перейдёт муравей
     let choose = Math.random();
     let nextVertex;
     for(let i = 0; i < neighbourVertexes.length; i++)
@@ -252,8 +252,6 @@ async function antAlgorithm()
             for(let i = 0; i < adj.length - 1; i++)
                 makeChoice(ant);
 
-            let dist = calculateDistance(ant);
-
             // Обновление феромонов
             localUpdatePheromone(lup, ant);
         }
@@ -279,8 +277,8 @@ async function antAlgorithm()
             lup = new Array(adj.length).fill(1 / (1 - EVAPORATION)).map(() => new Array(adj.length).fill(1 / (1 - EVAPORATION)));
 
             localUpdatePheromone(lup, bestPath, 0.1);
-
         }
+        // Начинаем поднимать коэфициент испрарения, чтобы увеличить зону поиска муравьёв
         else if (stagnation % Math.floor(STAGNATION_TRESHOLD / 10) === 0 && stagnation !== 0)
             EVAPORATION += 0.1;
 
@@ -298,6 +296,4 @@ async function antAlgorithm()
         
         iter += 1;
     }
-
-    isWorking = false;
 }
