@@ -3,7 +3,6 @@
 // Бинарный поиск в выборе следующей вершины
 // Заменить список соседних вершин на множество соседних вершин
 // Может быть 2-opt (слишком затратно)
-// Добавить опсиание алгоритма
 
 var vertexes = []; 
 var adj = []; 
@@ -33,9 +32,19 @@ function initializePheromoneMatrix()
 {
     pheromoneMatrix = new Array(adj.length).fill(0).map(() => new Array(adj.length).fill(0));
     for(let i = 0; i < adj.length; i++)
+    {
+        if(controller.signal.aborted)
+            return;
+        
         for(let j = 0; j < adj.length; j++)
+        {
+            if(controller.signal.aborted)
+                return;
+
             if (i !== j)
                 pheromoneMatrix[i][j] = PHEROMONE_0;
+        }
+    }
 }
 
 // Создание муравьёв
@@ -69,6 +78,9 @@ function getBestPath(ants)
     let bestDistance = calculateDistance(bestPath);
     for (let path of ants) 
     {
+        if(controller.signal.aborted)
+            return;
+
         let distance = calculateDistance(path);
         if (distance < bestDistance) 
         {
@@ -84,8 +96,13 @@ function getNeighbourVertexes(ant)
 {
     let neighbors = [];
     for(let v = 0; v < adj.length; v++)
+    {
+        if(controller.signal.aborted)
+            return;
+
         if (!ant.includes(v))
             neighbors.push(v);
+    }
     return neighbors;
 }
 
@@ -100,6 +117,9 @@ function makeChoice(ant)
     let summWishes = 0.0;
     for(let neighbour of neighbourVertexes)
     {
+        if(controller.signal.aborted)
+            return;
+
         let pheromone = pheromoneMatrix[ant.at(-1)][neighbour];  // Кол-во феромона между текущим городом и neighbour
         let proximity = 1 / adj[ant.at(-1)][neighbour];
 
@@ -114,6 +134,9 @@ function makeChoice(ant)
     choosingProbabilities[0] = probabilities.at(-1);
     for(let i = 1; i < neighbourVertexes.length; i++)
     {
+        if(controller.signal.aborted)
+            return;
+
         probabilities.push(wishes[i] / summWishes);
         choosingProbabilities[i] = choosingProbabilities[i - 1] + probabilities.at(-1);
     }
@@ -126,6 +149,9 @@ function makeChoice(ant)
 
 	while (left <= right)
 	{
+        if(controller.signal.aborted)
+            return;
+
 	 	mid = Math.floor((left + right) / 2);
 
 	 	if (choosingProbabilities[mid] > choose)
@@ -151,15 +177,23 @@ function makeChoice(ant)
 function globalUpdatePheromone(lup)
 {
     for(let i = 0; i < lup.length; i++)
+    {
+        if(controller.signal.aborted)
+            return;
+        
         for(let j = 0; j < lup.length; j++)
-        {
-            pheromoneMatrix[i][j] = (1 - EVAPORATION) * pheromoneMatrix[i][j] + lup[i][j];
-
-            if(pheromoneMatrix[i][j] < MIN_PHEROMONE)
-                pheromoneMatrix[i][j] = MIN_PHEROMONE;
-            else if(pheromoneMatrix[i][j] > MAX_PHEROMONE)
-                pheromoneMatrix[i][j] = MAX_PHEROMONE;
-        }
+            {
+                if(controller.signal.aborted)
+                    return;
+                
+                pheromoneMatrix[i][j] = (1 - EVAPORATION) * pheromoneMatrix[i][j] + lup[i][j];
+    
+                if(pheromoneMatrix[i][j] < MIN_PHEROMONE)
+                    pheromoneMatrix[i][j] = MIN_PHEROMONE;
+                else if(pheromoneMatrix[i][j] > MAX_PHEROMONE)
+                    pheromoneMatrix[i][j] = MAX_PHEROMONE;
+            }
+    }
 }
 
 // Локальное обновление феромонов
@@ -184,12 +218,17 @@ function greedyAlgorithm()
     visited.add(0);
     for(let i = 1; i < adj.length; i++)
     {
+        if(controller.signal.aborted)
+            return;
+
         let v = path.at(-1);
 
         let minDist = Infinity;
         let nearestVertex;
         for(let u = 0; u < adj.length; u++)
         {
+            if(controller.signal.aborted)
+                return;
             if(visited.has(u))
                 continue;
 
@@ -258,7 +297,6 @@ async function antAlgorithm()
 
             initializePheromoneMatrix();
 
-            let dist = calculateDistance(bestPath);
             lup = new Array(adj.length).fill(1 / (1 - EVAPORATION)).map(() => new Array(adj.length).fill(1 / (1 - EVAPORATION)));
 
             localUpdatePheromone(lup, bestPath, 0.1);
