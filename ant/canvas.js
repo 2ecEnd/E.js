@@ -53,7 +53,6 @@ function drawEdges()
 function drawPath(path) 
 {
     clearCanvas();
-    drawVertexes();
 
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
@@ -68,4 +67,6 @@ function drawPath(path)
     ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
     ctx.stroke(); 
     ctx.closePath();
+    
+    drawVertexes();
 }

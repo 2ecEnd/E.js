@@ -57,8 +57,6 @@ function drawEdges()
 async function drawPath(path) 
 {
     clearCanvas();
-    drawVertexes();
-    //drawEdges();
 
     // Отрисовка найденного пути 
     ctx.strokeStyle = pathColor;
@@ -73,4 +71,6 @@ async function drawPath(path)
     ctx.lineTo(vertexes[path[0]][0], vertexes[path[0]][1]);
     ctx.stroke(); 
     ctx.closePath();
+
+    drawVertexes();
 }
