@@ -5,6 +5,13 @@ canvas{
     height: 700px;
 }
 
+#algorithm7{
+    border: 4px solid rgb(27, 68, 111);
+    border-radius: 10px;
+    background-color: rgb(27, 68, 111);
+    transform: translateX(+8px);
+}
+
 .mainContainer{
     display: flex;
     justify-items: center;
@@ -24,6 +31,8 @@ canvas{
         margin: 5px 0 0 400px;
 
         transition: margin 0.4s ease;
+
+        cursor: url('../aStar/images/brush_white.png') 0 0, auto;
     }
 
     .second-container{
