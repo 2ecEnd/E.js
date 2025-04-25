@@ -281,9 +281,7 @@ async function genetic()
 
         // Проверка на отличие от последнего лучшего найденного пути
         let newBestPath = getBestPath(population);
-        let nbp = calculateDistance(newBestPath);
-        let bp = calculateDistance(bestPath);
-        if (nbp >= bp)
+        if (calculateDistance(newBestPath) >= calculateDistance(bestPath))
             stagnation++;
         else
         {
