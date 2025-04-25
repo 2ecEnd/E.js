@@ -114,19 +114,13 @@ function saveDataToJson(data, filename){
 
 
 async function loadJsonFile() {
-    const [fileHandle] = await window.showOpenFilePicker({
-      types: [{
-        description: 'JSON Files',
-        accept: { 'application/json': ['.json'] },
-      }],
-    });
-    const file = await fileHandle.getFile();
-    const content = await file.text();
-    return JSON.parse(content);
+    const response = await fetch('weights 247 эпоха.json');
+    const content = await response.json();
+    return content;
 }
 
 
-function getFile(){
+function getWeights(){
     const promise = loadJsonFile();
     promise.then(result => {
         net.hiddenWeights = result[0];

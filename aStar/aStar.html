@@ -6,6 +6,7 @@
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="../style.css">
     <link rel="stylesheet" type="text/css" href="aStar.css">
+    <link rel="stylesheet" type="text/css" href="../error_window.css">
 </head>
 <body>
     <header class="container-fluid active" id="header">
@@ -50,7 +51,7 @@
     <div class="mainContainer">
         <div id="tableContainer" class="tableContainer">
             <form id="sizeForm" class="sizeForm">
-                <input type="text" id="size" class="sizeInput" placeholder="Введите размер">
+                <input type="number" id="size" class="sizeInput" placeholder="Введите размер">
                 <input type="submit" class="submitInput" value="Создать карту">
             </form>
         </div>
@@ -100,8 +101,15 @@
         </div>
     </div>
     <div class="background"></div>
+    <div id="error_modal">
+        <div id="modal_content">
+            <span id="error_modal_close_button">&times;</span>
+            <p id="error_message">Текст ошибки появится здесь</p>
+        </div>
+    </div>
     <script src="front.js"></script>
     <script src="aStar.js"></script>
     <script src="maze.js"></script>
+    <script src="../error_window.js"></script>
 </body>
 </html>

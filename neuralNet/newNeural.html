@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" type="text/css" href="../style.css">
+    <link rel="stylesheet" type="text/css" href="../error_window.css">
     <link rel="stylesheet" type="text/css" href="neural.css">
 </head>
 <body id="body">
@@ -60,10 +61,17 @@
             </button>
         </div>
     </div>
+    <div id="error_modal">
+        <div id="modal_content">
+            <span id="error_modal_close_button">&times;</span>
+            <p id="error_message">Текст ошибки появится здесь</p>
+        </div>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/pica/dist/pica.min.js"></script>
+    <script src="../error_window.js"></script>
+    <script src="input.js"></script>
     <script src="neuralNetwork.js"></script>
     <script src="front.js"></script>
-    <script src="input.js"></script>
     <script src="drawing.js"></script>
 </body>
 </html>

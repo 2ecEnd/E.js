@@ -1,5 +1,5 @@
-class neuralNetwork{
-    constructor(inputSize, hiddenSize, outputSize){
+class neuralNetwork{ 
+    constructor(inputSize, hiddenSize, outputSize){ // Инициализация
         this.hiddenWeights = Array.from({length: inputSize}, () => Array(hiddenSize).fill().map(() => Math.random() - 0.5));
         this.outputWeights = Array.from({length: hiddenSize}, () => Array(outputSize).fill().map(() => Math.random() - 0.5));
 
@@ -10,6 +10,8 @@ class neuralNetwork{
 
 
 const net = new neuralNetwork(2500, 128, 10);
+
+getWeights();
 
 const intervals = [1033, 1171, 1044, 1087, 1018, 948, 1034, 1100, 1015, 1047];
 
@@ -62,7 +64,7 @@ function outputPrediction(arr){
     for(let i = 0; i < arr.length; i++){
         if (arr[i] > arr[bestPred]) bestPred = i;
     }
-    arr[bestPred] > 0.5 ? alert(`это ${bestPred}`) : alert("Не могу понять что это");
+    arr[bestPred] > 0.3 ? showError(`это ${bestPred}`) : showError("Не могу понять что это");
 }
 
 function calculatePrediction(input, targetVector, flag){
@@ -105,7 +107,7 @@ function softmax(arr){
     const expArr = arr.map(i => Math.exp(i));
     const expSum = expArr.reduce((sum, i) => sum+i, 0);
 
-    return expArr.map(i => i/expSum);;
+    return expArr.map(i => i/expSum);
 }
 
 
