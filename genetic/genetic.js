@@ -1,7 +1,6 @@
 // TODO:
 // Улучшить скрещивание особей
 // Увеличить гибкость мутации
-// Добавить элитизм
 // Проверить читаемость кода
 // Добавить опсиание алгоритма
 
@@ -135,8 +134,8 @@ function crossing(parent1, parent2)
 // Динамическая мутация маршрута
 function adaptiveMutation(path) 
 {
-    // "Лёгкая" мутация путём смены мест двух вершин 
-    function lightMutation()
+    // Мутация перестановкой
+    function swapMutatuon()
     {
         const i = randomNumber(0, path.length);
         const j = randomNumber(0, path.length);
@@ -144,24 +143,61 @@ function adaptiveMutation(path)
         [path[i], path[j]] = [path[j], path[i]];
     }
 
-    // "Тяжёлая" (Агрессивная) мутация путём инверсии подмассива
-    function hardMutation()
+    // Мутация вставкой
+    function insertionMutatuon()
     {
-        let i = randomNumber(0, path.length - 1);
-        let j = randomNumber(i + 1, path.length);
-        
-        while (i < j)
-        {
-            [path[i], path[j]] = [path[j], path[i]];
-            i++;
-            j--;
-        }
+        const i = randomNumber(0, path.length);
+        const j = randomNumber(0, path.length);
+
+        let tmp = path[i];
+    
+        path.splice(i, 1);
+        path.splice(j, 0, tmp);
     }
 
+    // Мутация инверсией подмассива
+    function inverseMutation()
+    {
+        let i = randomNumber(0, path.length - 2);
+        let j = randomNumber(i + 1, path.length);
+        
+        let subPath = path.slice(i, j);
+        subPath.reverse();
+
+        path.splice(i, j-i);
+        path.splice(i, 0, ...subPath);
+    }
+    
+    // Мутация перемешиванием подмассива
+    function scrambleMutation()
+    {
+        let i = randomNumber(0, path.length - 2);
+        let j = randomNumber(i + 1, path.length);
+        
+        let subPath = path.slice(i, j);
+        shuffle(subPath);
+        
+        path.splice(i, j-i);
+        path.splice(i, 0, ...subPath);
+    }
+
+    let prob = Math.random();
     if (adj.length < 20)
-        lightMutation();
+    {
+        if (prob < 0.5)
+            swapMutatuon();
+        else
+            insertionMutatuon();
+    }
     else
-        hardMutation();
+    {
+        if (prob < 0.33)
+            insertionMutatuon();
+        else if (prob < 0.66)
+            inverseMutation();
+        else
+            scrambleMutation();
+    }
 }
 
 // Катастрофическая мутация популяции (чтобы выходить из локального минимума)
@@ -191,7 +227,7 @@ async function genetic()
         for(let i = 0; i < POPULATION_SIZE; i++)
         {
             if (controller.signal.aborted)
-                break;
+                return;
 
             // Выбор родителей
             let parent1 = selectParent(population);
@@ -206,8 +242,6 @@ async function genetic()
 
             newPopulation.push(child);
         }
-        if (controller.signal.aborted)
-            break;
 
         // Замена старой популяции новой
         population = newPopulation;
