@@ -93,8 +93,14 @@ body{
             }
         } 
 
-        input{
+        .text_input{
             height: 20px;
+            width: 200px;
+            border-radius: 5px;
+            color: rgba(0, 0, 0);
+        }
+
+        .range_input{
             width: 200px;
             border-radius: 5px;
             color: rgba(0, 0, 0);

@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="input_name">Коэф. альфа</div>
                             </div>
-                            <input type="number" id="alpha" value="1">
+                            <input type="number" class="text_input" id="alpha" value="1">
                         </div>
                         <div>
                             <div class="input_header">
@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="input_name">Коэф. бета</div>
                             </div>
-                            <input type="number" id="beta" value="3">
+                            <input type="number" class="text_input" id="beta" value="3">
                         </div>
                         <div>
                             <div class="input_header">
@@ -100,7 +100,7 @@
                                 </div>
                                 <div class="input_name">Коэф. Q</div>
                             </div>
-                            <input type="number" id="q" value="1000">
+                            <input type="number" class="text_input" id="q" value="1000">
                         </div>  
                         <div>
                             <div class="input_header">
@@ -112,18 +112,7 @@
                                 </div>
                                 <div class="input_name">Коэф. испарения</div>
                             </div>
-                            <input type="number" id="evaporation" value="0.1">
-                        </div>
-                        <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
-                                        Каждые n итераций будет отрисовываться лучший на данный момент путь.
-                                    </span>
-                                </div>
-                                <div class="input_name">Частота обновления</div>
-                            </div>
-                            <input type="number" id="update_rate" value="5">
+                            <input type="number" class="text_input" id="evaporation" value="0.1">
                         </div>
                         <div>
                             <div class="input_header">
@@ -135,7 +124,18 @@
                                 </div>
                                 <div class="input_name">Предел стагнации</div>
                             </div>
-                            <input type="number" id="stagnation_treshold" value="100">
+                            <input type="number" class="text_input" id="stagnation_treshold" value="100">
+                        </div>
+                        <div>
+                            <div class="input_header">
+                                <div class="info_icon">ℹ
+                                    <span class="info_tooltip">
+                                        Как часто будет отрисовываться лучший найденный путь.
+                                    </span>
+                                </div>
+                                <div class="input_name">Частота обновления</div>
+                            </div>
+                            <input type="range" class="range_input" id="update_rate" min="1" max="100" value="5">
                         </div>
                     </div>
                 </td>

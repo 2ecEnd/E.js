@@ -1,3 +1,7 @@
+const controlButton = document.getElementById('control_button');
+const clearButton = document.getElementById('clear_button');
+const updateRateSlider = document.getElementById('update_rate');
+
 canvas.addEventListener('click', async function(e)
 {
     // Преобразование координат курсора, чтобы точки отрисовывались корректно
@@ -35,15 +39,16 @@ canvas.addEventListener('click', async function(e)
         controller.abort();
         setTimeout(() =>
         {
-            controller = new AbortController();
             antAlgorithm();
         }, 50);
     }
 });
 
-controlButton = document.getElementById('control_button');
 controlButton.addEventListener('click', () =>
 {
+    if (adj.length < 2)
+        return
+
     if (!isWorking)
     {
         // Валидация ввода
@@ -59,9 +64,6 @@ controlButton.addEventListener('click', () =>
             }
 
         controlButton.textContent = "ОСТАНОВИТЬ";
-
-        controller = new AbortController();
-        isWorking = true;
     
         // Берём пользовательские значения констант алгоритма
         {
@@ -84,7 +86,7 @@ controlButton.addEventListener('click', () =>
     }
 });
 
-document.getElementById('clear_button').addEventListener('click', () =>
+clearButton.addEventListener('click', () =>
 {
     controlButton.textContent = "НАЧАТЬ";
     controller.abort();
@@ -95,4 +97,9 @@ document.getElementById('clear_button').addEventListener('click', () =>
     vertexes = [];
     adj = [];
     console.clear();
+});
+
+updateRateSlider.addEventListener('input', () =>
+{
+    UPDATE_RATE = parseInt(updateRateSlider.value);
 });

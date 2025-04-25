@@ -164,8 +164,8 @@ function globalUpdatePheromone(lup)
 // Муравьинный алгоритм
 async function antAlgorithm()
 {
-    if (adj.length < 2)
-        return;
+    controller = new AbortController();
+    isWorking = true;
 
     initializePheromoneMatrix();
 
@@ -182,7 +182,7 @@ async function antAlgorithm()
         for(let ant of ants)
         {
             if (controller.signal.aborted)
-                break;
+                return;
 
             // Проходим каждым муравьём весь путь
             for(let i = 0; i < adj.length - 1; i++)
@@ -200,8 +200,6 @@ async function antAlgorithm()
             lup[ant.at(-1)][ant[0]] += T_ijk;
             lup[ant[0]][ant.at(-1)] += T_ijk;
         }
-        if (controller.signal.aborted)
-            break;
 
 
         // Проверка на отличие от последнего лучшего найденного пути
@@ -235,6 +233,8 @@ async function antAlgorithm()
             let T_ijk = Q / dist;
             for(let v = 0; v < bestPath.length - 1; v++)
             {
+                if (controller.signal.aborted)
+                    return;
                 lup[bestPath[v]][bestPath[v + 1]] += 0.2 * T_ijk;
                 lup[bestPath[v + 1]][bestPath[v]] += 0.2 * T_ijk;
             }
@@ -259,4 +259,6 @@ async function antAlgorithm()
         
         iter += 1;
     }
+
+    isWorking = false;
 }
