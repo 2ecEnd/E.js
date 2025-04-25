@@ -5,15 +5,11 @@
 // Может быть 2-opt (слишком затратно)
 // Добавить опсиание алгоритма
 
-let vertexes = []; 
-let adj = []; 
+var vertexes = []; 
+var adj = []; 
 
-let controller = new AbortController();
-let isWorking = false;
-
-let vertexColor = "rgb(0, 0, 0)";
-let edgeColor   = "rgba(160, 160, 160, 0.1)";
-let pathColor   = "rgba(0, 200, 0, 0.8)";
+var controller = new AbortController();
+var isWorking = false;
 
 
 //-=-=-=-=-=- Муравьинный алгоритм -=-=-=-=-=-
