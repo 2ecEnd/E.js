@@ -3,6 +3,7 @@ let startIsSet = false;
 let finishIsSet = false;
 
 let buttonsAreActive = false;
+let findingThePath = false;
 
 
 //                         ФУНКЦИИ ДЛЯ СОЗДАНИЯ И ОТОБРАЖЕНИЯ ВЫЗУАЛЬНЫХ ЧАСТЕЙ: КНОПОК И КОНТЕЙНЕРОВ                             //
@@ -10,10 +11,9 @@ let buttonsAreActive = false;
 //                                                          \/                                                                    //
 
 
-const arrow = document.getElementById("arrow");
 const wallButton = document.getElementById("wallBrush");
 const startfinishButton = document.getElementById("start-finishBrush");
-const findPathButton = document.getElementById("findPath");
+let findPathButton = document.getElementById("findPath");
 const generateMazeButton = document.getElementById("generateMaze");
 const slider = document.getElementById("speedSlider");
 const animSwitch = document.getElementById("toggle-input");
@@ -34,7 +34,7 @@ animSwitch.addEventListener("change", function() {
 });
 
 generateMazeButton.addEventListener('click', function(){
-    if (buttonsAreActive) generateMaze();
+    if (buttonsAreActive && !findingThePath) generateMaze();
 });
 
 wallButton.addEventListener('click', function(){
@@ -66,7 +66,7 @@ eraserButton.addEventListener('click', function(){
 });
 
 startfinishButton.addEventListener('click', function(){
-    if (buttonsAreActive){
+    if (buttonsAreActive && !findingThePath){
         brushMode = "start-finish";
 
         map.classList.remove("mapWall");
@@ -80,28 +80,23 @@ startfinishButton.addEventListener('click', function(){
 });
 
 findPathButton.addEventListener('click', function(){
-    if (buttonsAreActive){
+    if (buttonsAreActive && !findingThePath){
         aStar();
         deactivateButtons();
     }
 });
 
 changeSizeButton.addEventListener('click', function(){
-    if (buttonsAreActive){
+    if (buttonsAreActive && !findingThePath){
         
     }
 });
 
 clearAllButton.addEventListener('click', function(){
-    if (buttonsAreActive){
+    if (buttonsAreActive && !findingThePath){
         clearAll();
     }
 });
-
-arrow.addEventListener('click', async function(){
-    document.getElementById("header").classList.toggle("active");
-});
-
 
 const form = document.getElementById('sizeForm'); 
 form.addEventListener('submit', function(event) {
@@ -111,15 +106,15 @@ form.addEventListener('submit', function(event) {
     n = parseInt(size);
 
     if (isNaN(n)){
-        alert('Пожалуйста, введите число');
+        showError('Пожалуйста, введите число');
         return;
     }
     else if(n > 110){
-        alert('Это слишком большой размер, максимум 110');
+        showError('Это слишком большой размер, максимум 110');
         return;
     }
     else if(n < 2){
-        alert('Слишком маленькое число');
+        showError('Слишком маленькое число');
         return;
     }
 
@@ -167,6 +162,8 @@ function activateButtons(){
         buttons[i].classList.remove("deactiveButton");
         buttons[i].classList.add("button");
     }
+    buttonsAreActive = true;
+    findingThePath = false;
 }
 
 function deactivateButtons(){
@@ -175,6 +172,7 @@ function deactivateButtons(){
         buttons[i].classList.add("deactiveButton");
         buttons[i].classList.remove("button");
     }
+    findingThePath = true;
 }
 
 
@@ -204,9 +202,9 @@ function createClearPathButton(startNode, finishNode){
 
 
 function createShowPathButton(){
-    const findPathButton = document.createElement('button');
-    findPathButton.id = "findPath";
-    findPathButton.addEventListener('click', function(){
+    const localfindPathButton = document.createElement('button');
+    localfindPathButton.id = "findPath";
+    localfindPathButton.addEventListener('click', function(){
         aStar();
         deactivateButtons();
     });
@@ -214,13 +212,14 @@ function createShowPathButton(){
     const image = new Image();
     image.src = "../design_Images/Astar 30px.png"
 
-    findPathButton.appendChild(image);
+    localfindPathButton.appendChild(image);
     const text = document.createElement('p');
     text.textContent = "Проложить путь";
-    findPathButton.appendChild(text);
+    localfindPathButton.appendChild(text);
 
-    findPathButton.classList.add("button");
-    document.getElementById("editorContainer").appendChild(findPathButton);
+    localfindPathButton.classList.add("button");
+    document.getElementById("editorContainer").appendChild(localfindPathButton);
+    findPathButton = localfindPathButton;
 }
 
 
@@ -251,4 +250,5 @@ function hidePath(startNode, finishNode){
 
     document.getElementById("editorContainer").removeChild(document.getElementById("clearPath"));
     createShowPathButton();
+    activateButtons();
 }

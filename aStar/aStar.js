@@ -29,20 +29,18 @@ function createMap(){ // Создание таблицы размером n*n
 
             let cellNumber = number
             cell.addEventListener('mousedown', function(){
-                if(brushMode == 'wall' || brushMode == 'eraser'){
+                if(brushMode === 'wall' || brushMode === 'eraser'){
                     wallDrawing = true;
                     toggleWall(cell, cellNumber);
-                    cell.preventDefault()
                 }
             });
             cell.addEventListener('mousemove', function(){
-                if((brushMode == 'wall' || brushMode == 'eraser') && wallDrawing){
+                if((brushMode === 'wall' || brushMode === 'eraser') && wallDrawing){
                     toggleWall(cell, cellNumber);
-                    cell.preventDefault()
                 }
             });
             cell.addEventListener('click', function(){
-                if(brushMode != 'wall' && brushMode != 'eraser'){
+                if(brushMode !== 'wall' && brushMode !== 'eraser'){
                     toggleWall(cell, cellNumber);
                 }
             });
@@ -62,13 +60,13 @@ document.addEventListener('mouseup', () => {
 
 
 function toggleWall(cell, cellNumber){ // Функция превращает клетку в wall или start-finish, в зависимости от текущей кисти (brushMode)
-    if (brushMode == 'wall'){
+    if (brushMode === 'wall'){
         cell.classList.add('wall')
         cell.classList.remove('free')
 
         graphNodes[cellNumber].isWall = true;
     }
-    else if(brushMode == 'eraser'){
+    else if(brushMode === 'eraser'){
         cell.classList.remove('wall')
         cell.classList.add('free')
 
@@ -122,10 +120,10 @@ class Node{ // Класс для вершины
         this.previousNode; 
 
         // Проверка соседних клеток на доступность
-        if ((number%n - (number-1)%n == 1) && (number-1 >= 0)){
+        if ((number%n - (number-1)%n === 1) && (number-1 >= 0)){
             this.reachableNodes.push(number-1);
         }
-        if (((number+1)%n - number%n == 1) && (number+1 < n*n)){
+        if (((number+1)%n - number%n === 1) && (number+1 < n*n)){
             this.reachableNodes.push(number+1);
         }
         if(number-n >= 0){
@@ -162,7 +160,7 @@ async function aStar(){
 
         document.getElementById(currentNodeNumber).classList.add('current');
 
-        if (currentNodeNumber == finishNode){
+        if (currentNodeNumber === finishNode){
             flag = true;
         }
         else{
@@ -190,7 +188,6 @@ async function aStar(){
     if (flag){
         showPath(startNode, finishNode);
         document.getElementById("editorContainer").removeChild(document.getElementById("findPath"));
-        activateButtons();
         createClearPathButton(startNode, finishNode);
     }
 
@@ -221,11 +218,6 @@ function chooseNode(nodes, finishNode){ // Алгоритм выбора луч�
             bestNode = i;
             bestCost = graphNodes[currentNode].cost + evristicCost(currentNode, finishNode);
         }
-
-        // if(evristicCost(currentNode, finishNode) < bestCost){
-        //     bestNode = i;
-        //     bestCost = evristicCost(currentNode, finishNode);
-        // }
     }
 
     return bestNode;

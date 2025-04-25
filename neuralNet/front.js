@@ -7,14 +7,14 @@ calcPredictionButton.addEventListener('click', function(){
     calculatePrediction(getInput(), [0], 1);
 });
 
-trainingButton.addEventListener('click', function(){
-    trainingTenNumbers();
-});
+// trainingButton.addEventListener('click', function(){
+//     trainingTenNumbers();
+// });
 
-inputFileButton.addEventListener('click', function(){
-    getFile();
-});
+// inputFileButton.addEventListener('click', function(){
+//     getFile();
+// });
 
-saveDataButton.addEventListener('click', function(){
-    saveDataToJson([net.hiddenWeights, net.outputWeights], 'weights.json');
-});
+// saveDataButton.addEventListener('click', function(){
+//     saveDataToJson([net.hiddenWeights, net.outputWeights], 'weights.json');
+// });
