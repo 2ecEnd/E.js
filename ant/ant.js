@@ -6,8 +6,6 @@
 // Добавить опсиание алгоритма
 
 let canvas = document.getElementsByTagName('canvas')[0];
-canvas.width  = 1024;
-canvas.height = 768;
 let ctx = canvas.getContext('2d');
 
 let vertexes = []; 
