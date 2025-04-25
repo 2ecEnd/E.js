@@ -1,6 +1,6 @@
-const controlButton = document.getElementById('control_button');
-const clearButton = document.getElementById('clear_button');
-const updateRateSlider = document.getElementById('update_rate');
+const controlButton = document.getElementById('control-button');
+const clearButton = document.getElementById('clear-button');
+const updateRateSlider = document.getElementById('update-rate');
 
 canvas.addEventListener('click', async function(e)
 {
@@ -56,8 +56,8 @@ controlButton.addEventListener('click', () =>
             isNaN(parseInt(document.getElementById('beta').value)) || 
             isNaN(parseInt(document.getElementById('q').value)) || 
             isNaN(parseFloat(document.getElementById('evaporation').value)) || 
-            isNaN(parseInt(document.getElementById('update_rate').value)) || 
-            isNaN(parseInt(document.getElementById('stagnation_treshold').value)))
+            isNaN(parseInt(document.getElementById('update-rate').value)) || 
+            isNaN(parseInt(document.getElementById('stagnation-treshold').value)))
             {
                 showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
                 return;
@@ -72,8 +72,8 @@ controlButton.addEventListener('click', () =>
             Q                   = parseInt(document.getElementById('q').value);
             EVAPORATION         = parseFloat(document.getElementById('evaporation').value);
             BASE_EVAPORATION    = parseFloat(document.getElementById('evaporation').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
+            UPDATE_RATE         = parseInt(document.getElementById('update-rate').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation-treshold').value);
         }
 
         antAlgorithm(); 

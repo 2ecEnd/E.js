@@ -235,7 +235,7 @@ async function genetic()
         }
         
         // Если пришла пора для отрисовкиы
-        if (gen % UPDATE_RATE === 0 && gen !== 0)
+        if (gen % UPDATE_RATE === 0 /*&& gen !== 0*/)
         {
             let bestDistance = calculateDistance(bestPath);
             console.log(bestDistance);

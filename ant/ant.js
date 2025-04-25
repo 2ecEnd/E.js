@@ -250,7 +250,7 @@ async function antAlgorithm()
 
 
         // Если пришла пора для отрисовкиы
-        if (iter % UPDATE_RATE === 0 && iter !== 0)
+        if (iter % UPDATE_RATE === 0 /*&& iter !== 0*/)
         {
             console.log(calculateDistance(bestPath));
             await drawPath(bestPath);

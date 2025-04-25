@@ -1,6 +1,6 @@
-const controlButton = document.getElementById('control_button');
-const clearButton = document.getElementById('clear_button');
-const updateRateSlider = document.getElementById('update_rate');
+const controlButton = document.getElementById('control-button');
+const clearButton = document.getElementById('clear-button');
+const updateRateSlider = document.getElementById('update-rate');
 
 canvas.addEventListener('click', function(e)
 {
@@ -49,11 +49,10 @@ controlButton.addEventListener('click', () =>
     if (!isWorking)
     {
         // Валидация ввода
-        if (isNaN(parseInt(document.getElementById('popilation_size').value)) || 
-            isNaN(parseFloat(document.getElementById('mutation_rate').value)) || 
-            isNaN(parseInt(document.getElementById('tournament_size').value)) || 
-            isNaN(parseInt(document.getElementById('update_rate').value)) || 
-            isNaN(parseInt(document.getElementById('stagnation_treshold').value)))
+        if (isNaN(parseInt(document.getElementById('popilation-size').value)) || 
+            isNaN(parseFloat(document.getElementById('mutation-rate').value)) || 
+            isNaN(parseInt(document.getElementById('tournament-size').value)) || 
+            isNaN(parseInt(document.getElementById('stagnation-treshold').value)))
             {
                 showError("Неккоректный ввод данных! Пожалуйста, введите числа!");
                 return;
@@ -63,11 +62,10 @@ controlButton.addEventListener('click', () =>
     
         // Берём пользовательские значения констант алгоритма
         {
-            POPULATION_SIZE     = parseInt(document.getElementById('popilation_size').value);
-            MUTATION_RATE       = parseFloat(document.getElementById('mutation_rate').value);
-            TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament_size').value);
-            UPDATE_RATE         = parseInt(document.getElementById('update_rate').value);
-            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation_treshold').value);
+            POPULATION_SIZE     = parseInt(document.getElementById('popilation-size').value);
+            MUTATION_RATE       = parseFloat(document.getElementById('mutation-rate').value);
+            TOURNAMENT_SIZE     = parseInt(document.getElementById('tournament-size').value);
+            STAGNATION_TRESHOLD = parseInt(document.getElementById('stagnation-treshold').value);
         }
     
         genetic(); 
