@@ -1,11 +1,21 @@
 let decisionTree; 
 
+class Node {
+    constructor(type, value, attribute = undefined, leftChild = undefined, rightChild = undefined) {
+        this.type = type;
+        this.attribute = attribute;
+        this.value = value;
+        this.left = leftChild;
+        this.right = rightChild;
+    }
+}
 
 // Класс дерева решений
 class DecisionTree {
-    constructor(target) {
+    constructor(target, minExamples) {
         this.target = target;
         this.root = null; 
+        this.minExamples = minExamples;
     }
 
 
@@ -15,18 +25,26 @@ class DecisionTree {
 
     // Рекурсивное построение дерева
     buildTree(data, attributes, depth) {
-        // Условия остановки рекурсии:
-        if (data.length <= 1) {
-            return this.createLeaf(data); 
-        }
-
         // Получаю все значения целевого признака
         let targetValues = data.map(line => line[this.target]);
+
+       
+       
+
+
 
 
         // Если все значения одинаковые - создаем лист
         if (this.isSame(targetValues)) {
-            return this.createLeaf(data);
+            let leaf = new Node('leaf', data[0][this.target]);
+            return leaf;
+        }
+
+        if (data.length < this.minExamples) {
+            let bestSplit = this.findBestSplit(data, attributes);
+            if (bestSplit[2] <= 0) {
+                return this.createLeaf(targetValues);
+            }
         }
 
         // Ищу лучшее разбиение по критерию информационного прироста
@@ -39,7 +57,7 @@ class DecisionTree {
         
         // Если не нашли полезного разбиения 
         if (bestGain <= 0) {
-            return this.createLeaf(data);
+            return this.createLeaf(targetValues);
         }
 
         // Разделяю данные на две части
@@ -58,14 +76,38 @@ class DecisionTree {
 
         // Возвращаю узел дерева
 
-        return {
-            type: 'node', 
-            attribute: bestAttribute, 
-            value: bestValue, 
-            left: leftChild, 
-            right: rightChild 
-        };
+        let node = new Node('node', bestValue, bestAttribute, leftChild, rightChild);
 
+        return node;
+    }
+
+
+    createLeaf(targetValues) {
+    
+        // Считаю сколько раз встречается каждое значение
+        let valueCounts = {};
+
+        for (let value of targetValues) {
+            if (!valueCounts[value]) {
+                valueCounts[value] = 0;
+            }
+            valueCounts[value]++;
+        }
+    
+        // Нахожу значение, которое встречается чаще всего
+
+        let mostCommonValue;
+        let maxCount = 0;
+
+        for (let value in valueCounts) {
+            if (valueCounts[value] > maxCount) {
+                mostCommonValue = value;
+                maxCount = valueCounts[value];
+            }
+        }
+    
+        // Возвращаем лист с самым частым классом
+        return new Node('leaf', mostCommonValue);
     }
 
     // Поиск наилучшего разбиения
@@ -236,21 +278,21 @@ class DecisionTree {
     // Вычисление энтропии
     calculateEntropy(values) {
         // Подсчет количества каждого класса
-        let counts = {};
+        let valueCounts = {};
         for (let value of values) {
 
-            if (!counts[value]) {
-                counts[value] = 0; 
+            if (!valueCounts[value]) {
+                valueCounts[value] = 0; 
             }
-            counts[value]++;
+            valueCounts[value]++;
 
         }
         
         let entropy = 0;
         
         // Формула энтропии Шеннона
-        for (let key in counts) {
-            let p = counts[key] / values.length;
+        for (let value in valueCounts) {
+            let p = valueCounts[value] / values.length;
             entropy += p * Math.log2(p);
         }
 
@@ -298,138 +340,16 @@ class DecisionTree {
 
 
     isSame(values) {
-        return new Set(values).size === 1;
-    }
-
-
-    
-
-    // Создаю лист дерева
-    createLeaf(data) {
-
-        return {
-            type: 'leaf',         
-            value: data[0][this.target],      
-        };
-    }
-
-    
-
-    
-}
-
-let nodeDataVisualization = new Map();
-
-// Визуализация дерева решения
-function visualizeTree() {
-    let visualization = document.getElementById('treeVisualization');
-    visualization.innerHTML = '';
-    nodeDataVisualization.clear();
-
-
-    let treeVisualization = d3.select(visualization).style('width', '100%').style('height', '600px'); 
-
-
-    // Создаю SVG холст 
-    let svg = treeVisualization.append('svg').attr('width', 2000).attr('height', 2000);
-
-    // Функция масштабирования
-    let zoomFunction = d3.zoom().scaleExtent([0.5, 3]).on('zoom', (event) => {
-        treeElements.attr('transform', event.transform);
-    });
-
-    svg.call(zoomFunction);
-
-    // Все элементы дерева помещаю в одну группу
-    let treeElements = svg.append('g');
-
-
-
- 
-    let treePosition = d3.tree().nodeSize([120, 200]).separation(() => 3);
-
-  
-
-
-    // Преобразую данные в формат иерархический формат для d3
-    let treeHierarchy = d3.hierarchy(decisionTree.root, function(node) {
-
-        if (node.type === 'node') {
-            return [node.left, node.right]; 
+        let setValues = new Set(values);
+        if (setValues.length === 1) {
+            return true;
         }
-        return []; 
-    });
-
-    treePosition(treeHierarchy);
-
-    
-
-    // Рисую линии между узлами
-    treeElements.selectAll('.line') 
-        .data(treeHierarchy.links()) // Привязываю данные о связях
-        .enter() // Для каждого нового элемента
-        .append('path') // Создаю SVG-путь 
-        .attr('class', 'line')
-        .attr('d', d3.linkVertical() 
-            .x(d => d.x) 
-            .y(d => d.y) 
-        );
-
-    
-
-    // Создаю узлы 
-    let nodes = treeElements.selectAll('.node') 
-        .data(treeHierarchy.descendants()) // Привязываю данные узлов
-        .enter() // Для каждого нового узла
-        .append('g') // Создаю группу для каждого узла
-
-        .attr('class', 'node')
-        .attr('type', d => `${d.data.type}`)
-
-        .attr('transform', d => `translate(${d.x},${d.y})`)
-
-        .each(function(d) {
-            // Сохраняю связь между данными и DOM-элементом
-            nodeDataVisualization.set(d.data, this);
-        });
-
-
-    
-
-    // Рисую узлы
-    nodes.append('rect')
-        .attr('width', 150) 
-        .attr('height', 50) 
-        .attr('x', -75) 
-        .attr('y', -25) 
-    
-    
-
-    // Текст узла
-    nodes.append('text')
-        .attr('dy', 4) 
-        .attr('text-anchor', 'middle') 
-        .style('font-size', '14px') 
-        .text(d => {
-
-            if (d.data.type === 'leaf') {
-
-                return `${d.data.value}`;
-            }
-
-            else {
-                if (!isNaN(d.data.value)) {
-                    return `${d.data.attribute} <= ${d.data.value}`;
-                }
-
-                else {
-                    return `${d.data.attribute} = ${d.data.value}`;
-                }
-            }
-
-        });
-    
+        else {
+            return false;
+        }
+    }   
 }
+
 
 
 
@@ -455,16 +375,7 @@ function findPath(line) {
 }
 
 
-// Подсветка узлов на пути
-function highlightPath(path) {
-    d3.selectAll('.node').classed('active', false); // Сбрасываю подсветку
-    
-    // Подсвечиваю все узлы на пути
-    path.forEach(node => {
-        let elementHTML = nodeDataVisualization.get(node);
-        d3.select(elementHTML).classed('active', true);
-    });
-}
+
 
 
 
@@ -555,6 +466,8 @@ function parseCSV(inputText) {
 // Обработчик кнопки построения дерева
 document.getElementById('buildTreeButton').addEventListener('click', () => {
     let csvData = document.getElementById('trainingData').value.trim();
+    let minExamples = parseInt(document.getElementById('minExamples').value)
+
     if (!csvData) {
         showError('Введите обучающюю выборку');
         return;
@@ -571,9 +484,11 @@ document.getElementById('buildTreeButton').addEventListener('click', () => {
     // Определяю целевую переменную 
     let targetColumn = Object.keys(data[0]).pop();
 
+
+
     
     // Строю дерево
-    decisionTree = new DecisionTree(targetColumn);
+    decisionTree = new DecisionTree(targetColumn, minExamples);
     decisionTree.startBuildTree(data, Object.keys(data[0]).filter(column => column !== targetColumn));
     visualizeTree()
 });

@@ -2,9 +2,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Дерево решений</title>
-    <link rel="stylesheet" href="decisionTree.css">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../error_window.css">
+    <link rel="stylesheet" href="decisionTree.css">
 </head>
 <body>
     <header class="container-fluid active" id="header">
@@ -59,28 +59,34 @@
         </div>
     </header>
     
-    <div class="main">
+    <div class="mainContainer">
         <h1>Дерево решений</h1>
         
         <div class="inputSection">
-            <textarea id="trainingData" placeholder="Введите обучающюю выборку в формате csv-текста"></textarea>
-            <button id="buildTreeButton">Построить дерево решений</button>
+            <label for="minExamples">Введите минимальное допустимое число примеров в узле:</label>
+            <input type="number" id="minExamples" value="7" min="1" placeholder="Минимальное число примеров">
+            <textarea id="trainingData" placeholder="Введите обучающую выборку в формате CSV"></textarea>
+            <button id="buildTreeButton">Построить дерево</button>
         </div>
-
+        
         <div class="visualizationSection">
             <div id="treeVisualization"></div>
         </div>
 
         <div class="decisionSection">
+            <div class="info-icon">ℹ
+                <span class="info-tooltip">Ввод дерева</span>
+            </div>
             <textarea id="decisionData" placeholder="Введите данные в формате csv-текста для принятия решения по дереву"></textarea>
             <button id="decisionButton">Принять решение</button>
             <div id="decisionResult"></div>
         </div>
     </div>
 
-    <script src="decisionTree.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="../main.js"></script>
+    <script src="decisionTree.js"></script>
+    <script src="visualizationTree.js"></script>
 
     <div id="error_modal">
         <div id="modal_content">
