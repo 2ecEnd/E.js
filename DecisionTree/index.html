@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Дерево решений</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="main">
+        <h1>Дерево решений</h1>
+        
+        <div class="inputSection">
+            <textarea id="trainingData" placeholder="Введите обучающюю выборку в формате csv-текста"></textarea>
+            <button id="buildTreeButton">Построить дерево решений</button>
+        </div>
+
+        <div class="visualization-section">
+            <div id="treeVisualization"></div>
+        </div>
+
+        <div class="decisionSection">
+            <textarea id="decisionData" placeholder="Введите данные в формате csv-текста для принятия решения по дереву"></textarea>
+            <button id="decisionButton">Принять решение</button>
+            <div id="decisionResult"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</body>
+</html>

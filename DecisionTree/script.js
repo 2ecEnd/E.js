@@ -1,9 +1,11 @@
 let decisionTree; 
+const MAX_DEPTH = 25; // Максимальная глубина дерева 
 
 
 // Класс дерева решений
 class DecisionTree {
-    constructor(target) {
+    constructor(maxDepth, target) {
+        this.maxDepth = maxDepth; 
         this.target = target;
         this.root = null; 
     }
@@ -16,7 +18,7 @@ class DecisionTree {
     // Рекурсивное построение дерева
     buildTree(data, attributes, depth) {
         // Условия остановки рекурсии:
-        if (data.length <= 1) {
+        if (depth >= this.maxDepth || data.length <= 1) {
             return this.createLeaf(data); 
         }
 
@@ -473,7 +475,7 @@ function highlightPath(path) {
 // Функция для принятия решений
 function makeDecision() {
     if (!decisionTree) {
-        showError('Вначале необходимо построить дерево решений');
+        alert('Вначале необходимо построить дерево решений');
         return;
     }
 
@@ -481,7 +483,7 @@ function makeDecision() {
     let csvData = document.getElementById('decisionData').value.trim();
     
     if (!csvData) {
-        showError('Введите ваши данные');
+        alert('Введите ваши данные');
         return;
     }
 
@@ -502,8 +504,8 @@ function makeDecision() {
         let decision = path[path.length-1].value;
         resultHTML += `
             <div class="decisionLine">
-                Строка ${index + 1}: ${decision}
-                <button class="highlightButton" dataIndex="${index}">Показать путь</button>
+                <strong>Строка ${index + 1}:</strong> ${decision}
+                <button class="highlightButton" data-index="${index}">Показать путь</button>
             </div>
         `;
     });
@@ -512,8 +514,8 @@ function makeDecision() {
     document.getElementById('decisionResult').innerHTML = resultHTML;
 
     document.querySelectorAll('.highlightButton').forEach(button => {
-        button.addEventListener('click', function() {
-            let index = parseInt(this.getAttribute('dataIndex'));
+        button.addEventListener('click', () => {
+            let index = parseInt(this.getAttribute('data-index'));
             let line = userData[index];
             let path = findPath(line);
             highlightPath(path); // Подсвечиваем путь
@@ -534,14 +536,14 @@ function parseCSV(inputText) {
     let lines = inputText.split('\n');
     
     
-    let headers = lines[0].split(';').map(header => header.trim());
+    let headers = lines[0].split(',').map(header => header.trim());
 
     let data = [];
 
     let newLines = lines.slice(1);
 
     newLines.forEach((line, i) => {
-        let values = line.split(';').map(value => value.trim());
+        let values = line.split(',').map(value => value.trim());
         let row = {};
         headers.forEach((header, j) => {
             row[header] = values[j] || '';
@@ -556,7 +558,7 @@ function parseCSV(inputText) {
 document.getElementById('buildTreeButton').addEventListener('click', () => {
     let csvData = document.getElementById('trainingData').value.trim();
     if (!csvData) {
-        showError('Введите обучающюю выборку');
+        alert('Введите обучающюю выборку');
         return;
     }
 
@@ -564,7 +566,7 @@ document.getElementById('buildTreeButton').addEventListener('click', () => {
 
 
     if (data.length === 0) {
-        showError('Введённая информация некоректна');
+        alert('Введённая информация некоректна');
         return;
     }
 
@@ -573,7 +575,7 @@ document.getElementById('buildTreeButton').addEventListener('click', () => {
 
     
     // Строю дерево
-    decisionTree = new DecisionTree(targetColumn);
+    decisionTree = new DecisionTree(MAX_DEPTH, targetColumn);
     decisionTree.startBuildTree(data, Object.keys(data[0]).filter(column => column !== targetColumn));
     visualizeTree()
 });
