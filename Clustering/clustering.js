@@ -1,7 +1,7 @@
 let inputCanvas = document.getElementById('inputCanvas');
 let inputCtx = inputCanvas.getContext('2d');
-inputCanvas.width = 500;
-inputCanvas.height = 500;
+inputCanvas.width = 1000;
+inputCanvas.height = 700;
 
 let clusterButton = document.getElementById('clusterButton');
 let clearButton = document.getElementById('clearButton');
@@ -25,7 +25,7 @@ let selectedMetric = 'euclidean';
 // Генерация цветов по цветовому кругу HSL
 function generateColors(k) {
     colours = [];
-    const hueStep = 360 / k;
+    let hueStep = 360 / k;
     for (let i = 0; i < k; i++) {
         colours.push(`hsl(${i * hueStep}, 70%, 60%)`);
     }
@@ -367,12 +367,12 @@ function performClustering() {
     let k = parseInt(kInput.value);
 
     if (isNaN(k) || k < 1 || k > 10) {
-        clusterInfo.textContent = "Введите число кластеров от 1 до 10";
+        showError(`Число кластеров должно быть от 1 до 10`);
         return;
     }
     
     if (inputPoints.length < k) {
-        clusterInfo.textContent = `Нужно как минимум ${k} точек для кластеризации`;
+        showError(`Нужно как минимум ${k} точек для кластеризации`);
         return;
     }
     
@@ -393,13 +393,11 @@ function performClustering() {
     }
     
     draw(result.points, result.centers);
-    clusterInfo.textContent = `Кластеризация выполнена (${selectedAlgorithm}, ${selectedMetric}) с ${k} кластерами`;
 }
 
 function clearAll() {
     inputPoints = [];
     draw(inputPoints);
-    clusterInfo.textContent = 'Поставьте точки на плоскости для кластеризации';
 }
 
 
