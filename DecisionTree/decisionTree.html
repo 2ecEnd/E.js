@@ -68,9 +68,12 @@
         <h1>Дерево решений</h1>
         
         <div class="inputSection">
-            <label for="minExamples">Введите минимальное допустимое число примеров в узле:</label>
-            <input type="number" id="minExamples" value="7" min="1" placeholder="Минимальное число примеров">
-            <textarea id="trainingData" placeholder="Введите обучающую выборку в формате CSV"></textarea>
+            <div class="input">
+                <label for="maxDepth">Введите максимальную глубину дерева</label>
+                <input type="number" id="maxDepth" value="50" min="1">
+            </div>
+        
+            <textarea id="trainingData" placeholder="Введите обучающую выборку в формате CSV-текста. В первой строке введите заголовки. Последний столбец - целевой. Значения должны быть разделены точкой с запятой"></textarea>
             <button id="buildTreeButton">Построить дерево</button>
         </div>
         
@@ -79,7 +82,7 @@
         </div>
 
         <div class="decisionSection">
-            <textarea id="decisionData" placeholder="Введите данные в формате csv-текста для принятия решения по дереву"></textarea>
+            <textarea id="decisionData" placeholder="Введите данные в формате CSV-текста для принятия решения по дереву. В первой строке введите заголовки. Значения должны быть разделены точкой с запятой"></textarea>
             <button id="decisionButton">Принять решение</button>
             <div id="decisionResult"></div>
         </div>

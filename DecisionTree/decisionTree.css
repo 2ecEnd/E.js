@@ -4,8 +4,21 @@ h1, h2 {
     color: white;
 }
 
+.input {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    gap: 10px;
+    margin-bottom: 15px;
+}
 
-#minExamples {
+.input label {
+    font-weight: bold;
+    color: white;
+    font-size: 20px;
+}
+
+#maxDepth {
     width: 50px;
     padding: 8px;
     border: 1px solid rgb(55, 65, 76);

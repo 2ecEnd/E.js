@@ -12,10 +12,10 @@ class Node {
 
 // Класс дерева решений
 class DecisionTree {
-    constructor(target, minExamples) {
+    constructor(target, maxDepth) {
         this.target = target;
         this.root = null; 
-        this.minExamples = minExamples;
+        this.maxDepth = maxDepth;
     }
 
 
@@ -25,13 +25,14 @@ class DecisionTree {
 
     // Рекурсивное построение дерева
     buildTree(data, attributes, depth) {
-        // Получаю все значения целевого признака
+        // Условия остановки рекурсии:
+        if (depth >= this.maxDepth || data.length <= 1) {
+            let leaf = new Node('leaf', data[0][this.target]);
+            return leaf; 
+        }
+
+        // Получаем все значения целевого признака
         let targetValues = data.map(line => line[this.target]);
-
-       
-       
-
-
 
 
         // Если все значения одинаковые - создаем лист
@@ -40,14 +41,7 @@ class DecisionTree {
             return leaf;
         }
 
-        if (data.length < this.minExamples) {
-            let bestSplit = this.findBestSplit(data, attributes);
-            if (bestSplit[2] <= 0) {
-                return this.createLeaf(targetValues);
-            }
-        }
-
-        // Ищу лучшее разбиение по критерию информационного прироста
+        // Ищем лучшее разбиение по критерию информационного прироста
         let bestSplit = this.findBestSplit(data, attributes);
 
         let bestAttribute = bestSplit[0];
@@ -57,58 +51,29 @@ class DecisionTree {
         
         // Если не нашли полезного разбиения 
         if (bestGain <= 0) {
-            return this.createLeaf(targetValues);
+            let leaf = new Node('leaf', data[0][this.target]);
+            return leaf;
         }
 
-        // Разделяю данные на две части
+        // Разделяем данные на две части
 
         let splitTree = this.splitTree(data, bestAttribute, bestValue);
 
         let leftData = splitTree[0];
         let rightData = splitTree[1];
 
-
-        // Удаляю использованный признак из доступных
         
         // Рекурсивно строим поддеревья
         let leftChild = this.buildTree(leftData, attributes, depth + 1);
         let rightChild = this.buildTree(rightData, attributes, depth + 1);
 
-        // Возвращаю узел дерева
+        // Возвращаем узел дерева
 
         let node = new Node('node', bestValue, bestAttribute, leftChild, rightChild);
 
         return node;
     }
 
-
-    createLeaf(targetValues) {
-    
-        // Считаю сколько раз встречается каждое значение
-        let valueCounts = {};
-
-        for (let value of targetValues) {
-            if (!valueCounts[value]) {
-                valueCounts[value] = 0;
-            }
-            valueCounts[value]++;
-        }
-    
-        // Нахожу значение, которое встречается чаще всего
-
-        let mostCommonValue;
-        let maxCount = 0;
-
-        for (let value in valueCounts) {
-            if (valueCounts[value] > maxCount) {
-                mostCommonValue = value;
-                maxCount = valueCounts[value];
-            }
-        }
-    
-        // Возвращаем лист с самым частым классом
-        return new Node('leaf', mostCommonValue);
-    }
 
     // Поиск наилучшего разбиения
     findBestSplit(data, attributes) {
@@ -466,7 +431,7 @@ function parseCSV(inputText) {
 // Обработчик кнопки построения дерева
 document.getElementById('buildTreeButton').addEventListener('click', () => {
     let csvData = document.getElementById('trainingData').value.trim();
-    let minExamples = parseInt(document.getElementById('minExamples').value)
+    let maxDepth = parseInt(document.getElementById('maxDepth').value)
 
     if (!csvData) {
         showError('Введите обучающюю выборку');
@@ -488,7 +453,7 @@ document.getElementById('buildTreeButton').addEventListener('click', () => {
 
     
     // Строю дерево
-    decisionTree = new DecisionTree(targetColumn, minExamples);
+    decisionTree = new DecisionTree(targetColumn, maxDepth);
     decisionTree.startBuildTree(data, Object.keys(data[0]).filter(column => column !== targetColumn));
     visualizeTree()
 });
