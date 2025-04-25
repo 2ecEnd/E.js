@@ -67,78 +67,80 @@
                 <td>
                     <div id="inputs">
                         <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
                                         Сколько особей будет в популяции.
                                         <div class="degree">Сильное влияние на алгоритм.</div>
                                     </span>
                                 </div>
-                                <div class="input_name">Размер популяции</div>
+                                <div class="input-name">Размер популяции</div>
                             </div>
-                            <input type="text" id="popilation_size" value="1000">
+                            <input type="number" class="text-input" id="popilation-size" value="1000">
                         </div>
                         <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
                                         Как часто особи будут мутировать. Чем выше вероятность, тем лучше алгоритм выбирается из локальных минимумов, однако слишком высокий шанс мутации может помешать поиску наилучшего пути.
                                         <div class="degree">Сильное влияние на алгоритм.</div>
                                     </span>
                                 </div>
-                                <div class="input_name">Вероятность мутации</div>
+                                <div class="input-name">Вероятность мутации</div>
                             </div>
-                            <input type="text" id="mutation_rate" value="0.1">
+                            <input type="number" class="text-input" id="mutation-rate" value="0.1">
                         </div> 
                         <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
                                         Среди данного числа случайных особей будет выбираться лучшая, которая станет одним из родителей для новой особи.
                                         <div class="degree">Сильное влияние на алгоритм.</div>
                                     </span>
                                 </div>
-                                <div class="input_name">Размер "турнира"</div>
+                                <div class="input-name">Размер "турнира"</div>
                             </div>
-                            <input type="text" id="tournament_size" value="16">
+                            <input type="number" class="text-input" id="tournament-size" value="16">
                         </div>
                         <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
-                                        Каждые n поколений будет отрисовываться лучший на данный момент путь.
-                                    </span>
-                                </div>
-                                <div class="input_name">Частота обновления</div>
-                            </div>
-                            <input type="text" id="update_rate" value="5">
-                        </div>
-                        <div>
-                            <div class="input_header">
-                                <div class="info_icon">ℹ
-                                    <span class="info_tooltip">
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
                                         Сколько поколений должно пройти без улучшения результата, чтобы запустилась "катастрофическая мутация" (крайне агрессивная мутация с высокой степенью изменения генов особей).
                                         <div class="degree">Среднее влияние на алгоритм.</div>
                                     </span>
                                 </div>
-                                <div class="input_name">Предел стагнации</div>
+                                <div class="input-name">Предел стагнации</div>
                             </div>
-                            <input type="text" id="stagnation_treshold" value="50">
+                            <input type="number" class="text-input" id="stagnation-treshold" value="100">
                         </div> 
+                        <div>
+                            <div class="input-header">
+                                <div class="info-icon">ℹ
+                                    <span class="info-tooltip">
+                                        Каждые n поколений будет отрисовываться лучший на данный момент путь.
+                                    </span>
+                                </div>
+                                <div class="input-name">Частота обновления</div>
+                            </div>
+                            <input type="range" class="range-input" id="update-rate" min="1" max="100" value="5">
+                        </div>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button id="clear_button">Очистить холст</button>
-                    <button id="control_button">НАЧАТЬ</button>
+                    <button id="clear-button">Очистить холст</button>
+                    <button id="control-button">НАЧАТЬ</button>
                 </td>
             </tr>
         </table>
 
     </div>
     <script src="../main.js"></script>
+    <script src="canvas.js"></script>
     <script src="genetic.js"></script>
+    <script src="listeners.js"></script>
     
     <div id="error_modal">
         <div id="modal_content">
